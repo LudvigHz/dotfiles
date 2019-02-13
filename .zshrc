@@ -45,7 +45,7 @@ ZSH_VCS_PROMPT_GIT_FORMATS+='#h'
 # Stashed
 ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{cyan}%}#i%{%f%b%}'
 # Clean
-ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{green}%}#j%{%f%b%}]'
+ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{green}%}#j%{%f%b%}'
 
 
 # Action
@@ -63,12 +63,12 @@ ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='#h'
 # Stashed
 ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='%{%F{cyan}%}#i%{%f%}'
 # Clean
-ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='%{%F{green}%}#j%{%f%}]'
+ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='%{%F{green}%}#j%{%f%}'
 
 
 
-ZSH_VCS_PROMPT_AHEAD_SIGIL='↑ '
-ZSH_VCS_PROMPT_BEHIND_SIGIL='↓ '
+ZSH_VCS_PROMPT_AHEAD_SIGIL="${i_oct_cloud_upload} "
+ZSH_VCS_PROMPT_BEHIND_SIGIL="${i_oct_cloud_download} "
 ZSH_VCS_PROMPT_STAGED_SIGIL='● '
 ZSH_VCS_PROMPT_CONFLICTS_SIGIL="${i_oct_x} "
 ZSH_VCS_PROMPT_UNSTAGED_SIGIL="${i_oct_plus} "
