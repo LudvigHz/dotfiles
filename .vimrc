@@ -6,9 +6,8 @@ set hlsearch                    " Highlight all search results
 set ignorecase                  " Ignore case on search
 set autoindent                  " Autoindent on new line
 set expandtab                   " Use spaces, not tabs
-set shiftwidth=2                " Set tab to 4 spaces
-set softtabstop=4
-set backspace=indent,eol,start  " Fix backsapce issues
+set shiftwidth=2                " Set tab to 2 spaces
+set softtabstop=2
 set ruler                       " Show char pos
 set undolevels=1000             " Better undo history
 set mouse=a                     " Enable mouse in all modes
@@ -65,7 +64,7 @@ Plug 'mattn/emmet-vim'
 Plug 'w0rp/ale'                             " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
 Plug 'morhetz/gruvbox'                      " Standard color scheme
-" Plug 'gilgigilgil/anderson.vim'           " Alternate color scheme
+Plug 'gilgigilgil/anderson.vim'             " Alternate color scheme
 Plug 'valloric/youcompleteme'               " Autocompletion
 Plug 'pangloss/vim-javascript'              " JS and JSX support
 Plug 'mxw/vim-jsx'
@@ -73,6 +72,10 @@ Plug 'prettier/vim-prettier'                " File formatting
 Plug 'ambv/black'                           " Python formatter
 Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'mbbill/undotree'                      " Undo tree
+Plug 'scrooloose/nerdcommenter'             " Command to comment out code
+Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
+Plug 'flowtype/vim-flow'                    " Flow support
+
 
 call plug#end()
 
@@ -110,6 +113,23 @@ let g:ale_sign_warning = ''
 let g:ale_sign_error = ''
 
 
+" YouCompleteMe settings
+
+" Hacky fix to use venv while in django project dir
+if filereadable("manage.py")
+  let g:ycm_python_interpreter_path = 'venv/bin/python'
+  let g:ycm_python_sys_path = []
+  let g:ycm_extra_conf_vim_data = [
+    \  'g:ycm_python_interpreter_path',
+    \  'g:ycm_python_sys_path'
+    \]
+  let g:ycm_global_ycm_extra_conf = '~/global_extra_conf.py'
+endif
+
+let g:ycm_show_diagnostics_ui = 0
+let g:ycm_autoclose_preview_window_after_completion = 0
+
+
 " Airline
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
@@ -128,6 +148,13 @@ hi SignColumn ctermbg=235 ctermfg=235
 hi GitGutterAdd ctermbg=235 ctermfg=34
 hi GitGutterChange ctermbg=235 ctermfg=220
 hi GitGutterDelete ctermbg=235 ctermfg=160
+hi GitGutterChangeDelete ctermbg=235 ctermfg=220
 let g:gitgutter_sign_added = '⏽'
 let g:gitgutter_sign_modified = '⏽'
 let g:gitgutter_sign_removed = ''
+let g:gitgutter_sign_modified_removed = ''
+
+
+" Delimitmate
+let g:delimitmate_expand_space = 1
+let g:delimitmate_expand_cr = 1

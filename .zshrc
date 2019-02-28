@@ -6,6 +6,11 @@
    fi
 
 
+HISTFILE=~/.zsh_history
+SAVEHIST=10000
+HISTSIZE=10000
+
+
 # Load modules
 autoload -Uz vcs_info
 compinit colors
@@ -85,13 +90,28 @@ zstyle ':vcs_info:git:*' check-for-changes true
 zstyle ':vcs_info:git*' formats "%F{green}${i_dev_git_branch}%f%F{blue}%b%f%m%c%u "
 
 
+# Show active venv, if any
+
+export VIRTUAL_ENV_DISABLE_PROMPT=yes
+
+function virtenv_indicator {
+    if [[ -z $VIRTUAL_ENV ]] then
+        psvar[1]=''
+    else
+        psvar[1]=${VIRTUAL_ENV##*/}
+    fi
+}
+
+add-zsh-hook precmd virtenv_indicator
+
+
 
 precmd() {
     vcs_info
     GLYPH="▲"
         [ "x$KEYMAP" = "xvicmd" ] && GLYPH="▼"
 
-        PS1="%(?.%F{blue}.%F{red})$GLYPH%f %(1j.%F{cyan}[%j]%f .)%F{blue}%~%f %(!.%F{red}#%f .)${vcs_info_msg_0_} $(vcs_super_info)
+        PS1="%(1V.(%1v).) %(?.%F{blue}.%F{red})$GLYPH%f %(1j.%F{cyan}[%j]%f .)%F{blue}%~%f %(!.%F{red}#%f .)${vcs_info_msg_0_} $(vcs_super_info)
 ${i_fa_long_arrow_right}  "
     }
 
