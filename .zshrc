@@ -9,6 +9,7 @@
 HISTFILE=~/.zsh_history
 SAVEHIST=10000
 HISTSIZE=10000
+setopt INC_APPEND_HISTORY
 
 
 # Load modules
@@ -36,11 +37,11 @@ source ~/.local/share/fonts/i_fa.sh
 source ~/.local/share/fonts/i_oct.sh
 
 source ~/.zsh/zsh-vcs-prompt/zshrc.sh
-ZSH_VCS_PROMPT_ENABLE_CACHING='true'
+ZSH_VCS_PROMPT_ENABLE_CACHING='false'
 
-ZSH_VCS_PROMPT_GIT_FORMATS='#c#d|'
+ZSH_VCS_PROMPT_GIT_FORMATS='#c#d '
 # Staged
-ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{blue}%}#e%{%f%b%}'
+ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{green}%}#e%{%f%b%}'
 # Conflicts
 ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{red}%}#f%{%f%b%}'
 # Unstaged
@@ -56,7 +57,7 @@ ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{green}%}#j%{%f%b%}'
 # Action
 ZSH_VCS_PROMPT_GIT_ACTION_FORMAT+=':%{%B%F{red}%}#a%{%f%b%}'
 # Ahead and Behind
-ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='#c#d|'
+ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='#c#d '
 # Staged
 ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='%{%F{blue}%}#e%{%f%}'
 # Conflicts
@@ -83,11 +84,11 @@ ZSH_VCS_PROMPT_CLEAN_SIGIL='✔ '
 
 
 
-zstyle ':vcs_info:*' stagedstr "%F{green}●%f "
-zstyle ':vcs_info:*' unstagedstr "%F{yellow}●%f "
-zstyle ':vcs_info:*' patch-format "%F{orange}%a%f"
-zstyle ':vcs_info:git:*' check-for-changes true
-zstyle ':vcs_info:git*' formats "%F{green}${i_dev_git_branch}%f%F{blue}%b%f%m%c%u "
+#zstyle ':vcs_info:*' stagedstr "%F{green}●%f "
+#zstyle ':vcs_info:*' unstagedstr "%F{yellow}●%f "
+#zstyle ':vcs_info:*' patch-format "%F{orange}%a%f"
+#zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git*' formats "%F{green}${i_dev_git_branch} %f%F{gray}%b "
 
 
 # Show active venv, if any
@@ -118,15 +119,16 @@ ${i_fa_long_arrow_right}  "
 
 #Aliases
 
-ga(){
-    git status
-}
-
-gd(){
-    git diff
-}
+alias gd="git diff"
+alias gs="git status"
 
 
+# Open modified files
+# ACMR = Added || Copied || Modified || Renamed
+alias v="vim"
+alias vd="vim \$(git diff HEAD --name-only --diff-filter=ACMR)"
+alias vds="vim \$(git diff --staged --name-only --diff-filter=ACMR)"
+alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=ACMR)"
 
 #Load zplug
 zplug load
