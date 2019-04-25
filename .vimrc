@@ -11,16 +11,19 @@ set softtabstop=2
 set ruler                       " Show char pos
 set undolevels=1000             " Better undo history
 set mouse=a                     " Enable mouse in all modes
-syntax on                       " Enable syntax highlighting
 set ttyfast                     " Fast scrolling
 set autoread
+set incsearch
+set clipboard=unnamed
+filetype plugin on                     " Enable file type specific settings
+syntax on                       " Enable syntax highlighting
 
 
 " Visuals
 set laststatus=2
 set list
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:.
-set number                      " Show linw numbers
+set number                      " Show line numbers
 
 " Status bar if airline not enabled
 let g:bufferline_echo = 0
@@ -41,7 +44,27 @@ map <leader>, :NERDTreeToggle<CR>
 nnoremap <leader>u :UndotreeToggle<CR>
 map <Space> :noh<CR>
 
+" Keep selection when indenting in visual mode
+vnoremap > >gv
+vnoremap < <gv
 
+" Move blocks in visual mode
+vnoremap > >gv
+vnoremap < <gv
+
+
+" Fast buffer switching
+set wildcharm=<Tab>
+set wildmenu
+set wildmode=full
+nnoremap <leader><Tab> :buffer<Space><Tab>
+
+
+" Retain undos after quit
+set undofile
+set undodir=$HOME/.vim/undo
+set undolevels=1000
+set undoreload=10000
 
 
 
@@ -52,6 +75,7 @@ if empty(glob('~/.vim/autoload/plug.vim'))
         autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
         endif
 
+
 call plug#begin('~/.vim/plugged')
 
 Plug 'vim-airline/vim-airline'              " Status bar
@@ -59,25 +83,46 @@ Plug 'scrooloose/nerdtree'                  " File tree browser
 Plug 'ryanoasis/vim-devicons'               " devicons for all icon support (requires nerdfont)
 Plug '~/.fzf'
 Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
+Plug 'ctrlpvim/ctrlp.vim'                   " Fuzzy file path search
 Plug 'terryma/vim-multiple-cursors'
 Plug 'mattn/emmet-vim'
 Plug 'w0rp/ale'                             " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
 Plug 'morhetz/gruvbox'                      " Standard color scheme
 Plug 'gilgigilgil/anderson.vim'             " Alternate color scheme
-Plug 'valloric/youcompleteme'               " Autocompletion
+"Plug 'valloric/youcompleteme'               " Autocompletion
+" deoplete
+Plug 'shougo/deoplete.nvim'                 " deoplete autocompletion
+Plug 'roxma/nvim-yarp'
+Plug 'roxma/vim-hug-neovim-rpc'
+Plug 'wokalski/autocomplete-flow'
+Plug 'HerringtonDarkholme/yats.vim'
+Plug 'mhartington/nvim-typescript', {'do': './install.sh'} " Ts completion
+Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
+Plug 'deoplete-plugins/deoplete-jedi'
+
 Plug 'pangloss/vim-javascript'              " JS and JSX support
 Plug 'mxw/vim-jsx'
+Plug 'leafgarland/typescript-vim'           " TS and TSX support
+Plug 'ianks/vim-tsx'
 Plug 'prettier/vim-prettier'                " File formatting
 Plug 'ambv/black'                           " Python formatter
 Plug 'tpope/vim-fugitive'                   " More git info
+Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
+Plug 'tpope/vim-vinegar'                    " netrw tweaks
 Plug 'mbbill/undotree'                      " Undo tree
 Plug 'scrooloose/nerdcommenter'             " Command to comment out code
 Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
 Plug 'flowtype/vim-flow'                    " Flow support
+Plug 'sheerun/vim-polyglot'                 " Support for most languages
+Plug 'RRethy/vim-hexokinase'                " Color highlighting
 
+" LaTeX plugins
+Plug 'lervag/vimtex'
+Plug 'sirver/ultisnips', {'for': ['tex']}
 
 call plug#end()
+
 
 
 " Gruvbox color scheme settings
@@ -92,16 +137,29 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 
+" CtrlP
+let g:ctrlp_custom_ignore = 'npm\|node_modules'
+" not working 100% currently
+let g:ctrlp_user_command = 'rg -g "**\%s*\**" "!node_modules\**"'   " Use ripgrep as search engine
+
+
 " Ale settings
 let g:ale_fixers = {
             \'*': ['remove_trailing_lines', 'trim_whitespace'],
             \'javascript': ['prettier', 'eslint'],
+            \'typescript': ['prettier'],
             \'python': ['black', 'isort']
 \}
 
 let g:ale_linters = {
-      \'python': ['flake8']
+      \'python': ['flake8'],
+      \'typescript': ['tsserver'],
+      \'javascript': ['eslint', 'ternjs', 'flow']
 \}
+
+
+" Run black on save
+autocmd BufWritePre *.py execute ':Black'
 
 let g:ale_fix_on_save = '1'               " Enble auto fixing on save
 let g:ale_lint_on_insert_leave = '1'
@@ -127,7 +185,35 @@ if filereadable("manage.py")
 endif
 
 let g:ycm_show_diagnostics_ui = 0
-let g:ycm_autoclose_preview_window_after_completion = 0
+let g:ycm_autoclose_preview_window_after_completion = 1
+
+
+" deoplete settings
+
+let g:deoplete#enable_at_startup = 1
+
+try
+  call deoplete#custom#source('ultisnips', 'rank', 1000)
+  call deoplete#custom#var('omni', 'input_patterns', {
+    \ 'tex': g:vimtex#re#deoplete,
+    \})
+catch
+endtry
+
+
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+set completeopt-=preview
+call deoplete#custom#option('max_list', 45)         " Set max options in completion dropdown
+call deoplete#custom#option('max_abbr_width', 60)   " Set max width of completion dropdown
+
+" tern.js completion
+let g:deoplete#sources#ternjs#filetypes = [
+  \'jsx',
+  \'javascript.jsx',
+  \]
+let g:deoplete#sources#ternjs#types = 1           " Show type in completion pane
+
 
 
 " Airline
@@ -158,3 +244,30 @@ let g:gitgutter_sign_modified_removed = ''
 " Delimitmate
 let g:delimitmate_expand_space = 1
 let g:delimitmate_expand_cr = 1
+
+" Hexokinase
+let g:Hexokinase_highlighters = ['virtual', 'backgroundfill']
+let g:Hexokinase_virtualText = '■'
+let g:Hexokinase_refreshEvents = ['TextChanged', 'TextChangedI']
+let g:Hexokinase_ftAutoload = ['css', 'xml']
+
+" Toggle Vexplore with Ctrl-E
+function! ToggleVExplorer()
+  if exists("t:expl_buf_num")
+      let expl_win_num = bufwinnr(t:expl_buf_num)
+      if expl_win_num != -1
+          let cur_win_nr = winnr()
+          exec expl_win_num . 'wincmd w'
+          close
+          exec cur_win_nr . 'wincmd w'
+          unlet t:expl_buf_num
+      else
+          unlet t:expl_buf_num
+      endif
+  else
+      exec '1wincmd w'
+      Vexplore
+      let t:expl_buf_num = bufnr("%")
+  endif
+endfunction
+map <silent> <C-E> :call ToggleVExplorer()<CR>
