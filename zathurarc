@@ -1,0 +1,20 @@
+# Zathura configuration file
+
+# colors
+set default-bg \#282828
+set default-fg \#ebdbb2
+set statusbar-bg \#282828
+set statusbar-fg \#ebdbb2
+set inputbar-bg \#282828
+set inputbar-fg \#ebdbb2
+set highlight-active-color \#fabd2f
+set highlight-color \#d79921
+
+# recolor
+set recolor-darkcolor \#D4CFBC
+set recolor-lightcolor \#282828
+
+set page-padding 8
+set adjust-open width
+set window-height 900
+set window-width 800
