@@ -12,6 +12,9 @@ HISTSIZE=10000
 setopt INC_APPEND_HISTORY
 
 
+# Turn off stupid beep!
+unsetopt BEEP
+
 # Load modules
 autoload -Uz vcs_info
 compinit colors
@@ -27,6 +30,10 @@ zplug "zsh-users/zsh-syntax-highlighting", defer:2
 zplug "zsh-users/zsh-autosuggestions"
 zplug "b4b4r07/enhancd", use:init.sh
 zplug "supercrabtree/k"
+zplug "plugins/sudo", from:oh-my-zsh
+zplug "plugins/git", from:oh-my-zsh
+zplug "plugins/completion" from:oh-my-zsh
+zplug "srijanshetty/zsh-pip-completion"
 
 
 
@@ -121,6 +128,8 @@ ${i_fa_long_arrow_right}  "
 
 alias gd="git diff"
 alias gs="git status"
+
+alias gotop="gotop-cjbassi --color=monokai -p -b"
 
 
 # Open modified files

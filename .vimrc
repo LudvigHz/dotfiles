@@ -1,7 +1,8 @@
 " General editor settings
 set encoding=UTF-8
 set textwidth=100               " Set line break on 100 chars
-set showmatch                   " Show matching brackets
+set showmatch                   " Show matching bracket/
+set noswapfile                  " Disable swap files
 set hlsearch                    " Highlight all search results
 set ignorecase                  " Ignore case on search
 set autoindent                  " Autoindent on new line
@@ -12,18 +13,31 @@ set ruler                       " Show char pos
 set undolevels=1000             " Better undo history
 set mouse=a                     " Enable mouse in all modes
 set ttyfast                     " Fast scrolling
-set autoread
-set incsearch
-set clipboard=unnamed
-filetype plugin on                     " Enable file type specific settings
+set autoread                    " Autoupdate files
+set incsearch                   " Enable incremental search
+set clipboard=unnamed           " Use standard clipboard
+set hidden
+filetype plugin on              " Enable file type specific settings
 syntax on                       " Enable syntax highlighting
-
+if has('nvim')
+  set termguicolors
+endif
+set visualbell
+set t_vb=                       " Disable terminal bell
 
 " Visuals
 set laststatus=2
 set list
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:.
 set number                      " Show line numbers
+
+
+" Netrw settings
+let g:netrw_liststyle = 3
+let g:netrw_banner = 0
+let g:netrw_browse_split = 1
+let g:netrw_winsize = 25
+let g:netrw_altv = 1
 
 " Status bar if airline not enabled
 let g:bufferline_echo = 0
@@ -59,6 +73,11 @@ set wildmenu
 set wildmode=full
 nnoremap <leader><Tab> :buffer<Space><Tab>
 
+" Navigate between buffers
+nmap <C-l> :bnext<CR>
+nmap <C-h> :bprevious<CR>
+nmap <C-w> :bp <BAR> bd #<CR>
+
 
 " Retain undos after quit
 set undofile
@@ -83,6 +102,7 @@ Plug 'scrooloose/nerdtree'                  " File tree browser
 Plug 'ryanoasis/vim-devicons'               " devicons for all icon support (requires nerdfont)
 Plug '~/.fzf'
 Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
+Plug 'junegunn/rainbow_parentheses.vim'
 Plug 'ctrlpvim/ctrlp.vim'                   " Fuzzy file path search
 Plug 'terryma/vim-multiple-cursors'
 Plug 'mattn/emmet-vim'
@@ -103,7 +123,7 @@ Plug 'deoplete-plugins/deoplete-jedi'
 
 Plug 'pangloss/vim-javascript'              " JS and JSX support
 Plug 'mxw/vim-jsx'
-Plug 'leafgarland/typescript-vim'           " TS and TSX support
+"Plug 'leafgarland/typescript-vim'           " TS and TSX support
 Plug 'ianks/vim-tsx'
 Plug 'prettier/vim-prettier'                " File formatting
 Plug 'ambv/black'                           " Python formatter
@@ -119,7 +139,8 @@ Plug 'RRethy/vim-hexokinase'                " Color highlighting
 
 " LaTeX plugins
 Plug 'lervag/vimtex'
-Plug 'sirver/ultisnips', {'for': ['tex']}
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 
 call plug#end()
 
@@ -129,7 +150,8 @@ call plug#end()
 colorscheme gruvbox
 set background=dark
 let g:gruvbox_improved_warnings = '1'
-let g:gruvbox_contrast_light = '1'
+let g:gruvbox_contrast_dark = 'medium'
+let g:gruvbox_sign_column = 'NONE'
 
 
 "Nerdtree settings
@@ -138,24 +160,29 @@ autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 
 " CtrlP
-let g:ctrlp_custom_ignore = 'npm\|node_modules'
-" not working 100% currently
-let g:ctrlp_user_command = 'rg -g "**\%s*\**" "!node_modules\**"'   " Use ripgrep as search engine
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/](\.(git|hg|svn)|\_site)$',
+  \ 'file': '\v\.(exe|so|dll|class|png|jpg|jpeg)$',
+\}
+let g:ctrlp_show_hidden = 1
+nnoremap <C-o> :CtrlPBuffer<CR>
 
 
 " Ale settings
 let g:ale_fixers = {
             \'*': ['remove_trailing_lines', 'trim_whitespace'],
             \'javascript': ['prettier', 'eslint'],
-            \'typescript': ['prettier'],
+            \'typescript': ['prettier', 'eslint'],
             \'python': ['black', 'isort']
 \}
 
 let g:ale_linters = {
       \'python': ['flake8'],
-      \'typescript': ['tsserver'],
+      \'typescript': ['tsserver', 'eslint'],
       \'javascript': ['eslint', 'ternjs', 'flow']
 \}
+
+let g:nvim_typescript#diagnostics_enable = 0
 
 
 " Run black on save
@@ -193,7 +220,7 @@ let g:ycm_autoclose_preview_window_after_completion = 1
 let g:deoplete#enable_at_startup = 1
 
 try
-  call deoplete#custom#source('ultisnips', 'rank', 1000)
+  "call deoplete#custom#source('ultisnips', 'rank', 1000)
   call deoplete#custom#var('omni', 'input_patterns', {
     \ 'tex': g:vimtex#re#deoplete,
     \})
@@ -215,20 +242,38 @@ let g:deoplete#sources#ternjs#filetypes = [
 let g:deoplete#sources#ternjs#types = 1           " Show type in completion pane
 
 
+" Rainbow parentheses
+augroup rainbow_javascript
+    autocmd!
+    autocmd FileType javascript,typescript,latex RainbowParentheses
+augroup END
 
 " Airline
+let g:airline_powerline_fonts = 1
+let g:airline_theme = 'gruvbox'
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
-  endif
+endif
 let g:airline_symbols.branch = ''
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
+" Visuals
 let g:airline_section_z = '%3p%% %3l/%L:%3v'
+let g:airline_right_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_left_alt_sep= ''
+let g:airline_left_sep = ''
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+
+" Show buffers in top bar
+let g:airline#extensions#tabline#enabled = 1
+
 
 
 " Git gutter
 set updatetime=100
 set signcolumn=yes
-let g:gitgutter_override_sign_column_highlight = 0
+let g:gitgutter_override_sign_column_highlight = 1
 hi VertSplit ctermbg=235 ctermfg=235
 hi SignColumn ctermbg=235 ctermfg=235
 hi GitGutterAdd ctermbg=235 ctermfg=34
@@ -250,6 +295,10 @@ let g:Hexokinase_highlighters = ['virtual', 'backgroundfill']
 let g:Hexokinase_virtualText = '■'
 let g:Hexokinase_refreshEvents = ['TextChanged', 'TextChangedI']
 let g:Hexokinase_ftAutoload = ['css', 'xml']
+
+" Ultisnips
+let g:UltiSnipsSnippetsDirectories = ["~/dotfiles/UltiSnips", "UltiSnips"]
+let g:UltiSnipsExpandTrigger="<leader><tab>"
 
 " Toggle Vexplore with Ctrl-E
 function! ToggleVExplorer()
