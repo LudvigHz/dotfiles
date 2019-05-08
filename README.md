@@ -6,11 +6,11 @@ Make sure to install Nerdfonts: https://github.com/ryanoasis/nerd-fonts
 Also install iconpacks which is used in zsh config: https://github.com/ryanoasis/nerd-fonts#icon-names-in-shell
 
 ## Tmux
-`sudo apt-get install tmux` to install. Then put `source ~/dotfiles/.tmux.conf` in `.tmux.conf` in home folder.
+`sudo apt-get install tmux` to install. Then put `source ~/dotfiles/tmux.conf` in `.tmux.conf` in home folder.
 
 
 ## ZSH
-Put `source ~/dotfiles/.zshrc` in `.zshrc` in home folder.
+Put `source ~/dotfiles/zshrc` in `.zshrc` in home folder.
 
 
 #### Install zsh-vcs-info
@@ -38,7 +38,7 @@ zplug install
 
 
 ## Vim
-Put `so ~/dotfiles/.vimrc` in `.vimrc` in home folder.
+Put `so ~/dotfiles/vimrc` in `.vimrc` in home folder.
 
 Run `:PlugInstall` if it doesn't install automatically when you open vim.
 
