@@ -5,131 +5,64 @@
        echo “tmux not installed on this system”
    fi
 
+zmodload zsh/zprof # top of your .zshrc file
 
+
+# history
 HISTFILE=~/.zsh_history
 SAVEHIST=10000
 HISTSIZE=10000
 setopt INC_APPEND_HISTORY
+setopt histignoredups
+zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 
+
+
+# various zsh options
+zstyle ':completion:*' menu select
 
 # Turn off stupid beep!
 unsetopt BEEP
 
 # Load modules
-autoload -Uz vcs_info
 compinit colors
+
+
 
 #Load plugins
 . /usr/share/autojump/autojump.sh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# use ripgrep for fzf
+export FZF_DEFFAULT_COMMAND='rg --type f'
 
 #zplug plugins
 source ~/.zplug/init.zsh
 
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 zplug "zsh-users/zsh-autosuggestions"
+zplug "zsh-users/zsh-completions"
 zplug "b4b4r07/enhancd", use:init.sh
 zplug "supercrabtree/k"
 zplug "plugins/sudo", from:oh-my-zsh
 zplug "plugins/git", from:oh-my-zsh
-zplug "plugins/completion" from:oh-my-zsh
-zplug "srijanshetty/zsh-pip-completion"
+#zplug "srijanshetty/zsh-pip-completion"
 
 
-
-# Prompt
-
-source ~/.local/share/fonts/i_dev.sh
-source ~/.local/share/fonts/i_fa.sh
-source ~/.local/share/fonts/i_oct.sh
-
-source ~/.zsh/zsh-vcs-prompt/zshrc.sh
-ZSH_VCS_PROMPT_ENABLE_CACHING='false'
-
-ZSH_VCS_PROMPT_GIT_FORMATS='#c#d '
-# Staged
-ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{green}%}#e%{%f%b%}'
-# Conflicts
-ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{red}%}#f%{%f%b%}'
-# Unstaged
-ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{yellow}%}#g%{%f%b%}'
-# Untracked
-ZSH_VCS_PROMPT_GIT_FORMATS+='#h'
-# Stashed
-ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{cyan}%}#i%{%f%b%}'
-# Clean
-ZSH_VCS_PROMPT_GIT_FORMATS+='%{%F{green}%}#j%{%f%b%}'
-
-
-# Action
-ZSH_VCS_PROMPT_GIT_ACTION_FORMAT+=':%{%B%F{red}%}#a%{%f%b%}'
-# Ahead and Behind
-ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='#c#d '
-# Staged
-ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='%{%F{blue}%}#e%{%f%}'
-# Conflicts
-ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='%{%F{red}%}#f%{%f%}'
-# Unstaged
-ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='%{%F{yellow}%}#g%{%f%}'
-# Untracked
-ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='#h'
-# Stashed
-ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='%{%F{cyan}%}#i%{%f%}'
-# Clean
-ZSH_VCS_PROMPT_GIT_ACTION_FORMATS+='%{%F{green}%}#j%{%f%}'
-
-
-
-ZSH_VCS_PROMPT_AHEAD_SIGIL="${i_oct_cloud_upload} "
-ZSH_VCS_PROMPT_BEHIND_SIGIL="${i_oct_cloud_download} "
-ZSH_VCS_PROMPT_STAGED_SIGIL='● '
-ZSH_VCS_PROMPT_CONFLICTS_SIGIL="${i_oct_x} "
-ZSH_VCS_PROMPT_UNSTAGED_SIGIL="${i_oct_plus} "
-ZSH_VCS_PROMPT_UNTRACKED_SIGIL="${i_dev_css_tricks} "
-ZSH_VCS_PROMPT_STASHED_SIGIL="${i_oct_inbox} "
-ZSH_VCS_PROMPT_CLEAN_SIGIL='✔ '
-
-
-
-#zstyle ':vcs_info:*' stagedstr "%F{green}●%f "
-#zstyle ':vcs_info:*' unstagedstr "%F{yellow}●%f "
-#zstyle ':vcs_info:*' patch-format "%F{orange}%a%f"
-#zstyle ':vcs_info:git:*' check-for-changes true
-zstyle ':vcs_info:git*' formats "%F{green}${i_dev_git_branch} %f%F{gray}%b "
-
-
-# Show active venv, if any
-
-export VIRTUAL_ENV_DISABLE_PROMPT=yes
-
-function virtenv_indicator {
-    if [[ -z $VIRTUAL_ENV ]] then
-        psvar[1]=''
-    else
-        psvar[1]=${VIRTUAL_ENV##*/}
-    fi
-}
-
-add-zsh-hook precmd virtenv_indicator
-
-
-
-precmd() {
-    vcs_info
-    GLYPH="▲"
-        [ "x$KEYMAP" = "xvicmd" ] && GLYPH="▼"
-
-        PS1="%(1V.(%1v).) %(?.%F{blue}.%F{red})$GLYPH%f %(1j.%F{cyan}[%j]%f .)%F{blue}%~%f %(!.%F{red}#%f .)${vcs_info_msg_0_} $(vcs_super_info)
-${i_fa_long_arrow_right}  "
-    }
+# prompt
+source ~/dotfiles/prompt.zsh
 
 
 #Aliases
+alias ..="cd ../"
 
+# Git
 alias gd="git diff"
 alias gs="git status"
 
+# Programs
 alias gotop="gotop-cjbassi --color=monokai -p -b"
+alias cat="ccat"
 
 
 # Open modified files
@@ -139,5 +72,54 @@ alias vd="vim \$(git diff HEAD --name-only --diff-filter=ACMR)"
 alias vds="vim \$(git diff --staged --name-only --diff-filter=ACMR)"
 alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=ACMR)"
 
+
+# Functions
+
+# Read MarkDown
+rmd() {
+  pandoc $1 | lynx -stdin
+}
+
+
+# Search and install from apt with fzf
+# Optional argument to shorten search list
+asp() {
+  local inst=$(apt-cache search "${1:-.}" | eval "fzf -m --tac --header='[apt install]'")
+  if [[ $inst ]]; then
+    local name=$(echo $inst | head -n1 | awk '{print $1;}')
+    echo $name
+    if [[ ! -z "$(apt list --installed | grep $name)" ]]; then
+      echo -e "\e[1m$name\e[0m is alredy installed: (u)pdate or (r)emove [ENTER to cancel]: \c"
+      read option
+      if [[ $option == "u" || $option == "U" ]]; then
+        echo -e "\e[1mUpgrading: \e[1;94m$inst\e[0m \n"
+        sudo apt upgrade $name
+      elif [[ $option == "r" || $option == "R" ]]; then
+        echo -e "\e[1mRemoving: \e[1;94m$inst\e[0m \n"
+        sudo apt remove $name
+      fi
+    else
+      echo -e "\e[1mInstalling: \e[1;94m$inst\e[0m \n"
+      sudo apt install $name
+    fi
+  fi
+}
+
+# rg - less
+# pipe rg to less
+rgl() {
+  rg $@ -p --line-buffered | less -R
+}
+
+ #Execute code in the background to not affect the current session
+ {
+   # Compile zcompdump, if modified, to increase startup speed.
+   zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+     if [[ -s "$zcompdump" && (! -s "${zcompdump}.zwc" || "$zcompdump" -nt "${zcompdump}.zwc") ]]; then
+       zcompile "$zcompdump"
+     fi
+} &!
+
 #Load zplug
 zplug load
+#zprof

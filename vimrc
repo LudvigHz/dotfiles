@@ -13,15 +13,17 @@ set ruler                       " Show char pos
 set undolevels=1000             " Better undo history
 set mouse=a                     " Enable mouse in all modes
 set ttyfast                     " Fast scrolling
+set scrolloff=10                " Scoll offset. 10 lines above/below cursor
 set autoread                    " Autoupdate files
 set incsearch                   " Enable incremental search
 set clipboard=unnamed           " Use standard clipboard
 set hidden
 filetype plugin on              " Enable file type specific settings
 syntax on                       " Enable syntax highlighting
-if has('nvim')
-  set termguicolors
-endif
+"let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
+"let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
+"set termguicolors
+"set background=dark
 set visualbell
 set t_vb=                       " Disable terminal bell
 
@@ -86,6 +88,15 @@ set undolevels=1000
 set undoreload=10000
 
 
+" Spellcheck
+augroup text_langs
+  autocmd!
+  autocmd Filetype tex, text, markdown setlocal spell
+  autocmd Filetype tex, text, markdown setlocal spelllang=nb,en_gb
+augroup end
+
+inoremap <C-b> <c-g>u<Esc>[s1z=`]a<c-g>u
+
 
 " Plug plugins
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -103,8 +114,7 @@ Plug 'ryanoasis/vim-devicons'               " devicons for all icon support (req
 Plug '~/.fzf'
 Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
 Plug 'junegunn/rainbow_parentheses.vim'
-Plug 'ctrlpvim/ctrlp.vim'                   " Fuzzy file path search
-Plug 'terryma/vim-multiple-cursors'
+"Plug 'ctrlpvim/ctrlp.vim'                   " Fuzzy file path search
 Plug 'mattn/emmet-vim'
 Plug 'w0rp/ale'                             " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
@@ -126,7 +136,6 @@ Plug 'mxw/vim-jsx'
 "Plug 'leafgarland/typescript-vim'           " TS and TSX support
 Plug 'ianks/vim-tsx'
 Plug 'prettier/vim-prettier'                " File formatting
-Plug 'ambv/black'                           " Python formatter
 Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
 Plug 'tpope/vim-vinegar'                    " netrw tweaks
@@ -141,9 +150,12 @@ Plug 'RRethy/vim-hexokinase'                " Color highlighting
 Plug 'lervag/vimtex'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+Plug 'tpope/vim-markdown'
 
 call plug#end()
 
+au BufNewFile,BufReadPost *.md set filetype=markdown
+let g:markdown_fenced_languages = ['python', 'java', 'js=javascript', 'bash=sh']
 
 
 " Gruvbox color scheme settings
@@ -157,23 +169,34 @@ let g:gruvbox_sign_column = 'NONE'
 "Nerdtree settings
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+let NERDTreeMinimalUI=1
 
 
 " CtrlP
+let g:ctrlp_user_command = {
+ \ 'types': {
+  \ 1: ['.git', 'cd %s && git ls-files']
+  \ },
+\ 'fallback': 'find %s -type f',
+\ }
 let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/](\.(git|hg|svn)|\_site)$',
   \ 'file': '\v\.(exe|so|dll|class|png|jpg|jpeg)$',
 \}
 let g:ctrlp_show_hidden = 1
-nnoremap <C-o> :CtrlPBuffer<CR>
-
+"nnoremap <C-o> :CtrlPBuffer<CR>
+"Use fzf instead
+nnoremap <C-p> :GFiles<CR>
+nnoremap <C-O> :Buffers<CR>
 
 " Ale settings
 let g:ale_fixers = {
             \'*': ['remove_trailing_lines', 'trim_whitespace'],
             \'javascript': ['prettier', 'eslint'],
+            \'json': ['prettier'],
             \'typescript': ['prettier', 'eslint'],
-            \'python': ['black', 'isort']
+            \'python': ['black', 'isort'],
+            \'java': ['google_java_format']
 \}
 
 let g:ale_linters = {
@@ -185,8 +208,6 @@ let g:ale_linters = {
 let g:nvim_typescript#diagnostics_enable = 0
 
 
-" Run black on save
-autocmd BufWritePre *.py execute ':Black'
 
 let g:ale_fix_on_save = '1'               " Enble auto fixing on save
 let g:ale_lint_on_insert_leave = '1'
@@ -243,10 +264,11 @@ let g:deoplete#sources#ternjs#types = 1           " Show type in completion pane
 
 
 " Rainbow parentheses
-augroup rainbow_javascript
+augroup rainbow_parentheses
     autocmd!
-    autocmd FileType javascript,typescript,latex RainbowParentheses
+    autocmd FileType javascript,typescript,latex,java RainbowParentheses
 augroup END
+let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
 
 " Airline
 let g:airline_powerline_fonts = 1
@@ -298,7 +320,7 @@ let g:Hexokinase_ftAutoload = ['css', 'xml']
 
 " Ultisnips
 let g:UltiSnipsSnippetsDirectories = ["~/dotfiles/UltiSnips", "UltiSnips"]
-let g:UltiSnipsExpandTrigger="<leader><tab>"
+let g:UltiSnipsExpandTrigger= "<c-u>"
 
 " Toggle Vexplore with Ctrl-E
 function! ToggleVExplorer()

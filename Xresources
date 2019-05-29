@@ -54,6 +54,8 @@ xft.dpi: 150
 xft.antialias: true
 xft.hinting: true
 URxvt.borderless: true
+URxvt.cursorColor: #a89984
+
 !URxvt.fading: 30
 
 ! Clipboard
