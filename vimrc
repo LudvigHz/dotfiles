@@ -20,12 +20,16 @@ set clipboard=unnamed           " Use standard clipboard
 set hidden
 filetype plugin on              " Enable file type specific settings
 syntax on                       " Enable syntax highlighting
-"let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
-"let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
-"set termguicolors
-"set background=dark
+" Doesnt work properly with airline
+"if exists('+termguicolors')
+"  let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+"  let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+"  set termguicolors
+"endif
 set visualbell
 set t_vb=                       " Disable terminal bell
+set noshowmode
+set ttimeoutlen=10
 
 " Visuals
 set laststatus=2
@@ -186,7 +190,15 @@ let g:ctrlp_custom_ignore = {
 let g:ctrlp_show_hidden = 1
 "nnoremap <C-o> :CtrlPBuffer<CR>
 "Use fzf instead
-nnoremap <C-p> :GFiles<CR>
+function! Custom_files()
+  if exists("./.git")
+    :Gfiles
+  else
+    :Files
+  endif
+endfunction
+
+nnoremap <C-p> :call Custom_files()<CR>
 nnoremap <C-O> :Buffers<CR>
 
 " Ale settings
@@ -316,7 +328,7 @@ let g:delimitmate_expand_cr = 1
 let g:Hexokinase_highlighters = ['virtual', 'backgroundfill']
 let g:Hexokinase_virtualText = '■'
 let g:Hexokinase_refreshEvents = ['TextChanged', 'TextChangedI']
-let g:Hexokinase_ftAutoload = ['css', 'xml']
+let g:Hexokinase_ftAutoload = ['css', 'xml', 'jsx']
 
 " Ultisnips
 let g:UltiSnipsSnippetsDirectories = ["~/dotfiles/UltiSnips", "UltiSnips"]
