@@ -1,5 +1,6 @@
 # zsh prompt
 
+autoload -Uz add-zsh-hook
 
 VCS_SYMBOL_BRANCH=""
 VCS_SYMBOL_AHEAD="ﰵ"
@@ -90,5 +91,5 @@ add-zsh-hook precmd virtenv_indicator
 precmd() {
     PS1="%(1V.(%1v).)%f%(1j.%F{cyan}[%j]%f .)%F{blue}ﬦ %~%f "   # start of promt: ﬦ ~
     PS1+="$(vcs_info)"                                          # git info
-    PS1+=$'\n%(?.%F{green}.%F{red})  '                         # input line
+    PS1+=$'\n%(?.%F{green}.%F{red})  %f'                         # input line
 }

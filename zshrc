@@ -8,6 +8,8 @@
 zmodload zsh/zprof # top of your .zshrc file
 
 
+
+
 # history
 HISTFILE=~/.zsh_history
 SAVEHIST=10000
@@ -36,17 +38,23 @@ compinit colors
 # use ripgrep for fzf
 export FZF_DEFFAULT_COMMAND='rg --type f'
 
-#zplug plugins
-source ~/.zplug/init.zsh
+#Plugins
+source_plugin() {
+  local source_file="$1.plugin.zsh"
+  if [[ ! -z $2 ]]; then
+    source_file=$2
+  fi
+  [[ -d $ZSH_PLUGINS/$1 ]] && source $ZSH_PLUGINS/$1/$source_file
+}
 
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-zplug "zsh-users/zsh-autosuggestions"
-zplug "zsh-users/zsh-completions"
-zplug "b4b4r07/enhancd", use:init.sh
-zplug "supercrabtree/k"
-zplug "plugins/sudo", from:oh-my-zsh
-zplug "plugins/git", from:oh-my-zsh
-#zplug "srijanshetty/zsh-pip-completion"
+
+source_plugin zsh-autosuggestions
+source_plugin zsh-syntax-highlighting
+source_plugin zsh-completions
+source_plugin zsh-history-substring-search
+source_plugin enhancd "init.sh"
+source_plugin k "k.sh"
+source $ZSH_PLUGINS/k/k.sh
 
 
 # prompt
@@ -62,7 +70,7 @@ alias gs="git status"
 
 # Programs
 alias gotop="gotop-cjbassi --color=monokai -p -b"
-alias cat="ccat"
+alias cat='ccat -G Keyword="darkgreen" -G Type="darkblue" -G Punctuation="lightgray" -G Plaintext="reset" -G Comment="darkgray"'
 
 
 # Open modified files
@@ -121,5 +129,4 @@ rgl() {
 } &!
 
 #Load zplug
-zplug load
 #zprof
