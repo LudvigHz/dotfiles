@@ -102,6 +102,28 @@ augroup end
 inoremap <C-b> <c-g>u<Esc>[s1z=`]a<c-g>u
 
 
+" Autoclose buffers with files defined in .gitignore
+" if a window containing the file is closed
+function Close_gitignore()
+  if filereadable('.gitignore')
+    for buffer in copy(getbufinfo())
+      let file_ignored = 0
+      for oline in readfile('.gitignore')
+        let line = substitute(oline, '\s|\n|\r', '', "g")
+        if buffer.name =~ line
+          let file_ignored = 1
+        endif
+      endfor
+      if buffer.hidden && file_ignored
+        execute 'bdelete ' . buffer.bufnr
+      endif
+    endfor
+  endif
+endfun
+
+autocmd BufEnter * call Close_gitignore()
+
+
 " Plug plugins
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -177,22 +199,22 @@ let NERDTreeMinimalUI=1
 
 
 " CtrlP
-let g:ctrlp_user_command = {
- \ 'types': {
-  \ 1: ['.git', 'cd %s && git ls-files']
-  \ },
-\ 'fallback': 'find %s -type f',
-\ }
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/](\.(git|hg|svn)|\_site)$',
-  \ 'file': '\v\.(exe|so|dll|class|png|jpg|jpeg)$',
-\}
-let g:ctrlp_show_hidden = 1
+"let g:ctrlp_user_command = {
+ "\ 'types': {
+  "\ 1: ['.git', 'cd %s && git ls-files']
+  "\ },
+"\ 'fallback': 'find %s -type f',
+"\ }
+"let g:ctrlp_custom_ignore = {
+  "\ 'dir':  '\v[\/](\.(git|hg|svn)|\_site)$',
+  "\ 'file': '\v\.(exe|so|dll|class|png|jpg|jpeg)$',
+"\}
+"let g:ctrlp_show_hidden = 1
 "nnoremap <C-o> :CtrlPBuffer<CR>
 "Use fzf instead
 function! Custom_files()
-  if exists("./.git")
-    :Gfiles
+  if isdirectory(".git")
+    :GFiles
   else
     :Files
   endif
@@ -353,4 +375,4 @@ function! ToggleVExplorer()
       let t:expl_buf_num = bufnr("%")
   endif
 endfunction
-map <silent> <C-E> :call ToggleVExplorer()<CR>
+map <silent> <leader>e :call ToggleVExplorer()<CR>
