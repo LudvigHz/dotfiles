@@ -13,7 +13,7 @@ VCS_SYMBOL_STASHED=""
 VCS_SYMBOL_CLEAN='✔'
 
 # git info
-vcs_info() {
+vcs_prompt_info() {
   # check if in git directory
   if git rev-parse --is-inside-work-tree 2> /dev/null | grep -q 'true' ; then
 
@@ -90,6 +90,6 @@ add-zsh-hook precmd virtenv_indicator
 # Finalized prompt
 precmd() {
     PS1="%(1V.(%1v).)%f%(1j.%F{cyan}[%j]%f .)%F{blue}ﬦ %~%f "   # start of promt: ﬦ ~
-    PS1+="$(vcs_info)"                                          # git info
+    PS1+="$(vcs_prompt_info)"                                          # git info
     PS1+=$'\n%(?.%F{green}.%F{red})  %f'                         # input line
 }

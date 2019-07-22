@@ -7,10 +7,22 @@
 
 zmodload zsh/zprof # top of your .zshrc file
 
+# various zsh options
+zstyle ':completion:*' menu select
+
+# Turn off stupid beep!
+unsetopt BEEP
+
+# Load colors
+compinit colors
 
 
 
+
+# ---------------------------------------------------------
 # history
+# ---------------------------------------------------------
+
 HISTFILE=~/.zsh_history
 SAVEHIST=10000
 HISTSIZE=10000
@@ -20,18 +32,10 @@ zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 
 
 
-# various zsh options
-zstyle ':completion:*' menu select
+# ---------------------------------------------------------
+# Plugins
+# ---------------------------------------------------------
 
-# Turn off stupid beep!
-unsetopt BEEP
-
-# Load modules
-compinit colors
-
-
-
-#Load plugins
 . /usr/share/autojump/autojump.sh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -54,19 +58,28 @@ source_plugin zsh-completions
 source_plugin zsh-history-substring-search
 source_plugin enhancd "init.sh"
 source_plugin k "k.sh"
-source $ZSH_PLUGINS/k/k.sh
 
 
-# prompt
+
+# ---------------------------------------------------------
+# Prompt
+# ---------------------------------------------------------
+
 source ~/dotfiles/prompt.zsh
 
 
-#Aliases
+
+# ---------------------------------------------------------
+# Aliases
+# ---------------------------------------------------------
+
 alias ..="cd ../"
+
 
 # Git
 alias gd="git diff"
 alias gs="git status"
+
 
 # Programs
 alias gotop="gotop-cjbassi --color=monokai -p -b"
@@ -81,7 +94,14 @@ alias vds="vim \$(git diff --staged --name-only --diff-filter=ACMR)"
 alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=ACMR)"
 
 
+# Clipboard
+# $<some command> | copy
+alias copy="xclip -sel clip"
+
+
+# ---------------------------------------------------------
 # Functions
+# ---------------------------------------------------------
 
 # Read MarkDown
 rmd() {
@@ -114,12 +134,12 @@ asp() {
 }
 
 # rg - less
-# pipe rg to less
+# pipe rg to less to not spam terminal buffer
 rgl() {
   rg $@ -p --line-buffered | less -R
 }
 
- #Execute code in the background to not affect the current session
+# Execute code in the background to not affect the current session
  {
    # Compile zcompdump, if modified, to increase startup speed.
    zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
