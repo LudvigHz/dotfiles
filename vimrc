@@ -117,11 +117,6 @@ map <Space> :noh<CR>
 vnoremap > >gv
 vnoremap < <gv
 
-" Move blocks in visual mode
-vnoremap > >gv
-vnoremap < <gv
-
-
 " Fast buffer switching
 nnoremap <leader><Tab> :buffer<Space><Tab>
 
@@ -180,7 +175,10 @@ function Close_gitignore()
 endfun
 " For some reason getbufinfo() is not updated if called on BufHidden
 " so BufEnter has to be used instead
-autocmd BufEnter * call Close_gitignore()
+augroup buffer_autoclose
+  autocmd!
+  autocmd BufEnter * call Close_gitignore()
+augroup end
 
 
 
@@ -216,8 +214,9 @@ Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
 Plug 'mattn/emmet-vim'
 Plug 'w0rp/ale'                             " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
-Plug 'morhetz/gruvbox'                      " Standard color scheme
+Plug 'gruvbox-community/gruvbox'            " Standard color scheme
 Plug 'gilgigilgil/anderson.vim'             " Alternate color scheme
+Plug 'srcery-colors/srcery-vim'
 "Plug 'valloric/youcompleteme'               " Autocompletion
 " deoplete
 Plug 'shougo/deoplete.nvim'                 " deoplete autocompletion
@@ -231,8 +230,6 @@ Plug 'deoplete-plugins/deoplete-jedi'
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
 Plug 'pangloss/vim-javascript'              " JS support
-Plug 'mxw/vim-jsx'                          " JSX support
-Plug 'ianks/vim-tsx'                        " TSX support
 Plug 'prettier/vim-prettier'                " File formatting
 Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
@@ -241,8 +238,7 @@ Plug 'mbbill/undotree'                      " Undo tree
 Plug 'scrooloose/nerdcommenter'             " Command to comment out code
 Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
 Plug 'flowtype/vim-flow'                    " Flow support
-Plug 'RRethy/vim-hexokinase'                " Color highlighting
-Plug 'tpope/vim-markdown'
+Plug 'RRethy/vim-hexokinase'                " Color highlighting CSS
 
 " LaTeX plugins
 Plug 'lervag/vimtex'
@@ -347,6 +343,7 @@ let g:ycm_autoclose_preview_window_after_completion = 1
 "# Deoplete
 "#--------------------------------------
 let g:deoplete#enable_at_startup = 1
+
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 set completeopt-=preview
