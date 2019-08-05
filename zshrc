@@ -23,7 +23,7 @@ compinit colors
 # history
 # ---------------------------------------------------------
 
-HISTFILE=~/.zsh_history
+HISTFILE=$DOTFILES/.local/zsh_history
 SAVEHIST=10000
 HISTSIZE=10000
 setopt INC_APPEND_HISTORY
@@ -67,7 +67,7 @@ source_plugin sudo
 # Prompt
 # ---------------------------------------------------------
 
-source ~/dotfiles/prompt.zsh
+source $DOTFILES/prompt.zsh
 
 
 
