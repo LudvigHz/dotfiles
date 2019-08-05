@@ -45,6 +45,7 @@ export FZF_DEFFAULT_COMMAND='rg --type f'
 #Plugins
 source_plugin() {
   local source_file="$1.plugin.zsh"
+  # Use second argument as filename if provided
   if [[ ! -z $2 ]]; then
     source_file=$2
   fi
@@ -58,6 +59,7 @@ source_plugin zsh-completions
 source_plugin zsh-history-substring-search
 source_plugin enhancd "init.sh"
 source_plugin k "k.sh"
+source_plugin sudo
 
 
 
@@ -133,11 +135,17 @@ asp() {
   fi
 }
 
+
 # rg - less
 # pipe rg to less to not spam terminal buffer
 rgl() {
   rg $@ -p --line-buffered | less -R
 }
+
+
+
+
+
 
 # Execute code in the background to not affect the current session
  {

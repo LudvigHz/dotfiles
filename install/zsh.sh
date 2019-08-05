@@ -1,18 +1,14 @@
-#!bin/bash
+#!/bin/bash
 
 source $DOTFILES/install/utils.sh
 
 # Set zsh plugin directory
-ZSH_PLUGINS=$DOTFILES/zsh_plugins
+ZSH_PLUGINS=$DOTFILES/.local/zsh_plugins
 
-
-add_if_not_present() {
-  grep -Fxq "$1" "$2" || echo "$1" >> "$2"
-}
-
+backup_file $HOME/.zshrc
 
 #Source these from home folder
-echo "source $DOTFILES/.local/zsh" > ~/.zshrc
+echo "source $DOTFILES/.local/zsh" > $HOME/.zshrc
 
 
 echo "export ZSH_PLUGINS=$ZSH_PLUGINS" >> $DOTFILES/.local/zsh
@@ -26,5 +22,7 @@ load_plugin "zsh-users/zsh-completions"
 load_plugin "zsh-users/zsh-history-substring-search"
 load_plugin "b4b4r07/enhancd"
 load_plugin "LudvigHz/k"
+
+load_oh-my-zsh_plugin "sudo"
 
 echo -e "\nInstalling zsh - DONE"
