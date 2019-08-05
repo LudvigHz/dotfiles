@@ -1,77 +1,71 @@
 # Dotfiles
-Dotfiles for zsh, tmux and vim used on linux - Ubuntu 18.10
+Dotfiles used on Pop!_OS 19.04 for the following:
+- Xresources (Used for [urxvt](https://wiki.archlinux.org/index.php/Rxvt-unicode))
+- [Vim](http://vim.org)
+- [zsh](http://zsh.sourceforge.net)
+- [Alacritty](https://github.com/jwilm/alacritty)
+- [zathura](https://git.pwmt.org/pwmt/zathura)
+
 
 Make sure to install Nerdfonts: https://github.com/ryanoasis/nerd-fonts
 
-Also install iconpacks which is used in zsh config: https://github.com/ryanoasis/nerd-fonts#icon-names-in-shell
+## Installation
+The configration uses an install utility, run the utility to see what can be auto-installed.
+```sh
+bash install.sh
+```
+To Install everything automatically, run the install utility with `-a`:
+```sh
+bash install.sh -a
+```
 
 ## Tmux
-`sudo apt-get install tmux` to install. Then put `source ~/dotfiles/tmux.conf` in `.tmux.conf` in home folder.
+`bash install.sh cli-tools -n tmux` to install.
 
 
 ## ZSH
-Put `source ~/dotfiles/zshrc` in `.zshrc` in home folder.
-
-
-#### Install zsh-vcs-info
-
-https://github.com/yonchu/zsh-vcs-prompt
-```sh
-cd ~
-mkdir .zsh && cd .zsh/
-git clone https://github.com/yonchu/zsh-vcs-prompt
-```
 
 #### Fzf
 
-https://github.com/junegunn/fzf
+- Both zsh and vim configration uses fzf.
+- Note: fzf commands in zsh uses ripgrep instead of grep for optimal performance.
+  use the utility to install it as well.
+
+- Installation
 ```sh
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install
+bash install.sh cli-tools -n fzf
 ```
 
-#### Install zplug
+#### Installation
+Install with the provided utility with `zsh` as argument:
+> This only installs the configration, to install the actual program, use the cli-tools script
+
 ```sh
-curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
-zplug install
+bash install.sh zsh
 ```
 
 
 ## Vim
-Put `so ~/dotfiles/vimrc` in `.vimrc` in home folder.
+> Same installation as with fzf, use cli-tools script to install both vim and neovim
+
+```sh
+bash install.sh vim
+```
 
 Run `:PlugInstall` if it doesn't install automatically when you open vim.
 
-#### YouCompleteMe
-This configration uses https://github.com/Valloric/YouCompleteMe for auto-completion
-
-For installation run:
-```sh
-sudo apt install build-essential cmake python3-dev
-
-cd ~/.vim/plugged/youcompleteme
-./install.py --clangd-completer --ts-completer
-```
 - Note: npm and node.js is required for javascript and typescript completion. If it is not installed, run:
 `sudo apt-get install nodejs` and `sudo apt-get install npm`
 
-- language flags are optional, see https://github.com/Valloric/YouCompleteMe#linux-64-bit for more info.
-
-#### Ripgrep
-https://github.com/BurntSushi/ripgrep
-
-`sudo apt-get install ripgrep` to install. `:Rg <search pattern>` in vim to use.
 
 ## Screenhots
 
-![zsh prompt](screenshots/zsh_prompt.png?raw=true)
+![zsh urxvt](screenshots/zsh-urxvt.png?raw=true)
 
-![vim autocompletion](screenshots/vim_ycm.png?raw=true)
-
-![vim ripgrep](screenshots/vim_rg.png?raw=true)
+![nvim_ts autocompletion](screenshots/vim-deoplete.png?raw=true)
 
 
-## Ubuntu configuration
+## Gnome configuration
 Make sure to have gnome-tweaks installed and run:
 ```sh
 cd ~
