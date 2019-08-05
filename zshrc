@@ -7,8 +7,22 @@
 
 zmodload zsh/zprof # top of your .zshrc file
 
+# various zsh options
+zstyle ':completion:*' menu select
 
+# Turn off stupid beep!
+unsetopt BEEP
+
+# Load colors
+compinit colors
+
+
+
+
+# ---------------------------------------------------------
 # history
+# ---------------------------------------------------------
+
 HISTFILE=~/.zsh_history
 SAVEHIST=10000
 HISTSIZE=10000
@@ -18,51 +32,60 @@ zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 
 
 
-# various zsh options
-zstyle ':completion:*' menu select
+# ---------------------------------------------------------
+# Plugins
+# ---------------------------------------------------------
 
-# Turn off stupid beep!
-unsetopt BEEP
-
-# Load modules
-compinit colors
-
-
-
-#Load plugins
 . /usr/share/autojump/autojump.sh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # use ripgrep for fzf
 export FZF_DEFFAULT_COMMAND='rg --type f'
 
-#zplug plugins
-source ~/.zplug/init.zsh
-
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-zplug "zsh-users/zsh-autosuggestions"
-zplug "zsh-users/zsh-completions"
-zplug "b4b4r07/enhancd", use:init.sh
-zplug "supercrabtree/k"
-zplug "plugins/sudo", from:oh-my-zsh
-zplug "plugins/git", from:oh-my-zsh
-#zplug "srijanshetty/zsh-pip-completion"
+#Plugins
+source_plugin() {
+  local source_file="$1.plugin.zsh"
+  # Use second argument as filename if provided
+  if [[ ! -z $2 ]]; then
+    source_file=$2
+  fi
+  [[ -d $ZSH_PLUGINS/$1 ]] && source $ZSH_PLUGINS/$1/$source_file
+}
 
 
-# prompt
+source_plugin zsh-autosuggestions
+source_plugin zsh-syntax-highlighting
+source_plugin zsh-completions
+source_plugin zsh-history-substring-search
+source_plugin enhancd "init.sh"
+source_plugin k "k.sh"
+source_plugin sudo
+
+
+
+# ---------------------------------------------------------
+# Prompt
+# ---------------------------------------------------------
+
 source ~/dotfiles/prompt.zsh
 
 
-#Aliases
+
+# ---------------------------------------------------------
+# Aliases
+# ---------------------------------------------------------
+
 alias ..="cd ../"
+
 
 # Git
 alias gd="git diff"
 alias gs="git status"
 
+
 # Programs
 alias gotop="gotop-cjbassi --color=monokai -p -b"
-alias cat="ccat"
+alias cat='ccat -G Keyword="darkgreen" -G Type="darkblue" -G Punctuation="lightgray" -G Plaintext="reset" -G Comment="darkgray"'
 
 
 # Open modified files
@@ -73,7 +96,14 @@ alias vds="vim \$(git diff --staged --name-only --diff-filter=ACMR)"
 alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=ACMR)"
 
 
+# Clipboard
+# $<some command> | copy
+alias copy="xclip -sel clip"
+
+
+# ---------------------------------------------------------
 # Functions
+# ---------------------------------------------------------
 
 # Read MarkDown
 rmd() {
@@ -105,13 +135,19 @@ asp() {
   fi
 }
 
+
 # rg - less
-# pipe rg to less
+# pipe rg to less to not spam terminal buffer
 rgl() {
   rg $@ -p --line-buffered | less -R
 }
 
- #Execute code in the background to not affect the current session
+
+
+
+
+
+# Execute code in the background to not affect the current session
  {
    # Compile zcompdump, if modified, to increase startup speed.
    zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
@@ -121,5 +157,4 @@ rgl() {
 } &!
 
 #Load zplug
-zplug load
 #zprof

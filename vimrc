@@ -155,7 +155,7 @@ inoremap <C-b> <c-g>u<Esc>[s1z=`]a<c-g>u
 "#--------------------------------------
 "# Autoclose hidden buffers if the file is defined in .gitignore
 "#--------------------------------------
-function Close_gitignore()
+function! Close_gitignore()
   let git_dir = substitute(system('git rev-parse --show-toplevel'), '\n\+$', '', '')
   if filereadable(git_dir . '/.gitignore')
     for buffer in copy(getbufinfo())
