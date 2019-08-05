@@ -239,6 +239,7 @@ Plug 'scrooloose/nerdcommenter'             " Command to comment out code
 Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
 Plug 'flowtype/vim-flow'                    " Flow support
 Plug 'RRethy/vim-hexokinase'                " Color highlighting CSS
+Plug 'mhinz/vim-startify'                   " Fancy start screen
 
 " LaTeX plugins
 Plug 'lervag/vimtex'
@@ -262,8 +263,8 @@ let g:gruvbox_sign_column = 'NONE'
 "# Nerdtree
 "#--------------------------------------
 map <leader>, :NERDTreeToggle<CR>
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+"autocmd StdinReadPre * let s:std_in=1
+"autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 let NERDTreeMinimalUI=1
 
 
@@ -436,6 +437,20 @@ let g:Hexokinase_highlighters = ['virtual', 'backgroundfill']
 let g:Hexokinase_virtualText = '■'
 let g:Hexokinase_refreshEvents = ['TextChanged', 'TextChangedI']
 let g:Hexokinase_ftAutoload = ['css', 'xml', 'jsx']
+
+
+"#--------------------------------------
+"# Startify
+"#--------------------------------------
+let g:startify_session_dir = '~/.vim/session'
+let g:startify_change_to_vcs_root = 1
+let g:startify_bookmarks = [
+      \ { 'x': $DOTFILES . '/vimrc' },
+      \ { 'z': $DOTFILES . '/zshrc' },
+      \ { 'L': '~/code/lego-editor/' },
+      \ { 'w': '~/code/lego-webapp/' },
+      \ { 'l': '~/code/lego/' }
+      \ ]
 
 
 "#--------------------------------------
