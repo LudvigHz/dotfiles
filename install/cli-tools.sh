@@ -61,18 +61,38 @@ print_all() {
 
 # Function for installing a given utility
 install_program() {
-  echo $2
+
+  if [[ ! $(command -v "$manager") ]]; then
+    printf "%s does not seem to be installed on this system\n" "$manager"
+
+    for m in "${!installers[@]}"; do
+      if [[ $(command -v $m) ]]; then
+        local alternate=$m
+        printf "Found %s! Do you wish to use it instead? [y/n] " "$alternate"
+        read ans
+        if [[ "$ans" == "y" || "$ans" == "Y" ]]; then
+          manager="$alternate"
+          printf "Installing using %s...\n" "$manager"
+          break
+        fi
+      fi
+    done
+
+    if [[ $manager != $alternate ]]; then
+      exit 0
+    fi
+  fi
 
   if [[ ! $force ]]; then
     if [[ $(command -v "${cli_tools["$1"]}") ]]; then
       printf "%s is already installed, use -f option to force install.\n" "$1"
     else
       printf "Installing %s using %s\n\n" "$1" "$manager"
-      eval "${installers["$manager"]} "${cli_tools["$1"]}" "
+      eval "${installers["$manager"]} $1"
     fi
   else
     printf "Installing %s using %s\n\n" "$1" "$manager"
-    eval "${installers["$manager"]} "
+    eval "${installers["$manager"]} $1"
   fi
 
 }
@@ -132,3 +152,5 @@ elif [[ $install_all ]]; then
 else
   print_help
 fi
+
+echo -e "\nInstalling cli tools - DONE\n"

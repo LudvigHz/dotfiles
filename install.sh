@@ -22,6 +22,8 @@ declare -A install_scripts=(
 
   ["zsh"]="$DOTFILES/install/zsh.sh"
   ["vim"]="$DOTFILES/install/vim.sh"
+  ["tmux"]="$DOTFILES/install/tmux.sh"
+  ["urxvt"]="$DOTFILES/install/urxvt.sh"
   ["cli-tools"]="$DOTFILES/install/cli-tools.sh"
 
 )
@@ -31,18 +33,10 @@ declare -A install_scripts_opts=(
   ["cli-tools"]="-a"
 )
 
-# Output a help message if no args are provided
-if [[ -z "$1" ]]; then
-  echo "Usage: $0 [program]
-  where [program] is one of the following:"
-  for i in "${!install_scripts[@]}"; do
-    printf "\t%s\n" "$i"
-  done
-fi
 
 # Run provided install scripts
 if [[ ! -z $1 && ! -z "${install_scripts["$1"]}" ]]; then
-  echo -e "\e[1mStarting install of $install\e[0m\n"
+  echo -e "\e[1mStarting $1 installation process...\e[0m\n"
   chmod +x "${install_scripts["$1"]}"
   ${install_scripts["$1"]} $@
 # Run all scripts on -a or --all
@@ -53,7 +47,7 @@ elif [[ $1 == "-a" || $1 == "--all" ]]; then
     ${install_scripts["$script"]} "${install_scripts_opts["$script"]}"
   done
 else
-  # Lazynesss...
+# Output a help message if no args are provided
   echo "Usage: $0 [program]
   where [program] is one of the following:"
   for i in "${!install_scripts[@]}"; do

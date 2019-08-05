@@ -25,4 +25,4 @@ load_plugin "LudvigHz/k"
 
 load_oh-my-zsh_plugin "sudo"
 
-echo -e "\nInstalling zsh - DONE"
+echo -e "\nInstalling zsh - DONE\n"

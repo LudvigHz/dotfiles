@@ -8,6 +8,7 @@ load_plugin() {
   if [[ ! -d "$ZSH_PLUGINS/$plugin_name" ]]; then
     echo -e "\e[1mInstalling $1...              \c"
     git clone "https://github.com/$1.git" $ZSH_PLUGINS/$plugin_name
+    echo -e "\e[1;94mDONE\e[0m"
   else
     echo -e "\e[1m$1\e[0m is already installed."
   fi
@@ -23,7 +24,7 @@ load_oh-my-zsh_plugin() {
   if [[ ! -d "$ZSH_PLUGINS/$1" ]]; then
     echo -e "\e[1mInstalling $1...              \c"
     svn export --quiet "https://github.com/robbyrussell/oh-my-zsh/trunk/plugins/$1" $ZSH_PLUGINS/$1
-    echo -e "\e[1;94mDONE"
+    echo -e "\e[1;94mDONE\e[0m"
   else
     echo -e "\e[1m$1\e[0m is already installed."
   fi
