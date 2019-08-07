@@ -7,12 +7,15 @@ ZSH_PLUGINS=$DOTFILES/.local/zsh_plugins
 
 backup_file $HOME/.zshrc
 
-#Source these from home folder
-echo "source $DOTFILES/.local/zsh" > $HOME/.zshrc
+#Source zshrc from home folder
+echo "source $DOTFILES/.local/zsh" > ${ZDOTDIR:-$HOME}/.zshrc
 
-
-echo "export ZSH_PLUGINS=$ZSH_PLUGINS" >> $DOTFILES/.local/zsh
+echo "export ZSH_PLUGINS=$ZSH_PLUGINS" > $DOTFILES/.local/zsh
 echo "source $DOTFILES/zshrc" >> $DOTFILES/.local/zsh
+
+# Source zshenv config from home folder
+echo "source $DOTFILES/.local/zshenv" > ${ZDOTDIR:-$HOME}/.zshenv
+echo "source $DOTFILES/zshenv" > $DOTFILES/.local/zshenv
 
 echo "Cloning and setting up dependencies"
 

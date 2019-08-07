@@ -5,18 +5,13 @@
        echo “tmux not installed on this system”
    fi
 
-zmodload zsh/zprof # top of your .zshrc file
+zmodload zsh/zprof
 
 # various zsh options
 zstyle ':completion:*' menu select
 
 # Turn off stupid beep!
 unsetopt BEEP
-
-# Load colors
-compinit colors
-
-
 
 
 # ---------------------------------------------------------
@@ -114,7 +109,7 @@ rmd() {
 # Search and install from apt with fzf
 # Optional argument to shorten search list
 asp() {
-  local inst=$(apt-cache search "${1:-.}" | eval "fzf -m --tac --header='[apt install]'")
+  local inst=$(apt-cache search "${1:-.}" | eval "fzf -m --header='[apt install]'")
   if [[ $inst ]]; then
     local name=$(echo $inst | head -n1 | awk '{print $1;}')
     echo $name
@@ -144,17 +139,30 @@ rgl() {
 
 
 
+# ---------------------------------------------------------
+# Compinit (Completion initialization)
+# ---------------------------------------------------------
 
+ _zpcompinit_custom() {
+   # Remember to have "skip_global_compinit=1" in $ZDOTDIR:-$HOME/.zshenv
+   # otherwise zsh calls compinit by itself and generates a new dumpfile,
+   # ruining the whole point of the cache...
+  setopt extendedglob local_options
+  autoload -Uz compinit
+  local zcd=${ZDOTDIR:-$HOME}/.zcompdump
+  local zcdc="$zcd.zwc"
+  # If the completion dum is older than 24h
+  if [[ -f "$zcd"(#qN.m+1) ]]; then
+    compinit -i -d "$zcd" # Run compinit and specify compdump to $zcd
+    compdump              # Force call compdump (should not be neccasary)
+    { rm -f "$zcdc" && zcompile "$zcd" } &!   # Remove and recompile
+  else
+    compinit -C "$zcd"    # Only check the cache usually
+  fi
+  unsetopt extendedglob
+}
 
+_zpcompinit_custom
 
-# Execute code in the background to not affect the current session
- {
-   # Compile zcompdump, if modified, to increase startup speed.
-   zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-     if [[ -s "$zcompdump" && (! -s "${zcompdump}.zwc" || "$zcompdump" -nt "${zcompdump}.zwc") ]]; then
-       zcompile "$zcompdump"
-     fi
-} &!
-
-#Load zplug
+# Call zprof (debug)
 #zprof

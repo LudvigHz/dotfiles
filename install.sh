@@ -53,4 +53,5 @@ else
   for i in "${!install_scripts[@]}"; do
     printf "\t%s\n" "$i"
   done
+  printf "\t-a|--all\tRun all install scripts (Install everything)\n"
 fi
