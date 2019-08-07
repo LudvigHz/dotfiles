@@ -42,7 +42,7 @@ set scrolloff=10                " Scoll offset. 10 lines above/below cursor
 set autoread                    " Autoupdate files
 set incsearch                   " Enable incremental search
 set clipboard=unnamed           " Use standard clipboard
-set hidden
+set hidden                      " Hide buffer when it is not in a window
 set updatetime=100              " Update more often (Gitgutter and Ale)
 filetype plugin on              " Enable file type specific settings
 syntax on                       " Enable syntax highlighting

@@ -18,10 +18,10 @@ vcs_prompt_info() {
   if git rev-parse --is-inside-work-tree 2> /dev/null | grep -q 'true' ; then
 
     # set all variables
+    VCS_INFO_BRANCH=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
     _VCS_INFO_COMMIT_STATUS=$(git for-each-ref --format="%(push:track)" refs/heads/$VCS_INFO_BRANCH | awk '{gsub(/\[|]|,/,""); print}')
     _VCS_INFO_STATUS=$(git status --porcelain 2> /dev/null)
 
-    VCS_INFO_BRANCH=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
     VCS_INFO_AHEAD=$(echo $_VCS_INFO_COMMIT_STATUS | awk '{for(i=1;i<=NF;i++) if ($i=="ahead") print $(i+1)}')
     VCS_INFO_BEHIND=$(echo $_VCS_INFO_COMMIT_STATUS | awk '{for(i=1;i<=NF;i++) if ($i=="behind") print $(i+1)}')
     VCS_INFO_STAGED=$(git diff --cached --numstat 2> /dev/null | wc -l)
