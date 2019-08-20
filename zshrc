@@ -9,6 +9,8 @@ zmodload zsh/zprof
 
 # various zsh options
 zstyle ':completion:*' menu select
+zmodload zsh/complist
+bindkey -M menuselect '^[[Z' reverse-menu-complete
 
 # Turn off stupid beep!
 unsetopt BEEP
@@ -76,6 +78,7 @@ alias ..="cd ../"
 # Git
 alias gd="git diff"
 alias gs="git status"
+alias ga="git add"
 
 
 # Programs

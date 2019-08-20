@@ -67,6 +67,9 @@ set wildcharm=<Tab>             " Use Tab for wildmenu selection
 set wildmenu
 set wildmode=full
 
+" Retain cursor position when switching buffers
+:autocmd BufEnter * silent! normal! g`""
+
 
 "#--------------------------------------
 "# Netrw settings
