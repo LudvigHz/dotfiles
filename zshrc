@@ -59,7 +59,6 @@ source_plugin k "k.sh"
 source_plugin sudo
 
 
-
 # ---------------------------------------------------------
 # Prompt
 # ---------------------------------------------------------
@@ -78,13 +77,13 @@ alias ..="cd ../"
 # Git
 alias gd="git diff"
 alias gs="git status"
-alias ga="git add"
+alias ga="git add ."
 
 
 # Programs
 alias gotop="gotop-cjbassi --color=monokai -p -b"
 alias cat='ccat -G Keyword="darkgreen" -G Type="darkblue" -G Punctuation="lightgray" -G Plaintext="reset" -G Comment="darkgray"'
-
+alias ocat="cat"
 
 # Open modified files
 # ACMR = Added || Copied || Modified || Renamed
@@ -140,6 +139,22 @@ rgl() {
   rg $@ -p --line-buffered | less -R
 }
 
+# Testing truecolor support
+truecolors() {
+  awk -v term_cols="${width:-$(tput cols || echo 80)}" 'BEGIN{
+      s="/\\";
+      for (colnum = 0; colnum<term_cols; colnum++) {
+          r = 255-(colnum*255/term_cols);
+          g = (colnum*510/term_cols);
+          b = (colnum*255/term_cols);
+          if (g>255) g = 510-g;
+          printf "\033[48;2;%d;%d;%dm", r,g,b;
+          printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+          printf "%s\033[0m", substr(s,colnum%2+1,1);
+      }
+      printf "\n";
+  }'
+}
 
 
 # ---------------------------------------------------------
@@ -154,7 +169,7 @@ rgl() {
   autoload -Uz compinit
   local zcd=${ZDOTDIR:-$HOME}/.zcompdump
   local zcdc="$zcd.zwc"
-  # If the completion dum is older than 24h
+  # If the completion dump is older than 24h
   if [[ -f "$zcd"(#qN.m+1) ]]; then
     compinit -i -d "$zcd" # Run compinit and specify compdump to $zcd
     compdump              # Force call compdump (should not be neccasary)
@@ -167,5 +182,6 @@ rgl() {
 
 _zpcompinit_custom
 
+#source <(kubectl completion zsh)
 # Call zprof (debug)
 #zprof
