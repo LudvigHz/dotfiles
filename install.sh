@@ -21,6 +21,7 @@ echo "export DOTFILES=$DOTFILES" > $DOTFILES/.local/constants
 declare -A install_scripts=(
 
   ["zsh"]="$DOTFILES/install/zsh.sh"
+  ["zsh-update"]="$DOTFILES/install/zsh_update.sh"
   ["vim"]="$DOTFILES/install/vim.sh"
   ["tmux"]="$DOTFILES/install/tmux.sh"
   ["urxvt"]="$DOTFILES/install/urxvt.sh"

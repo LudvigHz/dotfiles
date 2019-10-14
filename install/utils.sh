@@ -32,6 +32,27 @@ load_oh-my-zsh_plugin() {
 }
 
 
+# Update plugins
+update_plugin() {
+
+  local plugin_name="$1"
+  if [[ -d "$ZSH_PLUGINS/$plugin_name" ]]; then
+    echo -e "\e[1mLooking for changes in $1\e[0m"
+    git -C $ZSH_PLUGINS/$plugin_name remote update -p > /dev/null
+    _local="$(git -C $ZSH_PLUGINS/$plugin_name rev-parse HEAD)"
+    _remote="$(git -C $ZSH_PLUGINS/$plugin_name rev-parse @{u})"
+    if [[ "$_local" != "$_remote" ]]; then
+      echo -e "Fetching updates...    \c"
+      git -C $ZSH_PLUGINS/$plugin_name merge --ff-only @{u} > /dev/null
+    else
+      echo -e "$1 is already up to date... \c"
+    fi
+    echo -e "\e[1;94mDONE\e[0m"
+  fi
+
+}
+
+
 # Create a backup of a file in the "$DOTFILES/.local/backup" directory
 # Syntax: backup_file "path-to-file"
 backup_file() {

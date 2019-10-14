@@ -148,10 +148,10 @@ set undoreload=10000
 augroup text_langs
   autocmd!
   autocmd FileType tex, text, markdown setlocal spell
-  autocmd FileType tex, text, markdown setlocal spelllang=nb,en_gb
+  autocmd FileType tex, text, markdown setlocal spelllang=nb,en_us
 augroup end
 
-inoremap <C-b> <c-g>u<Esc>[s1z=`]a<c-g>u
+inoremap <c-b> <c-g>u<Esc>[s1z=`]a<c-g>u
 
 
 "#--------------------------------------
@@ -253,6 +253,7 @@ let g:gruvbox_improved_warnings = '1'
 let g:gruvbox_contrast_dark = 'medium'
 let g:gruvbox_sign_column = 'NONE'
 
+hi Visual cterm=NONE ctermbg=237 guibg=Grey27
 
 "#--------------------------------------
 "# Undotree
@@ -361,7 +362,8 @@ let g:airline#extensions#tabline#left_alt_sep = '|'
 
 " Show buffers in top bar
 let g:airline#extensions#tabline#enabled = 1
-"let g:airline#extensions#ale#enabled = 1
+let g:airline#extensions#ale#enabled = 1
+let g:airline#extensions#coc#enabled = 1
 
 
 "#--------------------------------------

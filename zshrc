@@ -161,10 +161,14 @@ truecolors() {
 # Compinit (Completion initialization)
 # ---------------------------------------------------------
 
- _zpcompinit_custom() {
-   # Remember to have "skip_global_compinit=1" in $ZDOTDIR:-$HOME/.zshenv
-   # otherwise zsh calls compinit by itself and generates a new dumpfile,
-   # ruining the whole point of the cache...
+_zpcompinit_custom() {
+  # Remember to have "skip_global_compinit=1" in $ZDOTDIR:-$HOME/.zshenv
+  # otherwise zsh calls compinit by itself and generates a new dumpfile,
+  # ruining the whole point of the cache...
+  #
+  # Completions not provided by plugins or bundled can be put here
+  fpath=("$DOTFILES/.local/completions" $fpath)
+
   setopt extendedglob local_options
   autoload -Uz compinit
   local zcd=${ZDOTDIR:-$HOME}/.zcompdump
