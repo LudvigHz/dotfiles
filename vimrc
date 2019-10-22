@@ -253,6 +253,8 @@ let g:gruvbox_improved_warnings = '1'
 let g:gruvbox_contrast_dark = 'medium'
 let g:gruvbox_sign_column = 'NONE'
 
+autocmd! ColorScheme
+autocmd ColorScheme * hi Visual cterm=NONE ctermbg=237 guibg=Grey27
 hi Visual cterm=NONE ctermbg=237 guibg=Grey27
 
 "#--------------------------------------
@@ -295,7 +297,7 @@ let g:ale_fixers = {
 \}
 
 let g:ale_linters = {
-      \'python': ['flake8', 'pylint', 'isort'],
+      \'python': ['flake8', 'isort'],
       \'typescript': ['tsserver', 'eslint'],
       \'javascript': ['eslint', 'ternjs', 'flow'],
       \'jsx': ['stylelint']
@@ -439,7 +441,6 @@ let g:UltiSnipsExpandTrigger= "<c-u>"
 
 " Testing
 if has('nvim') && exists('&winblend')
-  set termguicolors
   colorscheme gruvbox-material
   let g:airline_theme = 'gruvbox_material'
   set winblend=8

@@ -57,6 +57,7 @@ source_plugin zsh-history-substring-search
 source_plugin enhancd "init.sh"
 source_plugin k "k.sh"
 source_plugin sudo
+source_plugin dotenv
 
 
 # ---------------------------------------------------------
