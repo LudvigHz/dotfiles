@@ -55,6 +55,7 @@ set visualbell                  " Use visual bell instead of audio
 set t_vb=                       " Set visual bell to do nothing (Disable)
 set noshowmode
 set ttimeoutlen=10
+set cmdheight=1
 
 " Visuals
 set laststatus=2
@@ -147,8 +148,8 @@ set undoreload=10000
 "#--------------------------------------
 augroup text_langs
   autocmd!
-  autocmd FileType tex, text, markdown setlocal spell
-  autocmd FileType tex, text, markdown setlocal spelllang=nb,en_us
+  autocmd FileType tex,text,markdown setlocal spell
+  autocmd FileType tex,text,markdown setlocal spelllang=nb,en_us
 augroup end
 
 inoremap <c-b> <c-g>u<Esc>[s1z=`]a<c-g>u
@@ -183,6 +184,15 @@ endfun
 "augroup end
 
 
+"#--------------------------------------
+"# Open current file with xdg-open
+"#--------------------------------------
+function! Open_xdg()
+  let file_uri = expand('%:p')
+  execute system('xdg-open ' . file_uri)
+endfun
+
+command ShowFile call Open_xdg()
 
 
 
@@ -227,6 +237,7 @@ Plug 'pangloss/vim-javascript'              " JS support
 Plug 'prettier/vim-prettier'                " File formatting
 Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
+Plug 'tpope/vim-repeat'                     " Repeat plugin commands
 Plug 'tpope/vim-vinegar'                    " netrw tweaks
 Plug 'mbbill/undotree'                      " Undo tree
 Plug 'scrooloose/nerdcommenter'             " Command to comment out code
@@ -234,7 +245,7 @@ Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
 Plug 'flowtype/vim-flow'                    " Flow support
 Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
 Plug 'mhinz/vim-startify'                   " Fancy start screen
-"Plug 'liuchengxu/vim-clap'                  " Popup/floating win for FZF
+Plug 'svermeulen/vim-yoink'                 " Yank utils
 
 " LaTeX plugins
 Plug 'lervag/vimtex'
@@ -256,6 +267,7 @@ let g:gruvbox_sign_column = 'NONE'
 autocmd! ColorScheme
 autocmd ColorScheme * hi Visual cterm=NONE ctermbg=237 guibg=Grey27
 hi Visual cterm=NONE ctermbg=237 guibg=Grey27
+
 
 "#--------------------------------------
 "# Undotree
@@ -321,7 +333,6 @@ let g:ale_set_balloons = '1'
 "#--------------------------------------
 inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-set cmdheight=2
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
@@ -331,6 +342,8 @@ function! s:show_documentation()
     call CocAction('doHover')
   endif
 endfunction
+
+nnoremap <leader>g :call CocAction('jumpDefinition', 'drop')<CR>
 
 
 "#--------------------------------------
@@ -347,7 +360,7 @@ let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
 "# Airline
 "#--------------------------------------
 let g:airline_powerline_fonts = 1
-let g:airline_theme = 'gruvbox'
+let g:airline_theme = 'gruvbox_material'
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
@@ -439,9 +452,17 @@ let g:UltiSnipsSnippetsDirectories = ["~/dotfiles/UltiSnips", "UltiSnips"]
 let g:UltiSnipsExpandTrigger= "<c-u>"
 
 
+
+"#--------------------------------------
+"# Yoink
+"#--------------------------------------
+nmap p <plug>(YoinkPaste_p)
+nmap P <plug>(YoinkPaste_P)
+
+
 " Testing
 if has('nvim') && exists('&winblend')
-  colorscheme gruvbox-material
+  " colorscheme gruvbox-material
   let g:airline_theme = 'gruvbox_material'
   set winblend=8
 

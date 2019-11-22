@@ -21,8 +21,8 @@ unsetopt BEEP
 # ---------------------------------------------------------
 
 HISTFILE=$DOTFILES/.local/zsh_history
-SAVEHIST=10000
-HISTSIZE=10000
+SAVEHIST=100000
+HISTSIZE=100000
 setopt INC_APPEND_HISTORY
 setopt histignoredups
 zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
@@ -121,7 +121,7 @@ asp() {
       read option
       if [[ $option == "u" || $option == "U" ]]; then
         echo -e "\e[1mUpgrading: \e[1;94m$inst\e[0m \n"
-        sudo apt upgrade $name
+        sudo apt install $name
       elif [[ $option == "r" || $option == "R" ]]; then
         echo -e "\e[1mRemoving: \e[1;94m$inst\e[0m \n"
         sudo apt remove $name
