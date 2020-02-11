@@ -239,6 +239,7 @@ Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
 Plug 'tpope/vim-repeat'                     " Repeat plugin commands
 Plug 'tpope/vim-vinegar'                    " netrw tweaks
+Plug 'tpope/vim-sleuth'                     " Auto set tab width based on buffer
 Plug 'mbbill/undotree'                      " Undo tree
 Plug 'scrooloose/nerdcommenter'             " Command to comment out code
 Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
@@ -280,7 +281,7 @@ nnoremap <leader>u :UndotreeToggle<CR>
 "#--------------------------------------
 function! Custom_files()
   if isdirectory(".git")
-    :GFiles
+    :GFiles --cached
   else
     :Files
   endif
@@ -289,7 +290,7 @@ endfunction
 nnoremap <C-p> :call Custom_files()<CR>
 nnoremap <C-O> :Buffers<CR>
 
-let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.{.git,node/modules,venv}/*"'
+let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.{.git,node_modules,venv}/*"'
 
 " Terminal buffer options for fzf
 autocmd! FileType fzf
@@ -304,13 +305,17 @@ let g:ale_fixers = {
             \'javascript': ['prettier', 'eslint'],
             \'json': ['prettier'],
             \'typescript': ['prettier', 'eslint'],
+            \'typescriptreact': ['prettier', 'eslint'],
             \'python': ['black', 'isort'],
-            \'java': ['google_java_format']
+            \'java': ['google_java_format'],
+            \'css': ['prettier'],
+            \'markdown': ['prettier']
 \}
 
 let g:ale_linters = {
-      \'python': ['flake8', 'isort'],
+      \'python': ['flake8', 'isort', 'jedi'],
       \'typescript': ['tsserver', 'eslint'],
+      \'typescriptreact': ['tsserver', 'eslint'],
       \'javascript': ['eslint', 'ternjs', 'flow'],
       \'jsx': ['stylelint']
 \}

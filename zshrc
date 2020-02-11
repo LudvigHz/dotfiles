@@ -61,6 +61,13 @@ source_plugin dotenv
 
 
 # ---------------------------------------------------------
+# Path
+# ---------------------------------------------------------
+
+export PATH="$PATH:$HOME/.npm-global/bin"
+
+
+# ---------------------------------------------------------
 # Prompt
 # ---------------------------------------------------------
 
@@ -79,6 +86,8 @@ alias ..="cd ../"
 alias gd="git diff"
 alias gs="git status"
 alias ga="git add ."
+alias gc="git checkout"
+alias gcm="git checkout master"
 
 
 # Programs
