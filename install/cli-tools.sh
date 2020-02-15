@@ -30,7 +30,7 @@ declare -A installers=(
 
 declare -A updaters=(
 
-  ["apt"]="sudo apt-get install update"
+  ["apt"]="sudo apt-get update"
   ["pacman"]="sudo pacman -Syy"
   ["dnf"]="echo No need to update"
   ["pkg"]="echo No need to update"
@@ -54,9 +54,6 @@ declare -A cli_tools=(
   ["ripgrep"]="rg"
   ["tmux"]="tmux"
   ["gawk"]="awk"
-  # ["rxvt-unicode"]="urxvt"
-  # ["zathura"]="zathura"
-  # ["tweak-tools"]="gnome-tweak-tools"
   #TODO add command for installing GUI and distro-specific programs
 
 )

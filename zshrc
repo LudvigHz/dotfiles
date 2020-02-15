@@ -50,6 +50,26 @@ source_plugin() {
 }
 
 
+# Place github path for plugins to be installed here.
+plugins=(
+  "zsh-users/zsh-autosuggestions",
+  "zsh-users/zsh-syntax-highlighting",
+  "zsh-users/zsh-completions",
+  "zsh-users/zsh-history-substring-search",
+  "b4b4r07/enhancd",
+  "LudvigHz/k",
+)
+
+# Oh-my-zsh plugins to be installed
+oh_my_zsh_plugins=(
+  "sudo",
+  "dotenv",
+)
+
+
+# To source the plugins above, use the source_plugin command
+# if the filename is different from <plugin>.plugin.zsh
+# use second argument as filename.
 source_plugin zsh-autosuggestions
 source_plugin zsh-syntax-highlighting
 source_plugin zsh-completions
@@ -64,7 +84,7 @@ source_plugin dotenv
 # Path
 # ---------------------------------------------------------
 
-export PATH="$PATH:$HOME/.npm-global/bin"
+export PATH="$HOME/.npm-global/bin:$HOME/go/bin:$PATH"
 
 
 # ---------------------------------------------------------
@@ -106,6 +126,7 @@ alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=ACMR)"
 # Clipboard
 # $<some command> | copy
 alias copy="xclip -sel clip"
+
 
 
 # ---------------------------------------------------------
@@ -199,3 +220,6 @@ _zpcompinit_custom
 #source <(kubectl completion zsh)
 # Call zprof (debug)
 #zprof
+#. $HOME/.asdf/asdf.sh
+#. $HOME/.asdf/completions/asdf.bash
+#

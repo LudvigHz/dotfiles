@@ -309,7 +309,11 @@ let g:ale_fixers = {
             \'python': ['black', 'isort'],
             \'java': ['google_java_format'],
             \'css': ['prettier'],
-            \'markdown': ['prettier']
+            \'markdown': ['prettier'],
+            \'sql': ['sqlfmt'],
+            \'sh': ['shfmt'],
+            \'bash': ['shfmt'],
+            \'zshh': ['shfmt'],
 \}
 
 let g:ale_linters = {
@@ -317,7 +321,10 @@ let g:ale_linters = {
       \'typescript': ['tsserver', 'eslint'],
       \'typescriptreact': ['tsserver', 'eslint'],
       \'javascript': ['eslint', 'ternjs', 'flow'],
-      \'jsx': ['stylelint']
+      \'jsx': ['stylelint'],
+      \'sh': ['shell'],
+      \'bash': ['shell'],
+      \'zsh': ['shell']
 \}
 
 let g:nvim_typescript#diagnostics_enable = 0
