@@ -21,8 +21,8 @@ unsetopt BEEP
 # ---------------------------------------------------------
 
 HISTFILE=$DOTFILES/.local/zsh_history
-SAVEHIST=10000
-HISTSIZE=10000
+SAVEHIST=100000
+HISTSIZE=100000
 setopt INC_APPEND_HISTORY
 setopt histignoredups
 zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
@@ -50,6 +50,26 @@ source_plugin() {
 }
 
 
+# Place github path for plugins to be installed here.
+plugins=(
+  "zsh-users/zsh-autosuggestions",
+  "zsh-users/zsh-syntax-highlighting",
+  "zsh-users/zsh-completions",
+  "zsh-users/zsh-history-substring-search",
+  "b4b4r07/enhancd",
+  "LudvigHz/k",
+)
+
+# Oh-my-zsh plugins to be installed
+oh_my_zsh_plugins=(
+  "sudo",
+  "dotenv",
+)
+
+
+# To source the plugins above, use the source_plugin command
+# if the filename is different from <plugin>.plugin.zsh
+# use second argument as filename.
 source_plugin zsh-autosuggestions
 source_plugin zsh-syntax-highlighting
 source_plugin zsh-completions
@@ -57,7 +77,14 @@ source_plugin zsh-history-substring-search
 source_plugin enhancd "init.sh"
 source_plugin k "k.sh"
 source_plugin sudo
+source_plugin dotenv
 
+
+# ---------------------------------------------------------
+# Path
+# ---------------------------------------------------------
+
+export PATH="$HOME/.npm-global/bin:$HOME/go/bin:$PATH"
 
 
 # ---------------------------------------------------------
@@ -78,13 +105,15 @@ alias ..="cd ../"
 # Git
 alias gd="git diff"
 alias gs="git status"
-alias ga="git add"
+alias ga="git add ."
+alias gc="git checkout"
+alias gcm="git checkout master"
 
 
 # Programs
 alias gotop="gotop-cjbassi --color=monokai -p -b"
 alias cat='ccat -G Keyword="darkgreen" -G Type="darkblue" -G Punctuation="lightgray" -G Plaintext="reset" -G Comment="darkgray"'
-
+alias ocat="cat"
 
 # Open modified files
 # ACMR = Added || Copied || Modified || Renamed
@@ -97,6 +126,7 @@ alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=ACMR)"
 # Clipboard
 # $<some command> | copy
 alias copy="xclip -sel clip"
+
 
 
 # ---------------------------------------------------------
@@ -121,7 +151,7 @@ asp() {
       read option
       if [[ $option == "u" || $option == "U" ]]; then
         echo -e "\e[1mUpgrading: \e[1;94m$inst\e[0m \n"
-        sudo apt upgrade $name
+        sudo apt install $name
       elif [[ $option == "r" || $option == "R" ]]; then
         echo -e "\e[1mRemoving: \e[1;94m$inst\e[0m \n"
         sudo apt remove $name
@@ -140,21 +170,41 @@ rgl() {
   rg $@ -p --line-buffered | less -R
 }
 
+# Testing truecolor support
+truecolors() {
+  awk -v term_cols="${width:-$(tput cols || echo 80)}" 'BEGIN{
+      s="/\\";
+      for (colnum = 0; colnum<term_cols; colnum++) {
+          r = 255-(colnum*255/term_cols);
+          g = (colnum*510/term_cols);
+          b = (colnum*255/term_cols);
+          if (g>255) g = 510-g;
+          printf "\033[48;2;%d;%d;%dm", r,g,b;
+          printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+          printf "%s\033[0m", substr(s,colnum%2+1,1);
+      }
+      printf "\n";
+  }'
+}
 
 
 # ---------------------------------------------------------
 # Compinit (Completion initialization)
 # ---------------------------------------------------------
 
- _zpcompinit_custom() {
-   # Remember to have "skip_global_compinit=1" in $ZDOTDIR:-$HOME/.zshenv
-   # otherwise zsh calls compinit by itself and generates a new dumpfile,
-   # ruining the whole point of the cache...
+_zpcompinit_custom() {
+  # Remember to have "skip_global_compinit=1" in $ZDOTDIR:-$HOME/.zshenv
+  # otherwise zsh calls compinit by itself and generates a new dumpfile,
+  # ruining the whole point of the cache...
+  #
+  # Completions not provided by plugins or bundled can be put here
+  fpath=("$DOTFILES/.local/completions" $fpath)
+
   setopt extendedglob local_options
   autoload -Uz compinit
   local zcd=${ZDOTDIR:-$HOME}/.zcompdump
   local zcdc="$zcd.zwc"
-  # If the completion dum is older than 24h
+  # If the completion dump is older than 24h
   if [[ -f "$zcd"(#qN.m+1) ]]; then
     compinit -i -d "$zcd" # Run compinit and specify compdump to $zcd
     compdump              # Force call compdump (should not be neccasary)
@@ -167,5 +217,9 @@ rgl() {
 
 _zpcompinit_custom
 
+#source <(kubectl completion zsh)
 # Call zprof (debug)
 #zprof
+#. $HOME/.asdf/asdf.sh
+#. $HOME/.asdf/completions/asdf.bash
+#

@@ -22,9 +22,21 @@ declare -A installers=(
   ["pacman"]="sudo pacman -S "
   ["dnf"]="sudo dnf install "
   ["pkg"]="pkg install "
-  ["zypper"]="sudo zypper install "
+  ["zypper"]="sudo zypper --non-interactive install "
   ["brew"]="brew install "
   ["snap"]="snap install "
+
+)
+
+declare -A updaters=(
+
+  ["apt"]="sudo apt-get update"
+  ["pacman"]="sudo pacman -Syy"
+  ["dnf"]="echo No need to update"
+  ["pkg"]="echo No need to update"
+  ["zypper"]="sudo zypper refresh"
+  ["brew"]="echo You may need to manually update homebrew!"
+  ["snap"]="snap refresh"
 
 )
 
@@ -35,16 +47,14 @@ declare -A cli_tools=(
 
   ["zsh"]="zsh"
   ["vim"]="vim"
-  ["neovim"]="nvim"
+  # ["neovim"]="nvim"
   ["fzf"]="fzf"
   ["subversion"]="svn"
   ["git"]="git"
   ["ripgrep"]="rg"
   ["tmux"]="tmux"
   ["gawk"]="awk"
-  ["rxvt-unicode"]="urxvt"
-  ["zathura"]="zathura"
-  ["tweak-tools"]="gnome-tweak-tools"
+  #TODO add command for installing GUI and distro-specific programs
 
 )
 
@@ -82,6 +92,7 @@ install_program() {
       exit 0
     fi
   fi
+
 
   if [[ ! $force ]]; then
     if [[ $(command -v "${cli_tools["$1"]}") ]]; then
@@ -144,8 +155,12 @@ done
 
 
 if [[ ! -z $cli_tool ]]; then
+  # Update package manager before installing
+  eval "${updaters["$manager"]}"
   install_program "$cli_tool"
 elif [[ $install_all ]]; then
+  # Update package manager before installing
+  eval "${updaters["$manager"]}"
   for prog in "${!cli_tools[@]}"; do
     install_program "$prog"
   done

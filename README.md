@@ -34,6 +34,7 @@ bash install.sh -a
 - Installation
 ```sh
 bash install.sh cli-tools -n fzf
+bash install.sh cli-tools -n ripgrep
 ```
 
 #### Installation
@@ -44,6 +45,13 @@ Install with the provided utility with `zsh` as argument:
 bash install.sh zsh
 ```
 
+#### Updating
+To update zsh plugins, run
+```sh
+bash install.sh zsh-update
+```
+> Currently does not support updates from oh-my-zsh plugins
+
 
 ## Vim
 > Same installation as with fzf, use cli-tools script to install both vim and neovim
@@ -52,17 +60,23 @@ bash install.sh zsh
 bash install.sh vim
 ```
 
+
 Run `:PlugInstall` if it doesn't install automatically when you open vim.
 
-- Note: npm and node.js is required for javascript and typescript completion. If it is not installed, run:
+- Note: npm and node.js is required for coc.nvim. If it is not installed, run:
 `sudo apt-get install nodejs` and `sudo apt-get install npm`
 
+#### Completion
+This config currently uses coc.nvim for completion.
+See [here](https://github.com/neoclide/coc.nvim/wiki/Language-servers) for configuration of language
+servers.
 
-## Screenhots
 
-![zsh urxvt](screenshots/zsh-urxvt.png?raw=true)
+## Screens
 
-![nvim_ts autocompletion](screenshots/vim-deoplete.png?raw=true)
+![zsh alacritty](screenshots/zsh-alacritty.png?raw=true)
+
+![vim_coc autocompletion](screenshots/vim-coc.png?raw=true)
 
 
 ## Gnome configuration

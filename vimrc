@@ -46,16 +46,16 @@ set hidden                      " Hide buffer when it is not in a window
 set updatetime=100              " Update more often (Gitgutter and Ale)
 filetype plugin on              " Enable file type specific settings
 syntax on                       " Enable syntax highlighting
-" Doesnt work properly with airline
-"if exists('+termguicolors')
-"  let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
-"  let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
-"  set termguicolors
-"endif
+if exists('+termguicolors')
+  let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
+endif
 set visualbell                  " Use visual bell instead of audio
 set t_vb=                       " Set visual bell to do nothing (Disable)
 set noshowmode
 set ttimeoutlen=10
+set cmdheight=1
 
 " Visuals
 set laststatus=2
@@ -148,11 +148,11 @@ set undoreload=10000
 "#--------------------------------------
 augroup text_langs
   autocmd!
-  autocmd Filetype tex, text, markdown setlocal spell
-  autocmd Filetype tex, text, markdown setlocal spelllang=nb,en_gb
+  autocmd FileType tex,text,markdown setlocal spell
+  autocmd FileType tex,text,markdown setlocal spelllang=nb,en_us
 augroup end
 
-inoremap <C-b> <c-g>u<Esc>[s1z=`]a<c-g>u
+inoremap <c-b> <c-g>u<Esc>[s1z=`]a<c-g>u
 
 
 "#--------------------------------------
@@ -178,12 +178,21 @@ function! Close_gitignore()
 endfun
 " For some reason getbufinfo() is not updated if called on BufHidden
 " so BufEnter has to be used instead
-augroup buffer_autoclose
-  autocmd!
-  autocmd BufEnter * call Close_gitignore()
-augroup end
+"augroup buffer_autoclose
+  "autocmd!
+  "autocmd BufEnter * call Close_gitignore()
+"augroup end
 
 
+"#--------------------------------------
+"# Open current file with xdg-open
+"#--------------------------------------
+function! Open_xdg()
+  let file_uri = expand('%:p')
+  execute system('xdg-open ' . file_uri)
+endfun
+
+command ShowFile call Open_xdg()
 
 
 
@@ -209,7 +218,6 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 call plug#begin('~/.vim/plugged')
 
 Plug 'vim-airline/vim-airline'              " Status bar
-Plug 'scrooloose/nerdtree'                  " File tree browser
 Plug 'ryanoasis/vim-devicons'               " devicons for all icon support (requires nerdfont)
 Plug '~/.fzf'
 Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
@@ -220,29 +228,25 @@ Plug 'airblade/vim-gitgutter'               " Git info before line numbers
 Plug 'gruvbox-community/gruvbox'            " Standard color scheme
 Plug 'gilgigilgil/anderson.vim'             " Alternate color scheme
 Plug 'srcery-colors/srcery-vim'
-"Plug 'valloric/youcompleteme'               " Autocompletion
-" deoplete
-Plug 'shougo/deoplete.nvim'                 " deoplete autocompletion
-Plug 'roxma/nvim-yarp'
-Plug 'roxma/vim-hug-neovim-rpc'
-Plug 'wokalski/autocomplete-flow'
-Plug 'HerringtonDarkholme/yats.vim'
-Plug 'mhartington/nvim-typescript', {'do': './install.sh'} " Ts completion
-Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
-Plug 'deoplete-plugins/deoplete-jedi'
+Plug 'sainnhe/gruvbox-material'
+" coc
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
 Plug 'pangloss/vim-javascript'              " JS support
 Plug 'prettier/vim-prettier'                " File formatting
 Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
+Plug 'tpope/vim-repeat'                     " Repeat plugin commands
 Plug 'tpope/vim-vinegar'                    " netrw tweaks
+Plug 'tpope/vim-sleuth'                     " Auto set tab width based on buffer
 Plug 'mbbill/undotree'                      " Undo tree
 Plug 'scrooloose/nerdcommenter'             " Command to comment out code
 Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
 Plug 'flowtype/vim-flow'                    " Flow support
-Plug 'RRethy/vim-hexokinase'                " Color highlighting CSS
+Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
 Plug 'mhinz/vim-startify'                   " Fancy start screen
+Plug 'svermeulen/vim-yoink'                 " Yank utils
 
 " LaTeX plugins
 Plug 'lervag/vimtex'
@@ -261,14 +265,9 @@ let g:gruvbox_improved_warnings = '1'
 let g:gruvbox_contrast_dark = 'medium'
 let g:gruvbox_sign_column = 'NONE'
 
-
-"#--------------------------------------
-"# Nerdtree
-"#--------------------------------------
-map <leader>, :NERDTreeToggle<CR>
-"autocmd StdinReadPre * let s:std_in=1
-"autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-let NERDTreeMinimalUI=1
+autocmd! ColorScheme
+autocmd ColorScheme * hi Visual cterm=NONE ctermbg=237 guibg=Grey27
+hi Visual cterm=NONE ctermbg=237 guibg=Grey27
 
 
 "#--------------------------------------
@@ -282,7 +281,7 @@ nnoremap <leader>u :UndotreeToggle<CR>
 "#--------------------------------------
 function! Custom_files()
   if isdirectory(".git")
-    :GFiles
+    :GFiles --cached
   else
     :Files
   endif
@@ -290,6 +289,12 @@ endfunction
 
 nnoremap <C-p> :call Custom_files()<CR>
 nnoremap <C-O> :Buffers<CR>
+
+let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.{.git,node_modules,venv}/*"'
+
+" Terminal buffer options for fzf
+autocmd! FileType fzf
+autocmd  FileType fzf set noshowmode noruler nonu
 
 
 "#--------------------------------------
@@ -300,19 +305,29 @@ let g:ale_fixers = {
             \'javascript': ['prettier', 'eslint'],
             \'json': ['prettier'],
             \'typescript': ['prettier', 'eslint'],
+            \'typescriptreact': ['prettier', 'eslint'],
             \'python': ['black', 'isort'],
-            \'java': ['google_java_format']
+            \'java': ['google_java_format'],
+            \'css': ['prettier'],
+            \'markdown': ['prettier'],
+            \'sql': ['sqlfmt'],
+            \'sh': ['shfmt'],
+            \'bash': ['shfmt'],
+            \'zshh': ['shfmt'],
 \}
 
 let g:ale_linters = {
-      \'python': ['flake8'],
+      \'python': ['flake8', 'isort', 'jedi'],
       \'typescript': ['tsserver', 'eslint'],
-      \'javascript': ['eslint', 'ternjs', 'flow']
+      \'typescriptreact': ['tsserver', 'eslint'],
+      \'javascript': ['eslint', 'ternjs', 'flow'],
+      \'jsx': ['stylelint'],
+      \'sh': ['shell'],
+      \'bash': ['shell'],
+      \'zsh': ['shell']
 \}
 
 let g:nvim_typescript#diagnostics_enable = 0
-
-
 
 let g:ale_fix_on_save = '1'               " Enble auto fixing on save
 let g:ale_lint_on_insert_leave = '1'
@@ -322,52 +337,25 @@ hi ALEErrorSign ctermbg=235 ctermfg=160
 hi ALEWarningSign ctermbg=235 ctermfg=214
 let g:ale_sign_warning = ''
 let g:ale_sign_error = ''
+let g:ale_set_balloons = '1'
 
 
 "#--------------------------------------
-"# YouCompleteMe
+"# CoC (Conquerer of completion)
 "#--------------------------------------
+inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-" Hacky fix to use venv while in django project dir
-if filereadable("manage.py")
-  let g:ycm_python_interpreter_path = 'venv/bin/python'
-  let g:ycm_python_sys_path = []
-  let g:ycm_extra_conf_vim_data = [
-    \  'g:ycm_python_interpreter_path',
-    \  'g:ycm_python_sys_path'
-    \]
-  let g:ycm_global_ycm_extra_conf = '~/global_extra_conf.py'
-endif
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
 
-let g:ycm_show_diagnostics_ui = 0
-let g:ycm_autoclose_preview_window_after_completion = 1
-
-
-"#--------------------------------------
-"# Deoplete
-"#--------------------------------------
-let g:deoplete#enable_at_startup = 1
-
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-set completeopt-=preview
-call deoplete#custom#option('max_list', 45)         " Set max options in completion dropdown
-call deoplete#custom#option('max_abbr_width', 60)   " Set max width of completion dropdown
-
-try
-  "call deoplete#custom#source('ultisnips', 'rank', 1000)
-  call deoplete#custom#var('omni', 'input_patterns', {
-    \ 'tex': g:vimtex#re#deoplete,
-    \})
-catch
-endtry
-
-" tern.js completion
-let g:deoplete#sources#ternjs#filetypes = [
-  \'jsx',
-  \'javascript.jsx',
-  \]
-let g:deoplete#sources#ternjs#types = 1           " Show type in completion pane
+nnoremap <leader>g :call CocAction('jumpDefinition', 'drop')<CR>
 
 
 "#--------------------------------------
@@ -384,7 +372,7 @@ let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
 "# Airline
 "#--------------------------------------
 let g:airline_powerline_fonts = 1
-let g:airline_theme = 'gruvbox'
+let g:airline_theme = 'gruvbox_material'
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
@@ -401,6 +389,8 @@ let g:airline#extensions#tabline#left_alt_sep = '|'
 
 " Show buffers in top bar
 let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#ale#enabled = 1
+let g:airline#extensions#coc#enabled = 1
 
 
 "#--------------------------------------
@@ -436,10 +426,21 @@ augroup END
 "#--------------------------------------
 "# Hexokinase
 "#--------------------------------------
-let g:Hexokinase_highlighters = ['virtual', 'backgroundfill']
+let g:Hexokinase_highlighters = ['backgroundfull']
+let g:Hexokinase_optInPatterns = [
+    \ 'full_hex',
+    \ 'triple_hex',
+    \ 'rgb',
+    \ 'rgba',
+    \ 'hsl',
+    \ 'hsla',
+    \ 'colour_names'
+    \ ]
 let g:Hexokinase_virtualText = '■'
 let g:Hexokinase_refreshEvents = ['TextChanged', 'TextChangedI']
-let g:Hexokinase_ftAutoload = ['css', 'xml', 'jsx']
+if has('nvim')
+  let g:Hexokinase_ftEnabled = ['css', 'xml', 'javascript.jsx']
+endif
 
 
 "#--------------------------------------
@@ -461,3 +462,42 @@ let g:startify_bookmarks = [
 "#--------------------------------------
 let g:UltiSnipsSnippetsDirectories = ["~/dotfiles/UltiSnips", "UltiSnips"]
 let g:UltiSnipsExpandTrigger= "<c-u>"
+
+
+
+"#--------------------------------------
+"# Yoink
+"#--------------------------------------
+nmap p <plug>(YoinkPaste_p)
+nmap P <plug>(YoinkPaste_P)
+
+
+" Testing
+if has('nvim') && exists('&winblend')
+  " colorscheme gruvbox-material
+  let g:airline_theme = 'gruvbox_material'
+  set winblend=8
+
+  hi NormalFloat guibg=235
+  if exists('g:fzf_colors.bg')
+    call remove(g:fzf_colors, 'bg')
+  endif
+
+  if stridx($FZF_DEFAULT_OPTS, '--border') == -1
+    let $FZF_DEFAULT_OPTS .= ' --border'
+  endif
+
+  function! FloatingFZF()
+    let width = float2nr(&columns * 0.8)
+    let height = float2nr(&lines * 0.6)
+    let opts = { 'relative': 'editor',
+               \ 'row': (&lines - height) / 2,
+               \ 'col': (&columns - width) / 2,
+               \ 'width': width,
+               \ 'height': height }
+
+    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
+  endfunction
+
+  let g:fzf_layout = { 'window': 'call FloatingFZF()' }
+endif
