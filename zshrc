@@ -52,18 +52,18 @@ source_plugin() {
 
 # Place github path for plugins to be installed here.
 plugins=(
-  "zsh-users/zsh-autosuggestions",
-  "zsh-users/zsh-syntax-highlighting",
-  "zsh-users/zsh-completions",
-  "zsh-users/zsh-history-substring-search",
-  "b4b4r07/enhancd",
-  "LudvigHz/k",
+  "zsh-users/zsh-autosuggestions"
+  "zsh-users/zsh-syntax-highlighting"
+  "zsh-users/zsh-completions"
+  "zsh-users/zsh-history-substring-search"
+  "b4b4r07/enhancd"
+  "LudvigHz/k"
 )
 
 # Oh-my-zsh plugins to be installed
 oh_my_zsh_plugins=(
-  "sudo",
-  "dotenv",
+  "sudo"
+  "dotenv"
 )
 
 
