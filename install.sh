@@ -1,10 +1,8 @@
 #!/bin/bash
 # Script for installing LudvigHz dotfiles: http://github.com/LudvigHz/dotfiles
 
-
 # Set dotfiles directory
-DOTFILES="$( pwd )"
-
+DOTFILES="$(pwd)"
 
 # Create a directory for local files
 if [[ ! -d $DOTFILES/.local ]]; then
@@ -13,27 +11,24 @@ fi
 
 # Create a seperate file for global constants to not reset any local file used by
 # another installation.
-echo "export DOTFILES=$DOTFILES" > $DOTFILES/.local/constants
+echo "export DOTFILES=$DOTFILES" >$DOTFILES/.local/constants
 source $DOTFILES/.local/constants
-
 
 # Declare a table of install scripts
 declare -A install_scripts=(
-
   ["zsh"]="$DOTFILES/install/zsh.sh"
   ["zsh-update"]="$DOTFILES/install/zsh_update.sh"
   ["vim"]="$DOTFILES/install/vim.sh"
   ["tmux"]="$DOTFILES/install/tmux.sh"
   ["urxvt"]="$DOTFILES/install/urxvt.sh"
+  ["alacritty"]="$DOTFILES/install/alacritty.sh"
   ["cli-tools"]="$DOTFILES/install/cli-tools.sh"
-
 )
 
 # Options for running the script automatically
 declare -A install_scripts_opts=(
   ["cli-tools"]="-a"
 )
-
 
 # Run provided install scripts
 if [[ ! -z $1 && ! -z "${install_scripts["$1"]}" ]]; then
@@ -48,7 +43,7 @@ elif [[ $1 == "-a" || $1 == "--all" ]]; then
     ${install_scripts["$script"]} "${install_scripts_opts["$script"]}"
   done
 else
-# Output a help message if no args are provided
+  # Output a help message if no args are provided
   echo "Usage: $0 [program]
   where [program] is one of the following:"
   for i in "${!install_scripts[@]}"; do

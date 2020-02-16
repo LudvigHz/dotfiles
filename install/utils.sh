@@ -15,7 +15,6 @@ load_plugin() {
 
 }
 
-
 # Load plugins from oh-my-zsh
 # Syntax: load_oh-my-zsh_plugin "sudo"
 # **Requires svn to be installed**
@@ -31,19 +30,18 @@ load_oh-my-zsh_plugin() {
 
 }
 
-
 # Update plugins
 update_plugin() {
 
   local plugin_name="$1"
   if [[ -d "$ZSH_PLUGINS/$plugin_name" ]]; then
     echo -e "\e[1mLooking for changes in $1\e[0m"
-    git -C $ZSH_PLUGINS/$plugin_name remote update -p >> /dev/null
+    git -C $ZSH_PLUGINS/$plugin_name remote update -p >>/dev/null
     _local="$(git -C $ZSH_PLUGINS/$plugin_name rev-parse HEAD)"
     _remote="$(git -C $ZSH_PLUGINS/$plugin_name rev-parse @{u})"
     if [[ "$_local" != "$_remote" ]]; then
       echo -e "Fetching updates...    \c"
-      git -C $ZSH_PLUGINS/$plugin_name merge --ff-only @{u} >> /dev/null
+      git -C $ZSH_PLUGINS/$plugin_name merge --ff-only @{u} >>/dev/null
     else
       echo -e "$1 is already up to date... \c"
     fi
@@ -52,14 +50,13 @@ update_plugin() {
 
 }
 
-
 # Create a backup of a file in the "$DOTFILES/.local/backup" directory
 # Syntax: backup_file "path-to-file"
 backup_file() {
 
-  if [[ -a $1 ]]; then
+  if [[ -e $1 ]]; then
 
-    if [[ -d $DOTFILES/backup ]]; then
+    if [[ ! -d $DOTFILES/.local/backup ]]; then
       mkdir $DOTFILES/.local/backup
     fi
 
@@ -69,5 +66,23 @@ backup_file() {
 
     echo "Created a backup of '$1' in: $DOTFILES/.local/backup/$filename"
 
+  fi
+}
+
+# Check for installed program and install when confirmed
+# Optional second argument -e for exiting 0 if not installed
+# Syntax: check_install "<program>" "-e"
+check_install() {
+  if [[ ! $(command -v $1) ]]; then
+    echo -e "\e[1m$1\e[0m is not installed."
+    echo -e "\e[0m Do you wish to install it? [Y/n].\c"
+    read option
+    if [[ $option == '' || $option == 'y' ]]; then
+      $DOTFILES/install/cli_tools.sh -n "$1"
+    else
+      if [[ $2 == "-e" ]]; then
+        exit 1
+      fi
+    fi
   fi
 }
