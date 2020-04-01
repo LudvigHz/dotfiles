@@ -109,6 +109,8 @@ alias ga="git add ."
 alias gc="git checkout"
 alias gcm="git checkout master"
 
+# GitHub
+alias ghc="gh pr checkout"
 
 # Programs
 alias gotop="gotop-cjbassi --color=monokai -p -b"
@@ -117,15 +119,18 @@ alias ocat="cat"
 
 # Open modified files
 # ACMR = Added || Copied || Modified || Renamed
-alias v="vim"
 alias vd="vim \$(git diff HEAD --name-only --diff-filter=ACMR)"
 alias vds="vim \$(git diff --staged --name-only --diff-filter=ACMR)"
-alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=ACMR)"
+alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=CMR)"
 
 
 # Clipboard
 # $<some command> | copy
 alias copy="xclip -sel clip"
+
+
+# Asciinema to GIF
+alias asciicast2gif="docker run --rm -v $(pwd):/data asciinema/asciicast2gif"
 
 
 
@@ -223,3 +228,4 @@ _zpcompinit_custom
 #. $HOME/.asdf/asdf.sh
 #. $HOME/.asdf/completions/asdf.bash
 #
+export PASSWORD_STORE_ENABLE_EXTENSIONS=true

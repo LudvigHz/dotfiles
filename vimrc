@@ -280,7 +280,8 @@ nnoremap <leader>u :UndotreeToggle<CR>
 "# Fzf
 "#--------------------------------------
 function! Custom_files()
-  if isdirectory(".git")
+  let git_dir = substitute(system('git rev-parse --show-toplevel'), '\n\+$', '', '')
+  if isdirectory(git_dir)
     :GFiles --cached
   else
     :Files
@@ -314,6 +315,7 @@ let g:ale_fixers = {
             \'sh': ['shfmt'],
             \'bash': ['shfmt'],
             \'zshh': ['shfmt'],
+            \'go': ['gofmt']
 \}
 
 let g:ale_linters = {
@@ -356,6 +358,7 @@ function! s:show_documentation()
 endfunction
 
 nnoremap <leader>g :call CocAction('jumpDefinition', 'drop')<CR>
+nnoremap <silent> <leader>d <Plug>(coc-references)
 
 
 "#--------------------------------------
@@ -411,7 +414,7 @@ let g:gitgutter_sign_modified_removed = ''
 
 
 "#--------------------------------------
-"$ Delimitmate
+"# Delimitmate
 "#--------------------------------------
 let g:delimitMate_expand_space = 1
 let g:delimitMate_expand_cr = 2
