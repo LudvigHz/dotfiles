@@ -84,7 +84,7 @@ source_plugin dotenv
 # Path
 # ---------------------------------------------------------
 
-export PATH="$HOME/.npm-global/bin:$HOME/go/bin:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/go/bin:$PATH"
 
 
 # ---------------------------------------------------------

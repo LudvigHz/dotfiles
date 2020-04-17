@@ -195,6 +195,39 @@ endfun
 command ShowFile call Open_xdg()
 
 
+"#--------------------------------------
+"# Create pdf from md using eisvogel template
+"#--------------------------------------
+function! EisvogelRun()
+  let generated_file = substitute(expand('%:p'), '.md', '.pdf', '')
+  execute system('pandoc '
+        \ . expand('%:p')
+        \ . ' -o '
+        \ . generated_file
+        \ . ' --from markdown --template eisvogel -V lang=en &')
+  " If run for the first time, open the generated pdf in zathura, or another program
+  if !get(b:, 'eisvogel_auto_run', 0) && filereadable(generated_file)
+    try
+      execute system('zathura ' . generated_file . ' &')
+    catch
+      try
+        execute system('xdg-open ' . generated_file)
+      endtry
+    endtry
+    let b:eisvogel_auto_run = 1
+  endif
+endfunction
+
+augroup eisvogel_on_save
+  autocmd!
+  autocmd FileType markdown let b:eisvogel_auto_run = 0
+  autocmd BufWrite * if get(b:, 'eisvogel_auto', 0) | call EisvogelRun() | endif
+augroup end
+
+" Command to toggle compile on save
+command Eisvogel let b:eisvogel_auto = !get(b:, 'eisvogel_auto', 0)
+
+
 
 "###########################################################
 "###########################################################
@@ -222,8 +255,12 @@ Plug 'ryanoasis/vim-devicons'               " devicons for all icon support (req
 Plug '~/.fzf'
 Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
 Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
+
+Plug 'junegunn/goyo.vim'                    " Distraction free writing
+Plug 'junegunn/limelight.vim'               " Focus text with goyo
+
 Plug 'mattn/emmet-vim'
-Plug 'w0rp/ale'                             " Linter
+Plug 'dense-analysis/ale'                             " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
 Plug 'gruvbox-community/gruvbox'            " Standard color scheme
 Plug 'gilgigilgil/anderson.vim'             " Alternate color scheme
@@ -299,6 +336,16 @@ autocmd  FileType fzf set noshowmode noruler nonu
 
 
 "#--------------------------------------
+"# Goyo
+"#--------------------------------------
+let g:goyo_width = 110
+
+autocmd! User GoyoEnter Limelight
+autocmd! User GoyoLeave Limelight!
+
+
+
+"#--------------------------------------
 "# Ale
 "#--------------------------------------
 let g:ale_fixers = {
@@ -339,8 +386,9 @@ hi ALEErrorSign ctermbg=235 ctermfg=160
 hi ALEWarningSign ctermbg=235 ctermfg=214
 let g:ale_sign_warning = ''
 let g:ale_sign_error = ''
-let g:ale_set_balloons = '1'
+let g:ale_hover_to_preview = 1
 
+let g:ale_writegood_options = '--no-passive'
 
 "#--------------------------------------
 "# CoC (Conquerer of completion)
