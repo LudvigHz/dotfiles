@@ -67,6 +67,30 @@ This will also install any new plugins defined in `zshrc`
 
 > Currently does not support updates from oh-my-zsh plugins
 
+#### Completion
+
+There is a bit of custom logic for shell completion. See `zshrc` for detail. By default, zsh
+compiles and loads completions on every new shell startup. This is slow and annoying, so it is
+configured to load once every day.
+
+To reload new completions, f.ex. when installing new programs or
+adding completion files, run the provided command:
+
+```sh
+# Reload completions
+$ compload
+```
+
+##### Custom completions
+
+Many programs provide completions by generating this with a command. This must be put in its own
+file in `$DOTFILES/.local/completions` to be loaded.
+**Example**
+
+```sh
+kubectl completion zsh > $DOTFILES/.local/completions/_kubectl
+```
+
 ## Vim
 
 > Same installation as with fzf, use cli-tools script to install both vim and neovim

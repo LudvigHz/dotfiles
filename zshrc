@@ -84,7 +84,7 @@ source_plugin dotenv
 # Path
 # ---------------------------------------------------------
 
-export PATH="$HOME/.yarn/bin:$HOME/go/bin:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:$PATH"
 
 
 # ---------------------------------------------------------
@@ -222,10 +222,19 @@ _zpcompinit_custom() {
 
 _zpcompinit_custom
 
-#source <(kubectl completion zsh)
+
+# Reload completions. Useful for loading new completions.
+# Otherwise they are not loaded until the next day
+compload() {
+  setopt extendedglob local_options
+  local zcd=${ZDOTDIR:-$HOME}/.zcompdump
+  local zcdc="$zcd.zwc"
+  compdump
+  { rm -f "$zcdc" && zcompile "$zcd" } &!
+  unsetopt extendedglob
+}
+
 # Call zprof (debug)
 #zprof
-#. $HOME/.asdf/asdf.sh
-#. $HOME/.asdf/completions/asdf.bash
 #
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true

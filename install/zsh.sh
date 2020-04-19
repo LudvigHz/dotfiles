@@ -9,6 +9,7 @@ check_install zsh -e
 ZSH_PLUGINS=$DOTFILES/.local/zsh_plugins
 
 backup_file ${ZDOTDIR:-$HOME}/.zshrc
+backup_file ${ZDOTDIR:-$HOME}/.zshenv
 
 #Source zshrc from home folder
 echo "source $DOTFILES/.local/zsh" >${ZDOTDIR:-$HOME}/.zshrc

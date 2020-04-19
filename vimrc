@@ -260,7 +260,7 @@ Plug 'junegunn/goyo.vim'                    " Distraction free writing
 Plug 'junegunn/limelight.vim'               " Focus text with goyo
 
 Plug 'mattn/emmet-vim'
-Plug 'dense-analysis/ale'                             " Linter
+Plug 'dense-analysis/ale'                   " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
 Plug 'gruvbox-community/gruvbox'            " Standard color scheme
 Plug 'gilgigilgil/anderson.vim'             " Alternate color scheme
