@@ -5,7 +5,7 @@
        echo “tmux not installed on this system”
    fi
 
-zmodload zsh/zprof
+# zmodload zsh/zprof
 
 # various zsh options
 zstyle ':completion:*' menu select
@@ -33,11 +33,18 @@ zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 # Plugins
 # ---------------------------------------------------------
 
-. /usr/share/autojump/autojump.sh
+# If on debian and autojump installed, source the provided
+# shell script.
+if [ -f "/etc/debian_version" ]; then
+  [ -x $(command -v autojump) ] && . /usr/share/autojump/autojump.sh
+fi
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # use ripgrep for fzf
-export FZF_DEFFAULT_COMMAND='rg --type f'
+# Respect gitignores and always ignore module directories
+export FZF_DEFAULT_COMMAND="rg --files --ignore-vcs -g '!{node_modules,venv,.git}'"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 #Plugins
 source_plugin() {
@@ -56,7 +63,6 @@ plugins=(
   "zsh-users/zsh-syntax-highlighting"
   "zsh-users/zsh-completions"
   "zsh-users/zsh-history-substring-search"
-  "b4b4r07/enhancd"
   "LudvigHz/k"
 )
 
@@ -74,7 +80,6 @@ source_plugin zsh-autosuggestions
 source_plugin zsh-syntax-highlighting
 source_plugin zsh-completions
 source_plugin zsh-history-substring-search
-source_plugin enhancd "init.sh"
 source_plugin k "k.sh"
 source_plugin sudo
 source_plugin dotenv

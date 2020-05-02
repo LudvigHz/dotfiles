@@ -319,7 +319,7 @@ nnoremap <leader>u :UndotreeToggle<CR>
 function! Custom_files()
   let git_dir = substitute(system('git rev-parse --show-toplevel'), '\n\+$', '', '')
   if isdirectory(git_dir)
-    :GFiles --cached
+    :GFiles
   else
     :Files
   endif
@@ -361,7 +361,7 @@ let g:ale_fixers = {
             \'sql': ['sqlfmt'],
             \'sh': ['shfmt'],
             \'bash': ['shfmt'],
-            \'zshh': ['shfmt'],
+            \'zsh': ['shfmt'],
             \'go': ['gofmt']
 \}
 
@@ -371,8 +371,8 @@ let g:ale_linters = {
       \'typescriptreact': ['tsserver', 'eslint'],
       \'javascript': ['eslint', 'ternjs', 'flow'],
       \'jsx': ['stylelint'],
-      \'sh': ['shell'],
-      \'bash': ['shell'],
+      \'sh': ['shell', 'shellcheck'],
+      \'bash': ['shell', 'shellcheck'],
       \'zsh': ['shell']
 \}
 
@@ -407,7 +407,6 @@ endfunction
 
 nnoremap <leader>g :call CocAction('jumpDefinition', 'drop')<CR>
 nnoremap <silent> <leader>d <Plug>(coc-references)
-
 
 "#--------------------------------------
 "# Rainbow parentheses

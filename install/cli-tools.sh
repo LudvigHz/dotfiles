@@ -54,10 +54,10 @@ declare -A cli_tools=(
   ["ripgrep"]="rg"
   ["tmux"]="tmux"
   ["gawk"]="awk"
+  ["autojump"]="autojump"
   #TODO add command for installing GUI and distro-specific programs
 
 )
-
 
 # Function to print keys from an associative array
 print_all() {
@@ -76,10 +76,10 @@ install_program() {
     printf "%s does not seem to be installed on this system\n" "$manager"
 
     for m in "${!installers[@]}"; do
-      if [[ $(command -v $m) ]]; then
+      if [[ $(command -v "$m") ]]; then
         local alternate=$m
         printf "Found %s! Do you wish to use it instead? [y/n] " "$alternate"
-        read ans
+        read -r ans
         if [[ "$ans" == "y" || "$ans" == "Y" ]]; then
           manager="$alternate"
           printf "Installing using %s...\n" "$manager"
@@ -88,11 +88,10 @@ install_program() {
       fi
     done
 
-    if [[ $manager != $alternate ]]; then
+    if [[ $manager != "$alternate" ]]; then
       exit 0
     fi
   fi
-
 
   if [[ ! $force ]]; then
     if [[ $(command -v "${cli_tools["$1"]}") ]]; then
@@ -108,53 +107,51 @@ install_program() {
 
 }
 
-
 manager="apt"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
-    -a|--all)
-      install_all=true
-      shift
-      ;;
-    -f|--force)
-      force=true
-      shift
-      ;;
-    -n|--name)
-      cli_tool="$2"
-      shift
-      shift
-      ;;
-    -u|--use)
-      manager="$2"
-      shift
-      shift
-      ;;
-    -h|--help)
-      print_help
-      exit 1
-      ;;
-    -l|--list)
-      print_all
-      exit 1
-      ;;
-    --list-managers)
-      printf "Supported package managers:\n"
-      for i in "${!installers[@]}"; do
-        printf "\t%s\n" "$i"
-      done
-      exit 1
-      ;;
-    *)
-      shift
-      ;;
+  -a | --all)
+    install_all=true
+    shift
+    ;;
+  -f | --force)
+    force=true
+    shift
+    ;;
+  -n | --name)
+    cli_tool="$2"
+    shift
+    shift
+    ;;
+  -u | --use)
+    manager="$2"
+    shift
+    shift
+    ;;
+  -h | --help)
+    print_help
+    exit 1
+    ;;
+  -l | --list)
+    print_all
+    exit 1
+    ;;
+  --list-managers)
+    printf "Supported package managers:\n"
+    for i in "${!installers[@]}"; do
+      printf "\t%s\n" "$i"
+    done
+    exit 1
+    ;;
+  *)
+    shift
+    ;;
   esac
 done
 
-
-if [[ ! -z $cli_tool ]]; then
+if [[ -n $cli_tool ]]; then
   # Update package manager before installing
   eval "${updaters["$manager"]}"
   install_program "$cli_tool"

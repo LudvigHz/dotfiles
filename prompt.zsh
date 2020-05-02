@@ -3,7 +3,7 @@
 autoload -Uz add-zsh-hook
 
 VCS_SYMBOL_BRANCH=""
-VCS_SYMBOL_AHEAD="ﰵ"
+VCS_SYMBOL_AHEAD="" # FIXME arrow up broken
 VCS_SYMBOL_BEHIND="ﰬ"
 VCS_SYMBOL_STAGED='●'
 VCS_SYMBOL_CONFLICTS=""

@@ -6,13 +6,14 @@ DOTFILES="$(pwd)"
 
 # Create a directory for local files
 if [[ ! -d $DOTFILES/.local ]]; then
-  mkdir $DOTFILES/.local
+  mkdir "$DOTFILES/.local"
 fi
 
 # Create a seperate file for global constants to not reset any local file used by
 # another installation.
-echo "export DOTFILES=$DOTFILES" >$DOTFILES/.local/constants
-source $DOTFILES/.local/constants
+echo "export DOTFILES=$DOTFILES" >"$DOTFILES/.local/constants"
+# shellcheck source=.local/constants
+source "$DOTFILES/.local/constants"
 
 # Declare a table of install scripts
 declare -A install_scripts=(
@@ -31,10 +32,10 @@ declare -A install_scripts_opts=(
 )
 
 # Run provided install scripts
-if [[ ! -z $1 && ! -z "${install_scripts["$1"]}" ]]; then
+if [[ -n $1 && -n "${install_scripts["$1"]}" ]]; then
   echo -e "\e[1mStarting $1 installation process...\e[0m\n"
   chmod +x "${install_scripts["$1"]}"
-  ${install_scripts["$1"]} $@
+  ${install_scripts["$1"]} "$@"
 # Run all scripts on -a or --all
 elif [[ $1 == "-a" || $1 == "--all" ]]; then
   for script in "${!install_scripts[@]}"; do
