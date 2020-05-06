@@ -256,6 +256,7 @@ Plug '~/.fzf'
 Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
 Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
 
+Plug 'junegunn/vim-peekaboo'                " Show register contents
 Plug 'junegunn/goyo.vim'                    " Distraction free writing
 Plug 'junegunn/limelight.vim'               " Focus text with goyo
 
@@ -390,6 +391,7 @@ let g:ale_hover_to_preview = 1
 
 let g:ale_writegood_options = '--no-passive'
 
+
 "#--------------------------------------
 "# CoC (Conquerer of completion)
 "#--------------------------------------
@@ -407,6 +409,7 @@ endfunction
 
 nnoremap <leader>g :call CocAction('jumpDefinition', 'drop')<CR>
 nnoremap <silent> <leader>d <Plug>(coc-references)
+
 
 "#--------------------------------------
 "# Rainbow parentheses
@@ -510,7 +513,7 @@ let g:startify_bookmarks = [
 "#--------------------------------------
 "# Ultisnips
 "#--------------------------------------
-let g:UltiSnipsSnippetsDirectories = ["~/dotfiles/UltiSnips", "UltiSnips"]
+let g:UltiSnipsSnippetsDirectories = [$DOTFILES . "/UltiSnips", "UltiSnips"]
 let g:UltiSnipsExpandTrigger= "<c-u>"
 
 
