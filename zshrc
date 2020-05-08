@@ -120,7 +120,7 @@ alias ghc="gh pr checkout"
 
 # Programs
 alias gotop="gotop-cjbassi --color=monokai -p -b"
-[ -x $(command -v ccat) ] && alias cat='ccat -G Keyword="darkgreen" -G Type="darkblue" -G Punctuation="lightgray" -G Plaintext="reset" -G Comment="darkgray"'
+[ $(command -v ccat) ] && alias cat='ccat -G Keyword="darkgreen" -G Type="darkblue" -G Punctuation="lightgray" -G Plaintext="reset" -G Comment="darkgray"'
 alias ocat="cat"
 
 # Open modified files
