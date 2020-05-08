@@ -39,6 +39,7 @@ if [ -f "/etc/debian_version" ]; then
   [ -x $(command -v autojump) ] && . /usr/share/autojump/autojump.sh
 fi
 
+# Source FZF if installed
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # use ripgrep for fzf
@@ -53,7 +54,7 @@ source_plugin() {
   if [[ ! -z $2 ]]; then
     source_file=$2
   fi
-  [[ -d $ZSH_PLUGINS/$1 ]] && source $ZSH_PLUGINS/$1/$source_file
+  [[ -d $ZSH_PLUGINS/$1 ]] && source "$ZSH_PLUGINS/$1/$source_file"
 }
 
 
@@ -119,7 +120,7 @@ alias ghc="gh pr checkout"
 
 # Programs
 alias gotop="gotop-cjbassi --color=monokai -p -b"
-alias cat='ccat -G Keyword="darkgreen" -G Type="darkblue" -G Punctuation="lightgray" -G Plaintext="reset" -G Comment="darkgray"'
+[ -x $(command -v ccat) ] && alias cat='ccat -G Keyword="darkgreen" -G Type="darkblue" -G Punctuation="lightgray" -G Plaintext="reset" -G Comment="darkgray"'
 alias ocat="cat"
 
 # Open modified files

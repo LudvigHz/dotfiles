@@ -372,7 +372,7 @@ let g:ale_linters = {
       \'typescriptreact': ['tsserver', 'eslint'],
       \'javascript': ['eslint', 'ternjs', 'flow'],
       \'jsx': ['stylelint'],
-      \'sh': ['shell', 'shellcheck'],
+      \'sh': ['shell', 'shellcheck', 'language_server'],
       \'bash': ['shell', 'shellcheck'],
       \'zsh': ['shell']
 \}
@@ -407,8 +407,28 @@ function! s:show_documentation()
   endif
 endfunction
 
-nnoremap <leader>g :call CocAction('jumpDefinition', 'drop')<CR>
 nnoremap <silent> <leader>d <Plug>(coc-references)
+
+
+"#--------------------------------------
+"# Jump to definition (Ale & CoC)
+"#--------------------------------------
+
+" Custom funcion for jump to definition.
+" Will try jump to definition in order:
+" coc -> ale
+function! JumpToDefinition()
+  call CocActionAsync('jumpDefinition')
+  sleep 200m
+  let lastMsg = execute("1messages")
+  if lastMsg =~ "Definition provider not found"
+    redraw
+    echom ""
+    execute "ALEGoToDefinition"
+  endif
+endfunction
+
+nmap <leader>g :call JumpToDefinition()<CR>
 
 
 "#--------------------------------------
@@ -453,6 +473,7 @@ set signcolumn=yes
 let g:gitgutter_override_sign_column_highlight = 1
 hi VertSplit ctermbg=235 ctermfg=235
 hi SignColumn ctermbg=235 ctermfg=235
+hi! link SignColumn LineNr
 hi GitGutterAdd ctermbg=235 ctermfg=34
 hi GitGutterChange ctermbg=235 ctermfg=220
 hi GitGutterDelete ctermbg=235 ctermfg=160
