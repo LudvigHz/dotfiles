@@ -235,10 +235,8 @@ compload() {
   setopt extendedglob local_options
   local zcd=${ZDOTDIR:-$HOME}/.zcompdump
   local zcdc="$zcd.zwc"
-  compinit -i -d "$zcd"
-  compdump
-  { rm -f "$zcdc" && zcompile "$zcd" } &!
-  unsetopt extendedglob
+  rm -f "$zcdc" "$zcd"
+  _zpcompinit_custom
 }
 
 # Call zprof (debug)
