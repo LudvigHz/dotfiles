@@ -212,6 +212,8 @@ function! EisvogelRun()
     catch
       try
         execute system('xdg-open ' . generated_file)
+      catch
+        echom "No pdf viewer available to open file"
       endtry
     endtry
     let b:eisvogel_auto_run = 1
@@ -226,6 +228,8 @@ augroup end
 
 " Command to toggle compile on save
 command Eisvogel let b:eisvogel_auto = !get(b:, 'eisvogel_auto', 0)
+" Command to recompile current buffer
+command EisvogelCompile call EisvogelRun()
 
 
 
@@ -328,8 +332,6 @@ endfunction
 
 nnoremap <C-p> :call Custom_files()<CR>
 nnoremap <C-O> :Buffers<CR>
-
-let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.{.git,node_modules,venv}/*"'
 
 " Terminal buffer options for fzf
 autocmd! FileType fzf
