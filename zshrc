@@ -40,11 +40,16 @@ if [ -f "/etc/debian_version" ]; then
 fi
 
 # Source FZF if installed
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+if [ -f ~/.fzf.zsh ]; then
+  source ~/.fzf.zsh
+elif [ -f /usr/share/doc/fzf/examples/completion.zsh ]; then
+  source /usr/share/doc/fzf/examples/key-bindings.zsh
+  source /usr/share/doc/fzf/examples/completion.zsh
+fi
 
 # use ripgrep for fzf
 # Respect gitignores and always ignore module directories
-export FZF_DEFAULT_COMMAND="rg --files -hidden --follow --ignore-vcs -g '!{node_modules,venv,.git}'"
+export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --ignore-vcs -g '!{node_modules,venv,.git}'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 #Plugins
@@ -119,7 +124,7 @@ alias gcm="git checkout master"
 alias ghc="gh pr checkout"
 
 # Programs
-alias gotop="gotop-cjbassi --color=monokai -p -b"
+alias gotop="gotop --color=monokai -p -b"
 [ $(command -v ccat) ] && alias cat='ccat -G Keyword="darkgreen" -G Type="darkblue" -G Punctuation="lightgray" -G Plaintext="reset" -G Comment="darkgray"'
 alias ocat="cat"
 
@@ -157,7 +162,7 @@ asp() {
   if [[ $inst ]]; then
     local name=$(echo $inst | head -n1 | awk '{print $1;}')
     echo $name
-    if [[ ! -z "$(apt list --installed | grep $name)" ]]; then
+    if [[ ! -z "$(apt list --installed | grep -e "^$name/")" ]]; then
       echo -e "\e[1m$name\e[0m is alredy installed: (u)pdate or (r)emove [ENTER to cancel]: \c"
       read option
       if [[ $option == "u" || $option == "U" ]]; then

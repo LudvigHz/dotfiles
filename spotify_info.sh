@@ -1,6 +1,8 @@
 #!/bin/bash
+PLAYER="Plexamp"
+
 P_VERSION="0.1"
-SP_DEST="org.mpris.MediaPlayer2.spotify"
+SP_DEST="org.mpris.MediaPlayer2.$PLAYER"
 SP_PATH="/org/mpris/MediaPlayer2"
 SP_MEMB="org.mpris.MediaPlayer2.Player"
 
@@ -25,4 +27,5 @@ SPOTIFY_METADATA="$(dbus-send                                                 \
 TrackArtist=$(echo "$SPOTIFY_METADATA" | sed -n 's/artist|//p')
 TrackTitle=$(echo "$SPOTIFY_METADATA" | sed -n 's/title|//p')
 
-echo "$TrackArtist - $TrackTitle"
+# Display track name and artist. Limit length
+echo "$TrackArtist - $TrackTitle" | cut -c 1-35

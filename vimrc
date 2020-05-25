@@ -68,7 +68,7 @@ set wildmenu
 set wildmode=full
 
 " Retain cursor position when switching buffers
-:autocmd BufEnter * silent! normal! g`""
+":autocmd BufEnter * silent! normal! g`""
 
 
 "#--------------------------------------
@@ -256,8 +256,20 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'vim-airline/vim-airline'              " Status bar
 Plug 'ryanoasis/vim-devicons'               " devicons for all icon support (requires nerdfont)
-Plug '~/.fzf'
 Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
+if filereadable('~/.fzf')
+  " For git installations
+  Plug '~/.fzf'
+  let g:fzf_installed = 1
+elseif filereadable('/usr/share/doc/fzf/examples/fzf.vim')
+  " For debian installations with fzf installed through apt
+  source /usr/share/doc/fzf/examples/fzf.vim
+  let g:fzf_installed = 1
+else
+  " If fzf is not installed, can fall back to Vexplore
+  let g:fzf_installed = 0
+endif
+
 Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
 
 Plug 'junegunn/vim-peekaboo'                " Show register contents
@@ -268,15 +280,13 @@ Plug 'mattn/emmet-vim'
 Plug 'dense-analysis/ale'                   " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
 Plug 'gruvbox-community/gruvbox'            " Standard color scheme
-Plug 'gilgigilgil/anderson.vim'             " Alternate color scheme
+Plug 'gilgigilgil/anderson.vim'             " Alternate color schemes
 Plug 'srcery-colors/srcery-vim'
 Plug 'sainnhe/gruvbox-material'
 " coc
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
-Plug 'pangloss/vim-javascript'              " JS support
-Plug 'prettier/vim-prettier'                " File formatting
 Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
 Plug 'tpope/vim-repeat'                     " Repeat plugin commands
@@ -290,10 +300,13 @@ Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
 Plug 'mhinz/vim-startify'                   " Fancy start screen
 Plug 'svermeulen/vim-yoink'                 " Yank utils
 
-" LaTeX plugins
+" LaTeX and snippets
 Plug 'lervag/vimtex'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+
+" C#
+Plug 'OmniSharp/omnisharp-vim'
 
 call plug#end()
 
@@ -322,6 +335,10 @@ nnoremap <leader>u :UndotreeToggle<CR>
 "# Fzf
 "#--------------------------------------
 function! Custom_files()
+  if !get(g:, 'fzf_installed')
+    call ToggleVExplorer()
+    return
+  endif
   let git_dir = substitute(system('git rev-parse --show-toplevel'), '\n\+$', '', '')
   if isdirectory(git_dir)
     :GFiles
@@ -365,7 +382,8 @@ let g:ale_fixers = {
             \'sh': ['shfmt'],
             \'bash': ['shfmt'],
             \'zsh': ['shfmt'],
-            \'go': ['gofmt']
+            \'go': ['gofmt'],
+            \'cs': ['uncrustify']
 \}
 
 let g:ale_linters = {
@@ -376,7 +394,8 @@ let g:ale_linters = {
       \'jsx': ['stylelint'],
       \'sh': ['shell', 'shellcheck', 'language_server'],
       \'bash': ['shell', 'shellcheck'],
-      \'zsh': ['shell']
+      \'zsh': ['shell'],
+      \'cs': ['OmniSharp']
 \}
 
 let g:nvim_typescript#diagnostics_enable = 0
