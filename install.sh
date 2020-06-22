@@ -18,6 +18,7 @@ source "$DOTFILES/.local/constants"
 # Declare a table of install scripts
 declare -A install_scripts=(
   ["zsh"]="$DOTFILES/install/zsh.sh"
+  ["zsh-plugins"]="$DOTFILES/install/zsh_plugins.sh"
   ["zsh-update"]="$DOTFILES/install/zsh_update.sh"
   ["vim"]="$DOTFILES/install/vim.sh"
   ["tmux"]="$DOTFILES/install/tmux.sh"

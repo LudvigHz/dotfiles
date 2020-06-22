@@ -138,7 +138,10 @@ set pastetoggle=<F2>
 "# Undos
 "#--------------------------------------
 set undofile
-set undodir=$HOME/.vim/undo
+set undodir=$HOME/vim/undo
+if isdirectory($HOME . "/vim/undo")
+  call system("bash -c \"mkdr -p " . $HOME . "/vim/undo\"")
+endif
 set undolevels=1000
 set undoreload=10000
 
@@ -334,20 +337,21 @@ nnoremap <leader>u :UndotreeToggle<CR>
 "#--------------------------------------
 "# Fzf
 "#--------------------------------------
-function! Custom_files()
+function! CustomFiles()
   if !get(g:, 'fzf_installed')
     call ToggleVExplorer()
     return
   endif
   let git_dir = substitute(system('git rev-parse --show-toplevel'), '\n\+$', '', '')
   if isdirectory(git_dir)
-    :GFiles
+    " Include untracked files
+    :GFiles -co --exclude-standard
   else
     :Files
   endif
 endfunction
 
-nnoremap <C-p> :call Custom_files()<CR>
+nnoremap <C-p> :call CustomFiles()<CR>
 nnoremap <C-O> :Buffers<CR>
 
 " Terminal buffer options for fzf
@@ -428,14 +432,14 @@ function! s:show_documentation()
   endif
 endfunction
 
-nnoremap <silent> <leader>d <Plug>(coc-references)
+nmap <silent> <leader>d <Plug>(coc-references)
 
 
 "#--------------------------------------
 "# Jump to definition (Ale & CoC)
 "#--------------------------------------
 
-" Custom funcion for jump to definition.
+" Custom function for jump to definition.
 " Will try jump to definition in order:
 " coc -> ale
 function! JumpToDefinition()
@@ -567,10 +571,22 @@ nmap p <plug>(YoinkPaste_p)
 nmap P <plug>(YoinkPaste_P)
 
 
+"#--------------------------------------
+"# OmniSharp
+"#--------------------------------------
+let g:OmniSharp_server_path = '/mnt/c/OmniSharp/omnisharp.win-x64/OmniSharp.exe'
+let g:OmniSharp_translate_cygwin_wsl = 1
+let g:OmniSharp_server_stdio = 1
+let g:OmniSharp_selector_ui = 'fzf'    " Use fzf.vim
+
+augroup OmniSharp
+  autocmd! FileType cs nnoremap <silent> K :OmniSharpDocumentation<CR>
+  autocmd FileType cs nnoremap <silent> <leader>g :OmniSharpGotoDefinition<CR>
+  autocmd BufWritePost OmniSharpCodeFormat
+augroup END
+
 " Testing
 if has('nvim') && exists('&winblend')
-  " colorscheme gruvbox-material
-  let g:airline_theme = 'gruvbox_material'
   set winblend=8
 
   hi NormalFloat guibg=235

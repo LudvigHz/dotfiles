@@ -144,6 +144,8 @@ alias copy="xclip -sel clip"
 alias asciicast2gif="docker run --rm -v $(pwd):/data asciinema/asciicast2gif"
 
 
+#alias dotnet="dotnet.exe"
+
 
 # ---------------------------------------------------------
 # Functions
@@ -232,6 +234,14 @@ _zpcompinit_custom() {
 }
 
 _zpcompinit_custom
+
+_dotnet_zsh_complete() {
+  local completions=("$(dotnet complete "$words")")
+  reply=( "${(ps:\n:)completions}"  )
+}
+
+compctl -K _dotnet_zsh_complete dotnet
+
 
 
 # Reload completions. Useful for loading new completions.
