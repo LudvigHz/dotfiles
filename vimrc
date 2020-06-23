@@ -138,9 +138,9 @@ set pastetoggle=<F2>
 "# Undos
 "#--------------------------------------
 set undofile
-set undodir=$HOME/vim/undo
-if isdirectory($HOME . "/vim/undo")
-  call system("bash -c \"mkdr -p " . $HOME . "/vim/undo\"")
+set undodir=$HOME/.vim/undo
+if !isdirectory(&undodir)
+  call system("bash -c \"mkdir -p " . &undodir . "\"")
 endif
 set undolevels=1000
 set undoreload=10000
@@ -578,11 +578,14 @@ let g:OmniSharp_server_path = '/mnt/c/OmniSharp/omnisharp.win-x64/OmniSharp.exe'
 let g:OmniSharp_translate_cygwin_wsl = 1
 let g:OmniSharp_server_stdio = 1
 let g:OmniSharp_selector_ui = 'fzf'    " Use fzf.vim
+let g:OmniSharp_highlighting = 2
+set previewheight=10
 
 augroup OmniSharp
-  autocmd! FileType cs nnoremap <silent> K :OmniSharpDocumentation<CR>
-  autocmd FileType cs nnoremap <silent> <leader>g :OmniSharpGotoDefinition<CR>
-  autocmd BufWritePost OmniSharpCodeFormat
+  autocmd!
+  autocmd FileType cs nnoremap <buffer> <silent> K :OmniSharpDocumentation<CR>
+  autocmd FileType cs nnoremap <buffer> <silent> <leader>g :OmniSharpGotoDefinition<CR>
+  autocmd BufWritePre <buffer> :OmniSharpCodeFormat
 augroup END
 
 " Testing
