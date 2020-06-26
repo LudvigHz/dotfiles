@@ -49,7 +49,7 @@ fi
 
 # use ripgrep for fzf
 # Respect gitignores and always ignore module directories
-export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --ignore-vcs -g '!{node_modules,venv,.git}'"
+export FZF_DEFAULT_COMMAND="rg --files --follow --ignore-vcs -g '!{node_modules,venv}'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 #Plugins
