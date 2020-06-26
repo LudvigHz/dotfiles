@@ -149,6 +149,13 @@ alias asciicast2gif="docker run --rm -v $(pwd):/data asciinema/asciicast2gif"
 # Functions
 # ---------------------------------------------------------
 
+# dots
+# Run the dotfiles script from anywhere
+dots() {
+  cd "$DOTFILES" && ./install.sh $@
+  cd - >>/dev/null
+}
+
 # Read MarkDown
 rmd() {
   pandoc $1 | lynx -stdin

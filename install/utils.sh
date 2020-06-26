@@ -38,8 +38,8 @@ update_plugin() {
   if [[ -d "$ZSH_PLUGINS/$plugin_name" ]]; then
     echo -e "\e[1mLooking for changes in $1\e[0m"
     git -C "$ZSH_PLUGINS/$plugin_name" remote update -p >>/dev/null
-    _local="$(git -C "$ZSH_PLUGINS/$plugin_name" rev-parse HEAD)"
-    _remote="$(git -C "$ZSH_PLUGINS/$plugin_name" rev-parse '@{u}')"
+    _local="$(git -C "$ZSH_PLUGINS/$plugin_name" rev-parse HEAD >>/dev/null)"
+    _remote="$(git -C "$ZSH_PLUGINS/$plugin_name" rev-parse '@{u}' >>/dev/null)"
     if [[ "$_local" != "$_remote" ]]; then
       echo -e "Fetching updates...    \c"
       git -C "$ZSH_PLUGINS/$plugin_name" merge --ff-only '@{u}' >>/dev/null
@@ -79,7 +79,7 @@ check_install() {
     echo -e "\e[1m$1\e[0m is not installed."
     echo -e "\e[0m Do you wish to install it? [Y/n].\c"
     read -r option
-    if [[ $option == '' || $option == 'y' ]]; then
+    if [[ "$option" == "" || "$option" == "y" ]]; then
       "$DOTFILES/install/cli_tools.sh" -n "$1"
     else
       if [[ $2 == "-e" ]]; then
