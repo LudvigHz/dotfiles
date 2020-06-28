@@ -33,11 +33,11 @@ vcs_prompt_info() {
     # add indicators to prompt
     VCS_INFO="%F{green}${VCS_SYMBOL_BRANCH} %F{cyan}${VCS_INFO_BRANCH}%f "
 
-    if [ ! -z "$VCS_INFO_AHEAD" ]; then
+    if [ -n "$VCS_INFO_AHEAD" ]; then
       VCS_INFO+="${VCS_SYMBOL_AHEAD} ${VCS_INFO_AHEAD} "
     fi
 
-    if [ ! -z "$VCS_INFO_BEHIND" ]; then
+    if [ -n "$VCS_INFO_BEHIND" ]; then
       VCS_INFO+="${VCS_SYMBOL_BEHIND} ${VCS_INFO_BEHIND} "
     fi
 
