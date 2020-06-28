@@ -8,7 +8,9 @@ jobs:
         name: Run shellcheck
         with:
           check_together: yes
-          ignore: '**/*.zsh'
+          ignore: 'prompt.zsh zshrc zshenv screenshots'
+        env:
+          SHELLCHECK_OPTS: -e 1091
       - uses: ludvighz/vint-action@master
         name: Lint vimscript
         with:

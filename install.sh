@@ -12,7 +12,7 @@ fi
 # Create a seperate file for global constants to not reset any local file used by
 # another installation.
 echo "export DOTFILES=$DOTFILES" >"$DOTFILES/.local/constants"
-# shellcheck source=.local/constants
+# shellcheck disable=SC1090
 source "$DOTFILES/.local/constants"
 
 # Declare a table of install scripts

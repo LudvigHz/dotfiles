@@ -1,7 +1,6 @@
 #!/bin/bash
 PLAYER="Plexamp"
 
-P_VERSION="0.1"
 SP_DEST="org.mpris.MediaPlayer2.$PLAYER"
 SP_PATH="/org/mpris/MediaPlayer2"
 SP_MEMB="org.mpris.MediaPlayer2.Player"
