@@ -6,6 +6,9 @@ jobs:
       - uses: actions/checkout@v1
       - uses: ludeeus/action-shellcheck@master
         name: Run shellcheck
+        with:
+          check_together: yes
+          ignore: '**/*.zsh'
       - uses: ludvighz/vint-action@master
         name: Lint vimscript
         with:
