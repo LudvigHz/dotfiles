@@ -4,9 +4,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: ludeeus/shellcheck@latest
+      - uses: ludeeus/action-shellcheck@master
         name: Run shellcheck
-      - uses: ludvighz/vint-action@v1
+      - uses: ludvighz/vint-action@master
         name: Lint vimscript
         with:
           path: vimrc
