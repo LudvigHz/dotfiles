@@ -16,11 +16,15 @@ jobs:
         env:
           SHELLCHECK_OPTS: -e 1091
 
-  #build:
-    #strategy:
-      #matrix:
-        #os: [ubuntu-20.04, fedora-32, macos-latest]
-    #steps:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, fedora-32, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Complete install
+        run: ./install.sh -a
 
 on:
   push:
