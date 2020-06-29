@@ -8,13 +8,13 @@ jobs:
         name: Lint vimscript
         with:
           path: vimrc
-      - uses: ludeeus/action-shellcheck@master
-        name: Run shellcheck
-        with:
-          check_together: yes
-          ignore: 'prompt.zsh zshrc zshenv screenshots'
-        env:
-          SHELLCHECK_OPTS: -e 1091
+      #- uses: ludeeus/action-shellcheck@master
+        #name: Run shellcheck
+        #with:
+          #check_together: yes
+          #ignore: 'prompt.zsh zshrc zshenv screenshots'
+        #env:
+          #SHELLCHECK_OPTS: -e 1091
 
   build:
     strategy:
