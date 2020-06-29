@@ -16,15 +16,25 @@ jobs:
         #env:
           #SHELLCHECK_OPTS: -e 1091
 
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-20.04, macos-latest]
-    runs-on: ${{ matrix.os }}
+  build-ubuntu:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Complete install
+      - name: Install deps
+        run: ./install.sh cli-tools -a -f
+      - name: Run install script
         run: ./install.sh -a
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install bash version
+        run: brew install bash
+      - name: Install deps
+        run: ./install.sh cli-tools -a -f -u brew
+      - name: Run install script
+        run: ./install.sh -a -u brew
 
 on:
   push:
