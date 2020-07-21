@@ -145,6 +145,10 @@ endif
 set undolevels=1000
 set undoreload=10000
 
+if !isdirectory(&undodir)
+  call system("bash -c \"mkdir -p " . &undodir . "\"")
+endif
+
 
 "#--------------------------------------
 "# Spellcheck
@@ -282,10 +286,13 @@ Plug 'junegunn/limelight.vim'               " Focus text with goyo
 Plug 'mattn/emmet-vim'
 Plug 'dense-analysis/ale'                   " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
+
+" Color schemes
 Plug 'gruvbox-community/gruvbox'            " Standard color scheme
 Plug 'gilgigilgil/anderson.vim'             " Alternate color schemes
 Plug 'srcery-colors/srcery-vim'
 Plug 'sainnhe/gruvbox-material'
+
 " coc
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
@@ -295,6 +302,7 @@ Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
 Plug 'tpope/vim-repeat'                     " Repeat plugin commands
 Plug 'tpope/vim-vinegar'                    " netrw tweaks
 Plug 'tpope/vim-sleuth'                     " Auto set tab width based on buffer
+
 Plug 'mbbill/undotree'                      " Undo tree
 Plug 'scrooloose/nerdcommenter'             " Command to comment out code
 Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
@@ -344,7 +352,6 @@ function! CustomFiles()
   endif
   let git_dir = substitute(system('git rev-parse --show-toplevel'), '\n\+$', '', '')
   if isdirectory(git_dir)
-    " Include untracked files
     :GFiles -co --exclude-standard
   else
     :Files
