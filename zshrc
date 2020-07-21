@@ -95,7 +95,7 @@ source_plugin dotenv
 # Path
 # ---------------------------------------------------------
 
-export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:$PATH"
+export PATH="$HOME/dotnet:$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:$PATH:$HOME/bin"
 
 
 # ---------------------------------------------------------
@@ -132,7 +132,7 @@ alias ocat="cat"
 # ACMR = Added || Copied || Modified || Renamed
 alias vd="vim \$(git diff HEAD --name-only --diff-filter=ACMR)"
 alias vds="vim \$(git diff --staged --name-only --diff-filter=ACMR)"
-alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=CMR)"
+alias vdc="vim \$(git diff HEAD --name-only --diff-filter=CMR)"
 
 
 # Clipboard
@@ -258,3 +258,4 @@ compload() {
 #zprof
 #
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
+export DOCKER_HOST=tcp://localhost:2375

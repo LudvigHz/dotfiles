@@ -581,11 +581,15 @@ let g:OmniSharp_selector_ui = 'fzf'    " Use fzf.vim
 let g:OmniSharp_highlighting = 2
 set previewheight=10
 
+fun! Omnisharp_format()
+  autocmd BufWritePre <buffer> :OmniSharpCodeFormat
+endfun
+
 augroup OmniSharp
   autocmd!
   autocmd FileType cs nnoremap <buffer> <silent> K :OmniSharpDocumentation<CR>
   autocmd FileType cs nnoremap <buffer> <silent> <leader>g :OmniSharpGotoDefinition<CR>
-  autocmd BufWritePre <buffer> :OmniSharpCodeFormat
+  autocmd FileType cs call Omnisharp_format()
 augroup END
 
 " Testing
