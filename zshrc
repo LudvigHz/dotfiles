@@ -95,7 +95,7 @@ source_plugin dotenv
 # Path
 # ---------------------------------------------------------
 
-export PATH="$HOME/dotnet:$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:$PATH:$HOME/bin"
+export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:$PATH:$HOME/bin"
 
 
 # ---------------------------------------------------------
@@ -266,3 +266,4 @@ compload() {
 #
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 export DOCKER_HOST=tcp://localhost:2375
+export DOTNET_ROOT=/usr/share/dotnet
