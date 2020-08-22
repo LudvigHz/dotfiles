@@ -217,7 +217,7 @@ function! EisvogelRun()
       try
         execute system('xdg-open ' . generated_file)
       catch
-        echom "No pdf viewer available to open file"
+        echom 'No pdf viewer available to open file'
       endtry
     endtry
     let b:eisvogel_auto_run = 1
@@ -299,6 +299,7 @@ Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
 Plug 'tpope/vim-repeat'                     " Repeat plugin commands
 Plug 'tpope/vim-vinegar'                    " netrw tweaks
 Plug 'tpope/vim-sleuth'                     " Auto set tab width based on buffer
+Plug 'tpope/vim-obsession'                  " Session management
 
 Plug 'mbbill/undotree'                      " Undo tree
 Plug 'scrooloose/nerdcommenter'             " Command to comment out code
@@ -307,14 +308,12 @@ Plug 'flowtype/vim-flow'                    " Flow support
 Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
 Plug 'mhinz/vim-startify'                   " Fancy start screen
 Plug 'svermeulen/vim-yoink'                 " Yank utils
+Plug 'tmux-plugins/vim-tmux'                " tmux.conf editing features
 
 " LaTeX and snippets
 Plug 'lervag/vimtex'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-
-" C#
-Plug 'OmniSharp/omnisharp-vim'
 
 call plug#end()
 
@@ -449,11 +448,11 @@ nnoremap <silent> <leader>d <Plug>(coc-references)
 function! JumpToDefinition()
   call CocActionAsync('jumpDefinition')
   sleep 200m
-  let lastMsg = execute("1messages")
-  if lastMsg =~ "Definition provider not found"
+  let lastMsg = execute('1messages')
+  if lastMsg =~? 'Definition provider not found'
     redraw
-    echom ""
-    execute "ALEGoToDefinition"
+    echom ''
+    execute 'ALEGoToDefinition'
   endif
 endfunction
 
@@ -563,8 +562,8 @@ let g:startify_bookmarks = [
 "#--------------------------------------
 "# Ultisnips
 "#--------------------------------------
-let g:UltiSnipsSnippetsDirectories = [$DOTFILES . "/UltiSnips", "UltiSnips"]
-let g:UltiSnipsExpandTrigger= "<c-u>"
+let g:UltiSnipsSnippetsDirectories = [$DOTFILES . '/UltiSnips', 'UltiSnips']
+let g:UltiSnipsExpandTrigger= '<c-u>'
 
 
 
@@ -574,6 +573,11 @@ let g:UltiSnipsExpandTrigger= "<c-u>"
 nmap p <plug>(YoinkPaste_p)
 nmap P <plug>(YoinkPaste_P)
 
+
+"#--------------------------------------
+"# VimTeX
+"#--------------------------------------
+let g:tex_flavor = 'latex'
 
 " Testing
 if has('nvim') && exists('&winblend')

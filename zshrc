@@ -1,9 +1,9 @@
 # Run tmux if exists
-   if command -v tmux>/dev/null; then
-       [ -z $TMUX ] && exec tmux
-   else
-       echo “tmux not installed on this system”
-   fi
+if command -v tmux>/dev/null; then
+  [ -z $TMUX ] && exec tmux
+else
+  echo "tmux not installed on this system"
+fi
 
 # zmodload zsh/zprof
 
@@ -144,6 +144,9 @@ alias copy="xclip -sel clip"
 alias asciicast2gif="docker run --rm -v $(pwd):/data asciinema/asciicast2gif"
 
 
+# Ansible
+alias av="ansible-vault"
+alias ap="ansible-playbook"
 
 # ---------------------------------------------------------
 # Functions
