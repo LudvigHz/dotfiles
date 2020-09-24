@@ -95,7 +95,7 @@ source_plugin dotenv
 # Path
 # ---------------------------------------------------------
 
-export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
 
 
 # ---------------------------------------------------------

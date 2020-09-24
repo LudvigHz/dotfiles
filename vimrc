@@ -82,7 +82,7 @@ let g:netrw_altv = 1
 
 " Toggle Vexplore with Ctrl-E
 function! ToggleVExplorer()
-  if exists("t:expl_buf_num")
+  if exists('t:expl_buf_num')
       let expl_win_num = bufwinnr(t:expl_buf_num)
       if expl_win_num != -1
           let cur_win_nr = winnr()
@@ -96,7 +96,7 @@ function! ToggleVExplorer()
   else
       exec '1wincmd w'
       Vexplore
-      let t:expl_buf_num = bufnr("%")
+      let t:expl_buf_num = bufnr('%')
   endif
 endfunction
 map <silent> <leader>e :call ToggleVExplorer()<CR>
@@ -113,7 +113,7 @@ hi statusline guibg=DarkGrey ctermfg=10 guifg=Grey ctermbg=20
 "#--------------------------------------
 "# Keymaps (non-plugin)
 "#--------------------------------------
-let mapleader = ","             " Use ',' as leader
+let mapleader = ','             " Use ',' as leader
 map <Space> :noh<CR>
 
 " Keep selection when indenting in visual mode
@@ -168,7 +168,7 @@ function! Close_gitignore()
     for buffer in copy(getbufinfo())
       let file_ignored = 0
       for oline in readfile(git_dir . '/.gitignore')
-        let line = substitute(oline, '\s|\n|\r', '', "g")
+        let line = substitute(oline, '\s|\n|\r', '', 'g')
         if buffer.name =~ line
           let file_ignored = 1
           break
@@ -192,7 +192,7 @@ endfun
 "# Open current file with xdg-open
 "#--------------------------------------
 function! Open_xdg()
-  let file_uri = expand('%:p')
+  let file_uri = fnameescape(expand('%:p'))
   execute system('xdg-open ' . file_uri)
 endfun
 
@@ -203,16 +203,16 @@ command ShowFile call Open_xdg()
 "# Create pdf from md using eisvogel template
 "#--------------------------------------
 function! EisvogelRun()
-  let generated_file = substitute(expand('%:p'), '.md', '.pdf', '')
+  let generated_file = substitute(fnameescape(expand('%:p')), '.md', '.pdf', '')
   execute system('pandoc '
-        \ . expand('%:p')
+        \ . fnameescape(expand('%:p'))
         \ . ' -o '
         \ . generated_file
-        \ . ' --from markdown --template eisvogel -V lang=en &')
+        \ . ' --from markdown --template eisvogel -V lang=en --listings &')
   " If run for the first time, open the generated pdf in zathura, or another program
   if !get(b:, 'eisvogel_auto_run', 0) && filereadable(generated_file)
     try
-      execute system('zathura ' . generated_file . ' &')
+      execute system(get(g:, 'pdf_viewer', 'xdg-open') . generated_file . ' &')
     catch
       try
         execute system('xdg-open ' . generated_file)
@@ -227,7 +227,7 @@ endfunction
 augroup eisvogel_on_save
   autocmd!
   autocmd FileType markdown let b:eisvogel_auto_run = 0
-  autocmd BufWrite * if get(b:, 'eisvogel_auto', 0) | call EisvogelRun() | endif
+  autocmd BufWritePost * if get(b:, 'eisvogel_auto', 0) | call EisvogelRun() | endif
 augroup end
 
 " Command to toggle compile on save
@@ -261,18 +261,20 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'              " Status bar
 Plug 'ryanoasis/vim-devicons'               " devicons for all icon support (requires nerdfont)
 Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
-if filereadable('~/.fzf')
-  " For git installations
-  Plug '~/.fzf'
-  let g:fzf_installed = 1
-elseif filereadable('/usr/share/doc/fzf/examples/fzf.vim')
-  " For debian installations with fzf installed through apt
-  source /usr/share/doc/fzf/examples/fzf.vim
-  let g:fzf_installed = 1
-else
-  " If fzf is not installed, can fall back to Vexplore
-  let g:fzf_installed = 0
-endif
+"if filereadable('~/.fzf')
+  "" For git installations
+  "Plug '~/.fzf'
+  "let g:fzf_installed = 1
+"elseif filereadable('/usr/share/doc/fzf/examples/fzf.vim')
+  "" For debian installations with fzf installed through apt
+  "source /usr/share/doc/fzf/examples/fzf.vim
+  "let g:fzf_installed = 1
+"else
+  "" If fzf is not installed, can fall back to Vexplore
+  "let g:fzf_installed = 0
+"endif
+Plug 'junegunn/fzf', {'do': { -> fzf#install() }}
+let g:fzf_installed = 1
 
 Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
 
@@ -294,6 +296,7 @@ Plug 'sainnhe/gruvbox-material'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
+Plug 'Procrat/oz.vim'
 Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
 Plug 'tpope/vim-repeat'                     " Repeat plugin commands
@@ -356,6 +359,8 @@ endfunction
 
 nnoremap <C-p> :call CustomFiles()<CR>
 nnoremap <C-O> :Buffers<CR> -co --exclude-standard
+
+let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'batcat --color=always --style=header,grid --line-range :300 {}'"
 
 " Terminal buffer options for fzf
 autocmd! FileType fzf
