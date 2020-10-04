@@ -66,9 +66,10 @@ set number                      " Show line numbers
 set wildcharm=<Tab>             " Use Tab for wildmenu selection
 set wildmenu
 set wildmode=full
+set guicursor=n-v-c:block-Cursor
 
 " Retain cursor position when switching buffers
-":autocmd BufEnter * silent! normal! g`""
+:autocmd BufEnter * silent! normal! g`""
 
 
 "#--------------------------------------
@@ -296,7 +297,9 @@ Plug 'srcery-colors/srcery-vim'
 Plug 'sainnhe/gruvbox-material'
 
 " coc
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-lua/completion-nvim'
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
 Plug 'Procrat/oz.vim'
@@ -433,22 +436,25 @@ let g:ale_c_parse_makefile = 1
 let g:ale_c_clangformat_options = '--style=Mozilla'
 
 
+"--------------------------------------
+"# LSP
 "#--------------------------------------
-"# CoC (Conquerer of completion)
-"#--------------------------------------
-inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
+set omnifunc=v:lua.vim.lsp.omnifunc
+autocmd BufEnter * lua require'completion'.on_attach()
+set completeopt=menuone,noinsert,noselect
+set shortmess+=c
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+lua <<EOF
+require'lspconfig'.vimls.setup{}
 
-nnoremap <silent> <leader>d <Plug>(coc-references)
+require'lspconfig'.ccls.setup{}
+
+require'lspconfig'.tsserver.setup{}
+
+EOF
 
 
 "#--------------------------------------
@@ -593,33 +599,3 @@ nmap P <plug>(YoinkPaste_P)
 "# VimTeX
 "#--------------------------------------
 let g:tex_flavor = 'latex'
-
-" Testing
-if has('nvim') && exists('&winblend')
-  " colorscheme gruvbox-material
-  let g:airline_theme = 'gruvbox_material'
-  set winblend=8
-
-  hi NormalFloat guibg=235
-  if exists('g:fzf_colors.bg')
-    call remove(g:fzf_colors, 'bg')
-  endif
-
-  if stridx($FZF_DEFAULT_OPTS, '--border') == -1
-    let $FZF_DEFAULT_OPTS .= ' --border'
-  endif
-
-  function! FloatingFZF()
-    let width = float2nr(&columns * 0.8)
-    let height = float2nr(&lines * 0.6)
-    let opts = { 'relative': 'editor',
-               \ 'row': (&lines - height) / 2,
-               \ 'col': (&columns - width) / 2,
-               \ 'width': width,
-               \ 'height': height }
-
-    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
-  endfunction
-
-  let g:fzf_layout = { 'window': 'call FloatingFZF()' }
-endif
