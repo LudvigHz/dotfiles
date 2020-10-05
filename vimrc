@@ -279,10 +279,7 @@ let g:fzf_installed = 1
 Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
 
 Plug 'junegunn/vim-peekaboo'                " Show register contents
-"Plug 'junegunn/goyo.vim'                    " Distraction free writing
-"Plug 'junegunn/limelight.vim'               " Focus text with goyo
 
-"Plug 'mattn/emmet-vim'
 Plug 'dense-analysis/ale'                   " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
 
@@ -302,7 +299,6 @@ Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
 Plug 'tpope/vim-repeat'                     " Repeat plugin commands
 Plug 'tpope/vim-vinegar'                    " netrw tweaks
 Plug 'tpope/vim-sleuth'                     " Auto set tab width based on buffer
-"Plug 'tpope/vim-obsession'                  " Session management
 
 Plug 'mbbill/undotree'                      " Undo tree
 Plug 'scrooloose/nerdcommenter'             " Command to comment out code
