@@ -391,7 +391,7 @@ let g:ale_fixers = {
             \'bash': ['shfmt'],
             \'zsh': ['shfmt'],
             \'go': ['gofmt'],
-            \'cs': ['uncrustify']
+            \'scala': ['scalafmt']
 \}
 
 let g:ale_linters = {
@@ -403,7 +403,7 @@ let g:ale_linters = {
       \'sh': ['shell', 'shellcheck', 'language_server'],
       \'bash': ['shell', 'shellcheck'],
       \'zsh': ['shell'],
-      \'cs': ['OmniSharp']
+      \'scala': ['metals']
 \}
 
 let g:nvim_typescript#diagnostics_enable = 0
@@ -491,6 +491,8 @@ let g:airline#extensions#tabline#left_alt_sep = '|'
 
 " Show buffers in top bar
 let g:airline#extensions#tabline#enabled = 1
+
+" Other airline extensions
 let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#coc#enabled = 1
 

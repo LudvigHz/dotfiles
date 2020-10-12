@@ -148,6 +148,10 @@ alias asciicast2gif="docker run --rm -v $(pwd):/data asciinema/asciicast2gif"
 alias av="ansible-vault"
 alias ap="ansible-playbook"
 
+
+# Sudo vim
+alias svim="sudoedit"
+
 # ---------------------------------------------------------
 # Functions
 # ---------------------------------------------------------
