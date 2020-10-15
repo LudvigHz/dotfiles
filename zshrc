@@ -139,6 +139,9 @@ alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=CMR)"
 # $<some command> | copy
 alias copy="xclip -sel clip"
 
+# XDG open
+alias fm="xdg-open ." # Open file manager
+
 
 # Asciinema to GIF
 alias asciicast2gif="docker run --rm -v $(pwd):/data asciinema/asciicast2gif"
