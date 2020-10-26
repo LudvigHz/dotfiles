@@ -95,7 +95,7 @@ source_plugin dotenv
 # Path
 # ---------------------------------------------------------
 
-export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/texlive/2020/bin/x86_64-linux:/home/ludvig/.local/share/coursier/bin:$PATH"
 
 
 # ---------------------------------------------------------
@@ -132,7 +132,7 @@ alias ocat="cat"
 # ACMR = Added || Copied || Modified || Renamed
 alias vd="vim \$(git diff HEAD --name-only --diff-filter=ACMR)"
 alias vds="vim \$(git diff --staged --name-only --diff-filter=ACMR)"
-alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=CMR)"
+alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=tm)"
 
 
 # Clipboard
