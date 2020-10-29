@@ -178,8 +178,7 @@ asp() {
   local inst=$(apt-cache search "${1:-.}" | eval "fzf -m --header='[apt install]'")
   if [[ $inst ]]; then
     local name=$(echo $inst | head -n1 | awk '{print $1;}')
-    echo $name
-    if [[ ! -z "$(apt list --installed | grep -e "^$name/")" ]]; then
+    if [[ ! -z "$(apt list --installed 2>/dev/null | grep -e "^$name/")" ]]; then
       echo -e "\e[1m$name\e[0m is alredy installed: (u)pdate or (r)emove [ENTER to cancel]: \c"
       read option
       if [[ $option == "u" || $option == "U" ]]; then
