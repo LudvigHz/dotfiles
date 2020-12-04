@@ -1,7 +1,7 @@
 name: Test dotfiles
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v1
       - uses: ludvighz/vint-action@master
@@ -28,7 +28,7 @@ jobs:
         run: ./install.sh -a -f -u apt
 
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-10.15
     steps:
       - uses: actions/checkout@v1
       - name: Install bash version
