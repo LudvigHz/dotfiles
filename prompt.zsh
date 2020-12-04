@@ -5,7 +5,7 @@ autoload -Uz add-zsh-hook
 VCS_SYMBOL_BRANCH=""
 VCS_SYMBOL_AHEAD=""
 VCS_SYMBOL_BEHIND=""
-VCS_SYMBOL_STAGED='●'
+VCS_SYMBOL_STAGED="●"
 VCS_SYMBOL_CONFLICTS=""
 VCS_SYMBOL_UNSTAGED=""
 VCS_SYMBOL_UNTRACKED=""
@@ -24,10 +24,10 @@ vcs_prompt_info() {
 
     VCS_INFO_AHEAD=$(echo $_VCS_INFO_COMMIT_STATUS | awk '{for(i=1;i<=NF;i++) if ($i=="ahead") print $(i+1)}')
     VCS_INFO_BEHIND=$(echo $_VCS_INFO_COMMIT_STATUS | awk '{for(i=1;i<=NF;i++) if ($i=="behind") print $(i+1)}')
-    VCS_INFO_STAGED=$(git diff --cached --numstat 2>/dev/null | wc -l)
-    VCS_INFO_UNSTAGED=$(git diff --name-status 2>/dev/null | wc -l)
-    VCS_INFO_UNTRACKED=$(echo "${_VCS_INFO_STATUS}" | grep "^??" | wc -l)
-    VCS_INFO_CONFLICTS=$(git ls-files --unmerged 2>/dev/null | wc -l)
+    VCS_INFO_STAGED=$(git diff --cached --numstat 2>/dev/null | wc -l | tr -d ' ')
+    VCS_INFO_UNSTAGED=$(git diff --name-status 2>/dev/null | wc -l | tr -d ' ')
+    VCS_INFO_UNTRACKED=$(echo "${_VCS_INFO_STATUS}" | grep "^??" | wc -l | tr -d ' ')
+    VCS_INFO_CONFLICTS=$(git ls-files --unmerged 2>/dev/null | wc -l | tr -d ' ')
     VCS_INFO_STASHED=$(git rev-list --walk-reflogs --count refs/stash 2>/dev/null)
 
     # add indicators to prompt

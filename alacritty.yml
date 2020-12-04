@@ -11,6 +11,8 @@
   # check the local terminfo database and use `alacritty` if it is
   # available, otherwise `xterm-256color` is used.
   # TERM: xterm-256color
+env:
+  TERM: xterm-256color
 
 window:
   # Window dimensions (changes require restart)
@@ -52,7 +54,7 @@ window:
   # Values for `decorations` (macOS only):
   #     - transparent: Title bar, transparent background and title bar buttons
   #     - buttonless: Title bar, transparent background, but no title bar buttons
-  decorations: full
+  decorations: buttonless
 
   # When true, alacritty starts maximized.
   window.startup_mode: window
@@ -86,7 +88,7 @@ font:
     #   - (macOS) Menlo
     #   - (Linux) monospace
     #   - (Windows) Consolas
-    family: Hack Nerd Font Mono
+    family: "Hack Nerd Font Mono"
 
     # The `style` can be specified to pick a specific face.
     style: Regular
@@ -97,7 +99,7 @@ font:
     #
     # If the bold family is not specified, it will fall back to the
     # value specified for the normal font.
-    family: Hack Nerd Font Mono
+    family: "Hack Nerd Font Mono"
 
     # The `style` can be specified to pick a specific face.
     style: Bold
@@ -108,13 +110,13 @@ font:
     #
     # If the italic family is not specified, it will fall back to the
     # value specified for the normal font.
-    family: monospace
+    family: "Hack Nerd Font Mono"
 
     # The `style` can be specified to pick a specific face.
     style: Italic
 
   # Point size
-  size: 11.0
+  size: 12.0
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
@@ -339,19 +341,6 @@ cursor:
 
 # Live config reload (changes require restart)
 live_config_reload: true
-
-# Shell
-#
-# You can set `shell.program` to the path of your favorite shell, e.g. `/bin/fish`.
-# Entries in `shell.args` are passed unmodified as arguments to the shell.
-#
-# Default:
-#   - (Linux/macOS) /bin/bash --login
-#   - (Windows) powershell
-shell:
-  program: /bin/zsh
-#  args:
-#    - --login
 
 
 # Key bindings

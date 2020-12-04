@@ -215,7 +215,13 @@ function! EisvogelRun()
       execute system(get(g:, 'pdf_viewer', 'xdg-open') . generated_file . ' &')
     catch
       try
-        execute system('xdg-open ' . generated_file)
+        if has('macunix')
+          execute system('open ' . generated_file)
+        elseif has('unix')
+          execute system('xdg-open ' . generated_file)
+        else
+          throw 1
+        endif
       catch
         echom 'No pdf viewer available to open file'
       endtry
@@ -311,7 +317,8 @@ Plug 'tmux-plugins/vim-tmux'                " tmux.conf editing features
 
 " LaTeX and snippets
 Plug 'lervag/vimtex'
-Plug 'SirVer/ultisnips'
+Plug 'vim-pandoc/vim-pandoc-syntax'
+"Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
 call plug#end()
@@ -386,6 +393,7 @@ let g:ale_fixers = {
             \'java': ['google_java_format'],
             \'css': ['prettier'],
             \'markdown': ['prettier'],
+            \'pandoc': ['prettier'],
             \'sql': ['sqlfmt'],
             \'sh': ['shfmt'],
             \'bash': ['shfmt'],

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script for installing LudvigHz dotfiles: http://github.com/LudvigHz/dotfiles
 
 # Set dotfiles directory

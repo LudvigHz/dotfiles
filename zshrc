@@ -37,6 +37,8 @@ zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 # shell script.
 if [ -f "/etc/debian_version" ]; then
   [ -x $(command -v autojump) ] && . /usr/share/autojump/autojump.sh
+elif [[ "$OSTYPE" == "darwin"* ]] then
+  [ -x $(command -v autojump) ] && . /usr/local/share/autojump/autojump.zsh
 fi
 
 # Source FZF if installed

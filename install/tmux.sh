@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # shellcheck source=utils.sh
 source "$DOTFILES/install/utils.sh"
