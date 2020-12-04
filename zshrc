@@ -37,7 +37,7 @@ zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 # shell script.
 if [ -f "/etc/debian_version" ]; then
   [ -x $(command -v autojump) ] && . /usr/share/autojump/autojump.sh
-elif [[ "$OSTYPE" == "darwin"* ]] then
+elif [[ "$OSTYPE" == "darwin"* ]]; then
   [ -x $(command -v autojump) ] && . /usr/local/share/autojump/autojump.zsh
 fi
 
@@ -228,6 +228,11 @@ truecolors() {
 
 # Completions not provided by plugins or bundled can be put here
 fpath=("$DOTFILES/.local/completions" $fpath)
+
+# MacOS specific fpath
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  fpath=("/usr/local/share/zsh/site-functions" $fpath)
+fi
 
 _zpcompinit_custom() {
   # Remember to have "skip_global_compinit=1" in $ZDOTDIR:-$HOME/.zshenv

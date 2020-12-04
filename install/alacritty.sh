@@ -8,6 +8,8 @@ check_install alacritty -e
 
 backup_file "$HOME/.config/alacritty/alacritty.yml"
 
+mkdir -p "$HOME/.config/alacritty"
+
 rm "$HOME/.config/alacritty/alacritty.yml"
 
 ln -s "$DOTFILES/alacritty.yml" "$HOME/.config/alacritty/alacritty.yml"

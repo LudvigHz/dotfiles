@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Script for installing LudvigHz dotfiles: http://github.com/LudvigHz/dotfiles
 
+set -eo pipefail
+
 # Set dotfiles directory
 DOTFILES="$(pwd)"
 
