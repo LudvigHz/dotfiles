@@ -32,10 +32,9 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Install bash
-        run: brew install bash && sudo cat "/usr/local/bin/bash" >> /etc/shells && sudo chsh -s /usr/local/bin/bash
+        run: brew install bash && sudo echo "/usr/local/bin/bash" >> /etc/shells && sudo chsh -s /usr/local/bin/bash
       - name: Install deps
         run: ./install.sh cli-tools -a -f -u brew
-        shell:
       - name: Run install script
         run: ./install.sh -a -u brew
 

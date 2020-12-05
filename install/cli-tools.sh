@@ -18,7 +18,7 @@ print_help() {
 # Table of package managers and their install commands
 declare -A installers=(
 
-  ["apt"]="sudo apt-get install -y "
+  ["apt-get"]="sudo apt-get install -y "
   ["pacman"]="sudo pacman -S "
   ["dnf"]="sudo dnf install "
   ["pkg"]="pkg install "
@@ -30,7 +30,7 @@ declare -A installers=(
 
 declare -A updaters=(
 
-  ["apt"]="sudo apt-get update"
+  ["apt-get"]="sudo apt-get update"
   ["pacman"]="sudo pacman -Syy"
   ["dnf"]="echo No need to update"
   ["pkg"]="echo No need to update"
@@ -69,8 +69,7 @@ print_all() {
 
 }
 
-# Function for installing a given utility
-install_program() {
+check_manager() {
 
   if [[ ! $(command -v "$manager") ]]; then
     printf "%s does not seem to be installed on this system\n" "$manager"
@@ -82,32 +81,37 @@ install_program() {
         read -r ans
         if [[ "$ans" == "y" || "$ans" == "Y" ]]; then
           manager="$alternate"
-          printf "Installing using %s...\n" "$manager"
+          printf "Using %s...\n" "$manager"
           break
         fi
       fi
     done
 
-    if [[ $manager != "$alternate" ]]; then
+    if [[ "$manager" != "$alternate" ]]; then
       exit 0
     fi
   fi
+}
 
-  if [[ ! $force ]]; then
-    if [[ $(command -v "${cli_tools["$1"]}") ]]; then
-      printf "%s is already installed, use -f option to force install.\n" "$1"
-    else
-      printf "Installing %s using %s\n\n" "$1" "$manager"
-      eval "${installers["$manager"]} $1"
-    fi
-  else
-    printf "Installing %s using %s\n\n" "$1" "$manager"
-    eval "${installers["$manager"]} $1"
-  fi
+# Run package manager updater
+update_manager() {
+
+  check_manager
+
+  eval "${updaters["$manager"]}"
+}
+
+# Function for installing a given utility
+install_program() {
+
+  printf "Installing %s using %s\n\n" "$@" "$manager"
+  set -o xtrace
+  eval "${installers["$manager"]}" "$@"
+  set +o xtrace
 
 }
 
-manager="apt"
+manager="apt-get"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -152,15 +156,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -n $cli_tool ]]; then
-  # Update package manager before installing
-  eval "${updaters["$manager"]}"
+  update_manager
   install_program "$cli_tool"
 elif [[ $install_all ]]; then
-  # Update package manager before installing
-  eval "${updaters["$manager"]}"
-  for prog in "${!cli_tools[@]}"; do
-    install_program "$prog"
-  done
+  update_manager
+  echo "${cli_tools[@]}"
+  install_program "${cli_tools[@]}"
 else
   print_help
 fi
