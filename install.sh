@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Script for installing LudvigHz dotfiles: http://github.com/LudvigHz/dotfiles
 
+set -eo pipefail
+
 # Set dotfiles directory
 DOTFILES="$(pwd)"
 
@@ -12,13 +14,13 @@ fi
 # Create a seperate file for global constants to not reset any local file used by
 # another installation.
 echo "export DOTFILES=$DOTFILES" >"$DOTFILES/.local/constants"
-# shellcheck source=.local/constants
+# shellcheck disable=SC1090
 source "$DOTFILES/.local/constants"
 
 # Declare a table of install scripts
 declare -A install_scripts=(
   ["zsh"]="$DOTFILES/install/zsh.sh"
-  ["zsh-update"]="$DOTFILES/install/zsh_update.sh"
+  ["zsh-update"]="$DOTFILES/install/zsh_update.zsh"
   ["vim"]="$DOTFILES/install/vim.sh"
   ["tmux"]="$DOTFILES/install/tmux.sh"
   ["urxvt"]="$DOTFILES/install/urxvt.sh"

@@ -23,8 +23,9 @@
 "#                                                         #
 "###########################################################
 "###########################################################
-
+"
 set encoding=UTF-8
+scriptencoding utf-8
 set textwidth=100               " Set line break on 100 chars
 set showmatch                   " Show matching bracket/
 set noswapfile                  " Disable swap files
@@ -257,9 +258,11 @@ command EisvogelCompile call EisvogelRun()
 " -------------------------------------
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-      \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-        autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-        endif
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  augroup Plug
+    autocmd! VimEnter * PlugInstall --sync | source $MYVIMRC
+  augroup END
+endif
 
 
 call plug#begin('~/.vim/plugged')
@@ -333,9 +336,12 @@ let g:gruvbox_improved_warnings = '1'
 let g:gruvbox_contrast_dark = 'medium'
 let g:gruvbox_sign_column = 'NONE'
 
-autocmd! ColorScheme
-autocmd ColorScheme * hi Visual cterm=NONE ctermbg=237 guibg=Grey27
+augroup ColorScheme
+  autocmd! ColorScheme
+  autocmd ColorScheme * hi Visual cterm=NONE ctermbg=237 guibg=Grey27
+augroup END
 hi Visual cterm=NONE ctermbg=237 guibg=Grey27
+hi Search cterm=None ctermbg=237 guibg=Grey32
 
 
 "#--------------------------------------
@@ -366,8 +372,10 @@ nnoremap <C-O> :Buffers<CR> -co --exclude-standard
 let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'batcat --color=always --style=header,grid --line-range :300 {}'"
 
 " Terminal buffer options for fzf
-autocmd! FileType fzf
-autocmd  FileType fzf set noshowmode noruler nonu
+augroup Fzf
+  autocmd! FileType fzf
+  autocmd  FileType fzf set noshowmode noruler nonu
+augroup END
 
 
 "#--------------------------------------
@@ -375,8 +383,10 @@ autocmd  FileType fzf set noshowmode noruler nonu
 "#--------------------------------------
 let g:goyo_width = 110
 
-autocmd! User GoyoEnter Limelight
-autocmd! User GoyoLeave Limelight!
+augroup Goyo
+  autocmd! User GoyoEnter Limelight
+  autocmd! User GoyoLeave Limelight!
+augroup END
 
 
 
@@ -403,6 +413,7 @@ let g:ale_fixers = {
 \}
 
 let g:ale_linters = {
+      \'vim': ['vint'],
       \'python': ['flake8', 'isort', 'jedi'],
       \'typescript': ['tsserver', 'eslint'],
       \'typescriptreact': ['tsserver', 'eslint'],
@@ -458,7 +469,7 @@ function! JumpToDefinition()
   call CocActionAsync('jumpDefinition')
   sleep 200m
   let lastMsg = execute('1messages')
-  if lastMsg =~? 'Definition provider not found'
+  if lastMsg =~# 'Definition provider not found'
     redraw
     echom ''
     execute 'ALEGoToDefinition'
