@@ -105,9 +105,7 @@ update_manager() {
 install_program() {
 
   printf "Installing %s using %s\n\n" "$@" "$manager"
-  set -o xtrace
   eval "${installers["$manager"]}" "$@"
-  set +o xtrace
 
 }
 
@@ -160,8 +158,7 @@ if [[ -n $cli_tool ]]; then
   install_program "$cli_tool"
 elif [[ $install_all ]]; then
   update_manager
-  echo "${cli_tools[@]}"
-  install_program "${cli_tools[@]}"
+  install_program "${!cli_tools[@]}"
 else
   print_help
 fi

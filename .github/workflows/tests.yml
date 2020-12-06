@@ -23,20 +23,20 @@ jobs:
       - name: update
         run: sudo apt update
       - name: Install deps
-        run: ./install.sh cli-tools -a -f
+        run: sudo apt install software-properties-common subversion
       - name: Run install script
-        run: ./install.sh -a -f -u apt
+        run: set -o xtrace && ./install.sh -a -f -u apt
 
   build-macos:
     runs-on: macos-10.15
     steps:
       - uses: actions/checkout@v1
       - name: Install bash
-        run: brew install bash && sudo echo "/usr/local/bin/bash" >> /etc/shells && sudo chsh -s /usr/local/bin/bash
+        run: brew install bash && sudo sh -c 'echo "/usr/local/bin/bash" >> /etc/shells' && sudo chsh -s /usr/local/bin/bash
       - name: Install deps
         run: ./install.sh cli-tools -a -f -u brew
       - name: Run install script
-        run: ./install.sh -a -u brew
+        run: set -o xtrace && ./install.sh -a -u brew
 
 on:
   push:
