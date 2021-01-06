@@ -266,3 +266,8 @@ compload() {
 #zprof
 #
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
+
+# launch gpg-agent with ssh support
+export GPG_TTY="$(tty)"
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+gpgconf --launch gpg-agent
