@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 
 source $DOTFILES/install/utils.sh
 source $DOTFILES/zshrc

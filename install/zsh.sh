@@ -6,7 +6,7 @@ source "$DOTFILES/install/utils.sh"
 check_install zsh -e
 
 echo "Changing login shell to zsh..."
-chsh $USER -s /bin/zsh
+chsh $USER -s "$(which zsh)"
 
 # Set zsh plugin directory
 ZSH_PLUGINS=$DOTFILES/.local/zsh_plugins
@@ -23,5 +23,8 @@ echo "source $DOTFILES/zshrc" >>"$DOTFILES/.local/zsh"
 
 # Source zshenv config from home folder
 echo "source $DOTFILES/zshenv" >"${ZDOTDIR:-$HOME}/.zshenv"
+
+chmod +x "$DOTFILES/install/zsh_plugins.sh"
+"$DOTFILES/install/zsh_plugins.sh"
 
 echo -e "\nInstalling zsh - DONE\n"
