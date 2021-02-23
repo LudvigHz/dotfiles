@@ -97,7 +97,7 @@ source_plugin dotenv
 # Path
 # ---------------------------------------------------------
 
-export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/texlive/2020/bin/x86_64-linux:/home/ludvig/.local/share/coursier/bin:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/texlive/2020/bin/x86_64-linux:/home/ludvig/.local/share/coursier/bin:$HOME/.cabal/bin:$PATH"
 
 
 # ---------------------------------------------------------
@@ -156,6 +156,8 @@ alias ap="ansible-playbook"
 
 # Sudo vim
 alias svim="sudoedit"
+
+alias o=xdg-open
 
 # ---------------------------------------------------------
 # Functions
@@ -221,6 +223,13 @@ truecolors() {
   }'
 }
 
+# Yubikey reload. Will tell gpg-agent to update key ids when using multiple yubikeys with identical
+# gpg keys.
+# Run this when switching yubikey
+ykr() {
+  gpg-connect-agent "scd serialno" "learn --force" /bye
+  echo UPDATESTARTUPTTY | gpg-connect-agent
+}
 
 # ---------------------------------------------------------
 # Compinit (Completion initialization)
@@ -266,6 +275,8 @@ compload() {
 #zprof
 #
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
+
+export LESS='-+F -+S -+X -c'
 
 # launch gpg-agent with ssh support
 export GPG_TTY="$(tty)"
