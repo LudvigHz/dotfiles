@@ -204,7 +204,7 @@ command ShowFile call Open_xdg()
 "#--------------------------------------
 function! EisvogelRun()
   let generated_file = substitute(fnameescape(expand('%:p')), '.md', '.pdf', '')
-  execute system('pandoc '
+  execute system('pandoc --filter pandoc-include-code '
         \ . fnameescape(expand('%:p'))
         \ . ' -o '
         \ . generated_file
@@ -399,7 +399,8 @@ let g:ale_fixers = {
             \'bash': ['shfmt'],
             \'zsh': ['shfmt'],
             \'go': ['gofmt'],
-            \'scala': ['scalafmt']
+            \'scala': ['scalafmt'],
+            \'c': ['clang-format']
 \}
 
 let g:ale_linters = {
