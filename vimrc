@@ -400,7 +400,8 @@ let g:ale_fixers = {
             \'zsh': ['shfmt'],
             \'go': ['gofmt'],
             \'scala': ['scalafmt'],
-            \'c': ['clang-format']
+            \'c': ['clang-format'],
+            \'cpp': ['clang-format']
 \}
 
 let g:ale_linters = {
@@ -412,7 +413,7 @@ let g:ale_linters = {
       \'sh': ['shell', 'shellcheck', 'language_server'],
       \'bash': ['shell', 'shellcheck'],
       \'zsh': ['shell'],
-      \'scala': ['metals']
+      \'scala': ['metals'],
 \}
 
 let g:nvim_typescript#diagnostics_enable = 0
@@ -428,6 +429,7 @@ let g:ale_sign_error = ''
 let g:ale_hover_to_preview = 1
 
 let g:ale_writegood_options = '--no-passive'
+let g:ale_c_parse_makefile = 1
 
 
 "#--------------------------------------
