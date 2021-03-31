@@ -9,9 +9,6 @@ alias ga="git add ."
 alias gc="git checkout"
 alias gcm="git checkout master"
 
-# GitHub
-alias ghc="gh pr checkout"
-
 # Programs
 alias gotop="gotop --color=monokai -p -b"
 [ $(command -v ccat) ] && alias cat='ccat -G Keyword="darkgreen" -G Type="darkblue" -G Punctuation="lightgray" -G Plaintext="reset" -G Comment="darkgray"'

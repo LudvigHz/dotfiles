@@ -65,3 +65,41 @@ ykr() {
   gpg-connect-agent "scd serialno" "learn --force" /bye
   echo UPDATESTARTUPTTY | gpg-connect-agent
 }
+
+
+# GitHub
+ghc() {
+  # Original author: Sebastian Jambor (https://github.com/sgrj)
+  # Original source retrieved from: https://seb.jambor.dev/posts/improving-shell-workflows-with-fzf/
+
+  local jq_template pr_number
+
+  jq_template='"'\
+'#\(.number) - \(.title)'\
+'\t'\
+'Author: \(.user.login)\n'\
+'Created: \(.created_at)\n'\
+'Updated: \(.updated_at)\n\n'\
+'\(.body)'\
+'"'
+
+  if [ -n "$1" ]; then
+    pr_number="$1"
+  else
+    pr_number="$(
+    gh api 'repos/:owner/:repo/pulls' |
+      jq ".[] | $jq_template" |
+      sed -e 's/"\(.*\)"/\1/' -e 's/\\t/\t/' |
+      fzf \
+      --with-nth=1 \
+      --delimiter='\t' \
+      --preview='echo -e {2}' \
+      --preview-window=top:wrap |
+      sed 's/^#\([0-9]\+\).*/\1/'
+    )"
+  fi
+
+  if [ -n "$pr_number" ]; then
+    gh pr checkout "$pr_number"
+  fi
+}
