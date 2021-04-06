@@ -34,6 +34,11 @@ asp() {
   fi
 }
 
+psp() {
+  pacman -Slq | fzf --multi --preview 'pacman -Si {1}' | xargs -ro sudo pacman -S
+}
+
+
 
 # rg - less
 # pipe rg to less to not spam terminal buffer

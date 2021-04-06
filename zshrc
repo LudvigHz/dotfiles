@@ -1,6 +1,6 @@
 # Run tmux if exists
-if command -v tmux>/dev/null; then
-  [ -z $TMUX ] && exec tmux
+if [ -x "$(command -v tmux)" ] && [ -n "${DISPLAY}" ]; then
+  [ -z "${TMUX}" ] && exec tmux 
 else
   echo "tmux not installed on this system"
 fi
@@ -42,11 +42,17 @@ elif [[ "$OSTYPE" == "darwin"* ]] then
 fi
 
 # Source FZF if installed
+# Manual
 if [ -f ~/.fzf.zsh ]; then
   source ~/.fzf.zsh
+# Debian
 elif [ -f /usr/share/doc/fzf/examples/completion.zsh ]; then
   source /usr/share/doc/fzf/examples/key-bindings.zsh
   source /usr/share/doc/fzf/examples/completion.zsh
+# Arch
+elif [ -r /etc/arch-release ]; then
+  source /usr/share/fzf/completion.zsh
+  source /usr/share/fzf/key-bindings.zsh
 fi
 
 #Plugins
@@ -100,7 +106,7 @@ export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/texlive/2
 # ---------------------------------------------------------
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 
-export LESS='-+F -+S -+X -c'
+export LESS='-FrSX'
 
 # launch gpg-agent with ssh support
 export GPG_TTY="$(tty)"
