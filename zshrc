@@ -1,6 +1,6 @@
 # Run tmux if exists
 if [ -x "$(command -v tmux)" ] && [ -n "${DISPLAY}" ]; then
-  [ -z "${TMUX}" ] && exec tmux 
+  [ -z "${TMUX}" ] && exec tmux
 else
   echo "tmux not installed on this system"
 fi
@@ -33,12 +33,15 @@ zshaddhistory() { whence ${${(z)1}[1]} >| /dev/null || return 1 }
 # Plugins
 # ---------------------------------------------------------
 
-# If on debian and autojump installed, source the provided
-# shell script.
-if [ -f "/etc/debian_version" ]; then
-  [ -x $(command -v autojump) ] && . /usr/share/autojump/autojump.sh
-elif [[ "$OSTYPE" == "darwin"* ]] then
-  [ -x $(command -v autojump) ] && . /usr/local/share/autojump/autojump.zsh
+# If autojump installed, source the provided shell script.
+if [ -x $(command -v autojump) ]; then
+  if [ -f "/etc/debian_version" ]; then
+    source /usr/share/autojump/autojump.sh
+  elif [[ "$OSTYPE" == "darwin"* ]] then
+    source /usr/local/share/autojump/autojump.zsh
+  elif [ -f "/etc/arch-release" ]; then
+    source /usr/share/autojump/autojump.zsh
+  fi
 fi
 
 # Source FZF if installed
@@ -106,7 +109,7 @@ export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/texlive/2
 # ---------------------------------------------------------
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 
-export LESS='-FrSX'
+export LESS='-F -S -R -M -i'
 
 # launch gpg-agent with ssh support
 export GPG_TTY="$(tty)"

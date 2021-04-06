@@ -430,6 +430,7 @@ let g:ale_hover_to_preview = 1
 
 let g:ale_writegood_options = '--no-passive'
 let g:ale_c_parse_makefile = 1
+let g:ale_c_clangformat_options = '--style=Mozilla'
 
 
 "#--------------------------------------
