@@ -7,6 +7,7 @@ alias gs="git status"
 alias ga="git add ."
 alias gc="git checkout"
 alias gcm="git checkout master"
+alias gca="git commit --amend"
 
 # Programs
 alias gotop="gotop --color=monokai -p -b"
