@@ -1,6 +1,6 @@
 # Dotfiles
 
-Dotfiles used on Pop!\_OS 19.04 for the following:
+Dotfiles used on (currently) Arch Linux for the following:
 
 - Xresources (Used for [urxvt](https://wiki.archlinux.org/index.php/Rxvt-unicode))
 - [Vim](http://vim.org)
@@ -28,7 +28,7 @@ To Install everything automatically, run the install utility with `-a`:
 
 ## Tmux
 
-`bash install.sh cli-tools -n tmux` to install.
+`./install.sh tmux` to install.
 
 ## ZSH
 
@@ -49,7 +49,7 @@ To Install everything automatically, run the install utility with `-a`:
 
 Install with the provided utility with `zsh` as argument:
 
-> This only installs the configration, to install the actual program, use the cli-tools script
+> This only installs the configuration
 
 ```sh
 ./install.sh zsh
@@ -60,7 +60,9 @@ Install with the provided utility with `zsh` as argument:
 To update zsh plugins, run:
 
 ```sh
-./install.sh zsh-update
+./install.sh zsh-update # in dotfiles folder
+# Or
+dots zsh-update # From anywhere
 ```
 
 This will also install any new plugins defined in `zshrc`
@@ -101,8 +103,7 @@ kubectl completion zsh > $DOTFILES/.local/completions/_kubectl
 
 Run `:PlugInstall` if it doesn't install automatically when you open vim.
 
-- Note: npm and node.js is required for coc.nvim. If it is not installed, run:
-  `sudo apt-get install nodejs` and `sudo apt-get install npm`
+- Note: npm and node.js is required for coc.nvim.
 
 #### Completion
 
