@@ -1,6 +1,12 @@
-# Dotfiles
+<p align="center">
+  <h1 align="center" style="text-decoration: underline;">LudvigHz dotfiles</h1>
+</p>
 
-Dotfiles used on (currently) Arch Linux for the following:
+<p align="center">
+  <img src="./screenshots/arch-desktop.png" />
+</p>
+
+**Dotfiles used on (currently) Arch Linux for the following:**
 
 - Xresources (Used for [urxvt](https://wiki.archlinux.org/index.php/Rxvt-unicode))
 - [Vim](http://vim.org)
@@ -9,9 +15,9 @@ Dotfiles used on (currently) Arch Linux for the following:
 - [zathura](https://git.pwmt.org/pwmt/zathura)
 - [tmux](https://github.com/tmux/tmux)
 
-Make sure to install Nerdfonts: https://github.com/ryanoasis/nerd-fonts
-
 ## Installation
+
+> Make sure to install Nerdfonts: https://github.com/ryanoasis/nerd-fonts
 
 The configration uses an install utility, run the utility to see what can be auto-installed.
 
@@ -113,9 +119,9 @@ servers.
 
 ## Screens
 
-![zsh alacritty](screenshots/zsh-alacritty.png?raw=true)
-
-![vim_coc autocompletion](screenshots/vim-coc.png?raw=true)
+<p align="center">
+  <img width="600" src="./screenshots/vim-js.png" />
+</p>
 
 ## Gnome configuration
 
