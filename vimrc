@@ -361,7 +361,7 @@ function! CustomFiles()
 endfunction
 
 nnoremap <C-p> :call CustomFiles()<CR>
-nnoremap <C-O> :Buffers<CR> -co --exclude-standard
+nnoremap <C-O> :Buffers<CR>
 
 let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'batcat --color=always --style=header,grid --line-range :300 {}'"
 
