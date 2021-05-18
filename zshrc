@@ -107,6 +107,7 @@ export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/texlive/2
 # ---------------------------------------------------------
 # Environment
 # ---------------------------------------------------------
+export EDITOR='/usr/bin/nvim'
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 
 export LESS='-F -S -R -M -i'

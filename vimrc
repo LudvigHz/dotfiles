@@ -68,8 +68,11 @@ set wildmenu
 set wildmode=full
 set guicursor=n-v-c:block-Cursor
 
-" Retain cursor position when switching buffers
-:autocmd BufEnter * silent! normal! g`""
+" Retain cursor position when reading a new buffer
+autocmd BufReadPost *
+  \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+  \ |   exe "normal! g`\""
+  \ | endif
 
 
 "#--------------------------------------
@@ -205,7 +208,7 @@ command ShowFile call Open_xdg()
 "#--------------------------------------
 function! EisvogelRun()
   let generated_file = substitute(fnameescape(expand('%:p')), '.md', '.pdf', '')
-  execute system('pandoc --filter pandoc-include-code '
+  execute system('pandoc --pdf-engine=tectonic '
         \ . fnameescape(expand('%:p'))
         \ . ' -o '
         \ . generated_file
@@ -296,10 +299,10 @@ Plug 'gilgigilgil/anderson.vim'             " Alternate color schemes
 Plug 'srcery-colors/srcery-vim'
 Plug 'sainnhe/gruvbox-material'
 
-" coc
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Completion (nvim-lsp)
 Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-lua/completion-nvim'
+Plug 'hrsh7th/nvim-compe'
+"Plug 'nvim-treesitter/nvim-treesitter'
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
 Plug 'Procrat/oz.vim'
@@ -335,10 +338,12 @@ set background=dark
 let g:gruvbox_improved_warnings = '1'
 let g:gruvbox_contrast_dark = 'medium'
 let g:gruvbox_sign_column = 'NONE'
+let g:gruvbox_material_palette = 'original'
+"colorscheme gruvbox-material
 
 autocmd! ColorScheme
-autocmd ColorScheme * hi Visual cterm=NONE ctermbg=237 guibg=Grey27
-hi Visual cterm=NONE ctermbg=237 guibg=Grey27
+autocmd ColorScheme * hi Visual cterm=NONE ctermbg=237 guibg=#3a3a3a
+hi Visual cterm=NONE ctermbg=237 gui=NONE guibg=#3a3a3a
 
 
 "#--------------------------------------
@@ -425,8 +430,8 @@ let g:ale_fix_on_save = '1'               " Enble auto fixing on save
 let g:ale_lint_on_insert_leave = '1'
 let g:ale_echo_msg_format = '[%linter%]: %s'
 let g:ale_cursor_detail = '0'
-hi ALEErrorSign ctermbg=235 ctermfg=160
-hi ALEWarningSign ctermbg=235 ctermfg=214
+hi ALEErrorSign ctermbg=235 ctermfg=160 guifg=#d70000
+hi ALEWarningSign ctermbg=235 ctermfg=214 guifg=#ffaf00
 let g:ale_sign_warning = ''
 let g:ale_sign_error = ''
 let g:ale_hover_to_preview = 1
@@ -440,19 +445,74 @@ let g:ale_c_clangformat_options = '--style=Mozilla'
 "# LSP
 "#--------------------------------------
 
-set omnifunc=v:lua.vim.lsp.omnifunc
-autocmd BufEnter * lua require'completion'.on_attach()
-set completeopt=menuone,noinsert,noselect
+set completeopt=menuone,noselect
 set shortmess+=c
 " Use <Tab> and <S-Tab> to navigate through popup menu
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-lua <<EOF
-require'lspconfig'.vimls.setup{}
 
-require'lspconfig'.ccls.setup{}
+let g:compe = {}
+let g:compe.enabled = v:true
+let g:compe.autocomplete = v:true
+let g:compe.debug = v:false
+let g:compe.min_length = 1
+let g:compe.preselect = 'enable'
+let g:compe.throttle_time = 80
+let g:compe.source_timeout = 200
+let g:compe.incomplete_delay = 400
+let g:compe.max_abbr_width = 100
+let g:compe.max_kind_width = 100
+let g:compe.max_menu_width = 100
+let g:compe.documentation = v:true
 
-require'lspconfig'.tsserver.setup{}
+let g:compe.source = {}
+let g:compe.source.path = v:true
+let g:compe.source.buffer = v:true
+"let g:compe.source.calc = v:true
+let g:compe.source.nvim_lsp = v:true
+let g:compe.source.nvim_lua = v:true
+let g:compe.source.vsnip = v:true
+let g:compe.source.ultisnips = v:true
+
+highlight link CompeDocumentation NormalFloat
+
+lua << EOF
+local nvim_lsp = require('lspconfig')
+local on_attach = function(client, bufnr)
+  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+  --buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  -- Mappings.
+  local opts = { noremap=true, silent=true }
+  buf_set_keymap('n', '<leader>d', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  buf_set_keymap('n', '<leader>g', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap('n', '<leader>i', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  buf_set_keymap('n', '<leader>r', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+end
+
+nvim_lsp.vimls.setup{on_attach=on_attach}
+
+nvim_lsp.ccls.setup{on_attach=on_attach}
+
+nvim_lsp.tsserver.setup{on_attach=on_attach}
+
+nvim_lsp.jedi_language_server.setup{on_attach=on_attach}
+
+nvim_lsp.gopls.setup{on_attach=on_attach}
 
 EOF
 
@@ -475,7 +535,7 @@ function! JumpToDefinition()
   endif
 endfunction
 
-nmap <leader>g :call JumpToDefinition()<CR>
+"nmap <leader>g :call JumpToDefinition()<CR>
 
 
 "#--------------------------------------
@@ -523,10 +583,10 @@ let g:gitgutter_override_sign_column_highlight = 1
 hi VertSplit ctermbg=235 ctermfg=235
 hi SignColumn ctermbg=235 ctermfg=235
 hi! link SignColumn LineNr
-hi GitGutterAdd ctermbg=235 ctermfg=34
-hi GitGutterChange ctermbg=235 ctermfg=220
-hi GitGutterDelete ctermbg=235 ctermfg=160
-hi GitGutterChangeDelete ctermbg=235 ctermfg=220
+hi GitGutterAdd ctermbg=235 ctermfg=34 guifg=#00af00
+hi GitGutterChange ctermbg=235 ctermfg=220 guifg=#ffd700
+hi GitGutterDelete ctermbg=235 ctermfg=160 guifg=#d70000
+hi GitGutterChangeDelete ctermbg=235 ctermfg=220 guifg=#ffd700
 let g:gitgutter_sign_added = '⏽'
 let g:gitgutter_sign_modified = '⏽'
 let g:gitgutter_sign_removed = ''

@@ -1,5 +1,6 @@
 # General
 alias ..="cd ../"
+alias vim="nvim"
 
 # Git
 alias gd="git diff"
