@@ -202,17 +202,36 @@ endfun
 
 command ShowFile call Open_xdg()
 
+function! s:eis_on_err(j, d, e)
+  if len(a:d[0]) > 0
+    redraw
+    echoe a:d[0]
+  endif
+endfun
+
+function! s:eis_on_out(j, d, e)
+  redraw
+  echoh MoreMsg | echom "Eisvogel compiled successfully" | echoh None
+endfun
 
 "#--------------------------------------
 "# Create pdf from md using eisvogel template
 "#--------------------------------------
 function! EisvogelRun()
+  redraw
+  echom "Compiling pandoc..."
   let generated_file = substitute(fnameescape(expand('%:p')), '.md', '.pdf', '')
-  execute system('pandoc --pdf-engine=tectonic '
+  call jobstart('pandoc --pdf-engine=tectonic --filter pandoc-latex-environment '
         \ . fnameescape(expand('%:p'))
         \ . ' -o '
         \ . generated_file
-        \ . ' --from markdown --template eisvogel -V lang=en --listings &')
+        \ . ' --from markdown --template eisvogel -V lang=en --listings',
+        \ {
+          \ 'stdout_buffered': 1,
+          \ 'stderr_buffered': 1,
+          \ 'on_stderr': function("s:eis_on_err"),
+          \ 'on_stdout': function("s:eis_on_out")
+        \ })
   " If run for the first time, open the generated pdf in zathura, or another program
   if !get(b:, 'eisvogel_auto_run', 0) && filereadable(generated_file)
     try
@@ -240,10 +259,17 @@ augroup eisvogel_on_save
   autocmd BufWritePost * if get(b:, 'eisvogel_auto', 0) | call EisvogelRun() | endif
 augroup end
 
-" Command to toggle compile on save
-command Eisvogel let b:eisvogel_auto = !get(b:, 'eisvogel_auto', 0)
+function! Eis_toggleMsg()
+  echom 'Eisvogel auto compile ' . (get(b:, 'eisvogel_auto') ? 'ON' : 'OFF')
+endfun
+
+" Command to toggle compile on save for the current buffer
+command EisvogelToggle let b:eisvogel_auto = !get(b:, 'eisvogel_auto', 0) | call Eis_toggleMsg()
 " Command to recompile current buffer
 command EisvogelCompile call EisvogelRun()
+
+
+let g:python3_host_prog = '/usr/bin/python'
 
 
 
@@ -324,7 +350,7 @@ Plug 'tmux-plugins/vim-tmux'                " tmux.conf editing features
 " LaTeX and snippets
 Plug 'lervag/vimtex'
 Plug 'vim-pandoc/vim-pandoc-syntax'
-"Plug 'SirVer/ultisnips'
+Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
 call plug#end()
@@ -513,6 +539,14 @@ nvim_lsp.tsserver.setup{on_attach=on_attach}
 nvim_lsp.jedi_language_server.setup{on_attach=on_attach}
 
 nvim_lsp.gopls.setup{on_attach=on_attach}
+
+local pid = vim.fn.getpid()
+local omnisharp_bin = "/usr/bin/omnisharp"
+
+nvim_lsp.omnisharp.setup{
+  on_attach=on_attach,
+  cmd = { omnisharp_bin, "--languageserver" , "--hostPID", tostring(pid) };
+}
 
 EOF
 

@@ -12,7 +12,10 @@ alias gca="git commit --amend"
 
 # Programs
 alias gotop="gotop --color=monokai -p -b"
-[ $(command -v bat) ] && alias cat='bat'
+if [ $(command -v bat) ]; then
+  alias cat='bat'
+  alias catt='/usr/bin/cat'
+fi
 
 # Open modified files
 # ACMR = Added || Copied || Modified || Renamed
