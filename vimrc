@@ -353,6 +353,8 @@ Plug 'vim-pandoc/vim-pandoc-syntax'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
+"Plug 'omnisharp/omnisharp-vim'
+
 call plug#end()
 
 
@@ -435,8 +437,18 @@ let g:ale_fixers = {
             \'go': ['gofmt'],
             \'scala': ['scalafmt'],
             \'c': ['clang-format'],
-            \'cpp': ['clang-format']
+            \'cpp': ['clang-format'],
+            \'cs': [],
 \}
+
+function! FormatDotnet(buffer) abort
+  return {
+        \'command': 'dotnet format --fix --include' . ' %t',
+        \'read_temporary_file': 1,
+        \}
+endfunction
+
+execute ale#fix#registry#Add('dotnet-format', 'FormatDotnet', ['cs'], 'Dotnet-format for csharp')
 
 let g:ale_linters = {
       \'python': ['flake8', 'isort', 'jedi'],
@@ -448,6 +460,7 @@ let g:ale_linters = {
       \'bash': ['shell', 'shellcheck'],
       \'zsh': ['shell'],
       \'scala': ['metals'],
+      \'cs': [],
 \}
 
 let g:nvim_typescript#diagnostics_enable = 0
@@ -541,14 +554,22 @@ nvim_lsp.jedi_language_server.setup{on_attach=on_attach}
 nvim_lsp.gopls.setup{on_attach=on_attach}
 
 local pid = vim.fn.getpid()
-local omnisharp_bin = "/usr/bin/omnisharp"
+-- local omnisharp_bin = "/home/ludvig/.cache/omnisharp-vim/omnisharp-roslyn/omnisharp/OmniSharp.exe"
+local omnisharp_bin = "/home/ludvig/.bin/run"
+
 
 nvim_lsp.omnisharp.setup{
-  on_attach=on_attach,
-  cmd = { omnisharp_bin, "--languageserver" , "--hostPID", tostring(pid) };
+  on_attach=on_attach;
+  cmd = {omnisharp_bin, "-lsp", "-s", vim.fn.getcwd(), "-e utf-8", "--hostPID", tostring(pid) };
+  root_dir = nvim_lsp.util.root_pattern("*.sln");
 }
 
 EOF
+
+augroup CSwrap
+  autocmd!
+  autocmd FileType cs set nowrap
+augroup END
 
 
 "#--------------------------------------
