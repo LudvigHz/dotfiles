@@ -317,9 +317,14 @@ Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
 Plug 'junegunn/fzf', {'do': { -> fzf#install() }}
 let g:fzf_installed = 1
 
+if has('nvim')
+  Plug 'p00f/nvim-ts-rainbow'
+else
 Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
+endif
 
 Plug 'junegunn/vim-peekaboo'                " Show register contents
+Plug 'christoomey/vim-tmux-navigator'
 
 Plug 'dense-analysis/ale'                   " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
@@ -333,7 +338,7 @@ Plug 'sainnhe/gruvbox-material'
 " Completion (nvim-lsp)
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-compe'
-"Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
 Plug 'Procrat/oz.vim'
@@ -430,6 +435,7 @@ nnoremap <silent> <C-b>/ :TmuxNavigatePrevious<cr>
 let g:ale_fixers = {
             \'*': ['remove_trailing_lines', 'trim_whitespace'],
             \'javascript': ['prettier', 'eslint'],
+            \'javascriptreact': ['prettier', 'eslint'],
             \'json': ['prettier'],
             \'typescript': ['prettier', 'eslint'],
             \'typescriptreact': ['prettier', 'eslint'],
@@ -520,6 +526,9 @@ let g:compe.source.nvim_lsp = v:true
 let g:compe.source.nvim_lua = v:true
 let g:compe.source.vsnip = v:true
 let g:compe.source.ultisnips = v:true
+let g:compe.source.omni = {
+      \ 'filetypes': ['tex'],
+      \ }
 
 highlight link CompeDocumentation NormalFloat
 
@@ -555,11 +564,15 @@ nvim_lsp.vimls.setup{on_attach=on_attach}
 
 nvim_lsp.ccls.setup{on_attach=on_attach}
 
-nvim_lsp.tsserver.setup{on_attach=on_attach}
+nvim_lsp.tsserver.setup{on_attach=on_attach; root_dir=nvim_lsp.util.root_pattern("tsconfig.json")}
+
+nvim_lsp.flow.setup{on_attach=on_attach}
 
 nvim_lsp.jedi_language_server.setup{on_attach=on_attach}
 
 nvim_lsp.gopls.setup{on_attach=on_attach}
+
+nvim_lsp.metals.setup{on_attach=on_attach}
 
 local pid = vim.fn.getpid()
 -- local omnisharp_bin = "/home/ludvig/.cache/omnisharp-vim/omnisharp-roslyn/omnisharp/OmniSharp.exe"
@@ -578,6 +591,29 @@ augroup CSwrap
   autocmd!
   autocmd FileType cs set nowrap
 augroup END
+
+
+"#--------------------------------------
+"# Treesitter
+"#--------------------------------------
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,
+    },
+  rainbow = {
+    enable = true,
+    extended_mode = true,
+      colors = {
+        "#a89984",
+        "#fb4934",
+        "#98971a",
+        "#d79921",
+        "#458588",
+      },
+    }
+  }
+EOF
 
 
 "#--------------------------------------
@@ -604,11 +640,13 @@ endfunction
 "#--------------------------------------
 "# Rainbow parentheses
 "#--------------------------------------
-augroup rainbow_parentheses
-    autocmd!
-    autocmd FileType javascript,typescript,latex,java,python RainbowParentheses
-augroup END
-let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+if !has('nvim')
+  augroup rainbow_parentheses
+      autocmd!
+      autocmd FileType javascript,typescript,latex,java,python,c RainbowParentheses
+  augroup END
+  let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+endif
 
 
 "#--------------------------------------
@@ -673,6 +711,9 @@ augroup END
 "# Hexokinase
 "#--------------------------------------
 let g:Hexokinase_highlighters = ['backgroundfull']
+if has('nvim')
+  let g:Hexokinase_highlighters = ['virtual']
+endif
 let g:Hexokinase_optInPatterns = [
     \ 'full_hex',
     \ 'triple_hex',
@@ -684,9 +725,7 @@ let g:Hexokinase_optInPatterns = [
     \ ]
 let g:Hexokinase_virtualText = '■'
 let g:Hexokinase_refreshEvents = ['TextChanged', 'TextChangedI']
-"if has('nvim')
-  let g:Hexokinase_ftEnabled = ['css', 'xml', 'javascript.jsx']
-"endif
+let g:Hexokinase_ftEnabled = ['css', 'xml', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact']
 
 
 "#--------------------------------------
@@ -722,3 +761,9 @@ nmap P <plug>(YoinkPaste_P)
 "# VimTeX
 "#--------------------------------------
 let g:tex_flavor = 'latex'
+"let g:vimtex_compiler_method = 'tectonic'
+
+let g:vimtex_compiler_method = 'generic'
+let g:vimtex_compiler_generic = {
+      \ 'command': 'ls *.tex | entr -c tectonic /_ --synctex --keep-logs',
+      \ }
