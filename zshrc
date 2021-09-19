@@ -101,12 +101,16 @@ source_plugin dotenv
 # Path
 # ---------------------------------------------------------
 
-export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/texlive/2020/bin/x86_64-linux:/home/ludvig/.local/share/coursier/bin:$HOME/.cabal/bin:$PATH"
+export PATH="/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
+export PATH="/home/ludvig/.local/share/coursier/bin:$HOME/.cabal/bin:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 
 # ---------------------------------------------------------
 # Environment
 # ---------------------------------------------------------
+export EDITOR='/usr/bin/nvim'
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 
 export LESS='-F -S -R -M -i'

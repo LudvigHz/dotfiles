@@ -66,9 +66,13 @@ set number                      " Show line numbers
 set wildcharm=<Tab>             " Use Tab for wildmenu selection
 set wildmenu
 set wildmode=full
+set guicursor=n-v-c:block-Cursor
 
-" Retain cursor position when switching buffers
-":autocmd BufEnter * silent! normal! g`""
+" Retain cursor position when reading a new buffer
+autocmd BufReadPost *
+  \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+  \ |   exe "normal! g`\""
+  \ | endif
 
 
 "#--------------------------------------
@@ -133,6 +137,11 @@ nnoremap <F2> :set invpaste paste?<CR>
 imap <F2> <C-O>:set invpaste paste?<CR>
 set pastetoggle=<F2>
 
+" Splits (See also vim-tmux-navigator)
+nmap <silent> <C-t>k :wincmd k<CR>
+nmap <silent> <C-t>l :wincmd l<CR>
+nmap <silent> <C-t>j :wincmd j<CR>
+nmap <silent> <C-t>h :wincmd h<CR>
 
 "#--------------------------------------
 "# Undos
@@ -198,17 +207,36 @@ endfun
 
 command ShowFile call Open_xdg()
 
+function! s:eis_on_err(j, d, e)
+  if len(a:d[0]) > 0
+    redraw
+    echoe a:d[0]
+  endif
+endfun
+
+function! s:eis_on_out(j, d, e)
+  redraw
+  echoh MoreMsg | echom "Eisvogel compiled successfully" | echoh None
+endfun
 
 "#--------------------------------------
 "# Create pdf from md using eisvogel template
 "#--------------------------------------
 function! EisvogelRun()
+  redraw
+  echom "Compiling pandoc..."
   let generated_file = substitute(fnameescape(expand('%:p')), '.md', '.pdf', '')
-  execute system('pandoc --filter pandoc-include-code '
+  call jobstart('pandoc --pdf-engine=tectonic --filter pandoc-latex-environment '
         \ . fnameescape(expand('%:p'))
         \ . ' -o '
         \ . generated_file
-        \ . ' --from markdown --template eisvogel -V lang=en --listings &')
+        \ . ' --from markdown --template eisvogel -V lang=en --listings',
+        \ {
+          \ 'stdout_buffered': 1,
+          \ 'stderr_buffered': 1,
+          \ 'on_stderr': function("s:eis_on_err"),
+          \ 'on_stdout': function("s:eis_on_out")
+        \ })
   " If run for the first time, open the generated pdf in zathura, or another program
   if !get(b:, 'eisvogel_auto_run', 0) && filereadable(generated_file)
     try
@@ -236,10 +264,17 @@ augroup eisvogel_on_save
   autocmd BufWritePost * if get(b:, 'eisvogel_auto', 0) | call EisvogelRun() | endif
 augroup end
 
-" Command to toggle compile on save
-command Eisvogel let b:eisvogel_auto = !get(b:, 'eisvogel_auto', 0)
+function! Eis_toggleMsg()
+  echom 'Eisvogel auto compile ' . (get(b:, 'eisvogel_auto') ? 'ON' : 'OFF')
+endfun
+
+" Command to toggle compile on save for the current buffer
+command EisvogelToggle let b:eisvogel_auto = !get(b:, 'eisvogel_auto', 0) | call Eis_toggleMsg()
 " Command to recompile current buffer
 command EisvogelCompile call EisvogelRun()
+
+
+let g:python3_host_prog = '/usr/bin/python'
 
 
 
@@ -282,9 +317,14 @@ Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
 Plug 'junegunn/fzf', {'do': { -> fzf#install() }}
 let g:fzf_installed = 1
 
+if has('nvim')
+  Plug 'p00f/nvim-ts-rainbow'
+else
 Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
+endif
 
 Plug 'junegunn/vim-peekaboo'                " Show register contents
+Plug 'christoomey/vim-tmux-navigator'
 
 Plug 'dense-analysis/ale'                   " Linter
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
@@ -295,8 +335,10 @@ Plug 'gilgigilgil/anderson.vim'             " Alternate color schemes
 Plug 'srcery-colors/srcery-vim'
 Plug 'sainnhe/gruvbox-material'
 
-" coc
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Completion (nvim-lsp)
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-compe'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
 Plug 'Procrat/oz.vim'
@@ -318,8 +360,10 @@ Plug 'tmux-plugins/vim-tmux'                " tmux.conf editing features
 " LaTeX and snippets
 Plug 'lervag/vimtex'
 Plug 'vim-pandoc/vim-pandoc-syntax'
-"Plug 'SirVer/ultisnips'
+Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+
+"Plug 'omnisharp/omnisharp-vim'
 
 call plug#end()
 
@@ -332,10 +376,12 @@ set background=dark
 let g:gruvbox_improved_warnings = '1'
 let g:gruvbox_contrast_dark = 'medium'
 let g:gruvbox_sign_column = 'NONE'
+let g:gruvbox_material_palette = 'original'
+"colorscheme gruvbox-material
 
 autocmd! ColorScheme
-autocmd ColorScheme * hi Visual cterm=NONE ctermbg=237 guibg=Grey27
-hi Visual cterm=NONE ctermbg=237 guibg=Grey27
+autocmd ColorScheme * hi Visual cterm=NONE ctermbg=237 guibg=#3a3a3a
+hi Visual cterm=NONE ctermbg=237 gui=NONE guibg=#3a3a3a
 
 
 "#--------------------------------------
@@ -371,12 +417,15 @@ autocmd  FileType fzf set noshowmode noruler nonu
 
 
 "#--------------------------------------
-"# Goyo
+"# vim-tmux-navigator
 "#--------------------------------------
-let g:goyo_width = 110
+let g:tmux_navigator_no_mappings = 1
 
-autocmd! User GoyoEnter Limelight
-autocmd! User GoyoLeave Limelight!
+nnoremap <silent> <C-b>h :TmuxNavigateLeft<cr>
+nnoremap <silent> <C-b>j :TmuxNavigateDown<cr>
+nnoremap <silent> <C-b>k :TmuxNavigateUp<cr>
+nnoremap <silent> <C-b>l :TmuxNavigateRight<cr>
+nnoremap <silent> <C-b>/ :TmuxNavigatePrevious<cr>
 
 
 
@@ -386,6 +435,7 @@ autocmd! User GoyoLeave Limelight!
 let g:ale_fixers = {
             \'*': ['remove_trailing_lines', 'trim_whitespace'],
             \'javascript': ['prettier', 'eslint'],
+            \'javascriptreact': ['prettier', 'eslint'],
             \'json': ['prettier'],
             \'typescript': ['prettier', 'eslint'],
             \'typescriptreact': ['prettier', 'eslint'],
@@ -401,8 +451,18 @@ let g:ale_fixers = {
             \'go': ['gofmt'],
             \'scala': ['scalafmt'],
             \'c': ['clang-format'],
-            \'cpp': ['clang-format']
+            \'cpp': ['clang-format'],
+            \'cs': [],
 \}
+
+function! FormatDotnet(buffer) abort
+  return {
+        \'command': 'dotnet format --fix --include' . ' %t',
+        \'read_temporary_file': 1,
+        \}
+endfunction
+
+execute ale#fix#registry#Add('dotnet-format', 'FormatDotnet', ['cs'], 'Dotnet-format for csharp')
 
 let g:ale_linters = {
       \'python': ['flake8', 'isort', 'jedi'],
@@ -414,6 +474,7 @@ let g:ale_linters = {
       \'bash': ['shell', 'shellcheck'],
       \'zsh': ['shell'],
       \'scala': ['metals'],
+      \'cs': [],
 \}
 
 let g:nvim_typescript#diagnostics_enable = 0
@@ -422,8 +483,8 @@ let g:ale_fix_on_save = '1'               " Enble auto fixing on save
 let g:ale_lint_on_insert_leave = '1'
 let g:ale_echo_msg_format = '[%linter%]: %s'
 let g:ale_cursor_detail = '0'
-hi ALEErrorSign ctermbg=235 ctermfg=160
-hi ALEWarningSign ctermbg=235 ctermfg=214
+hi ALEErrorSign ctermbg=235 ctermfg=160 guifg=#d70000
+hi ALEWarningSign ctermbg=235 ctermfg=214 guifg=#ffaf00
 let g:ale_sign_warning = ''
 let g:ale_sign_error = ''
 let g:ale_hover_to_preview = 1
@@ -433,22 +494,126 @@ let g:ale_c_parse_makefile = 1
 let g:ale_c_clangformat_options = '--style=Mozilla'
 
 
+"--------------------------------------
+"# LSP
 "#--------------------------------------
-"# CoC (Conquerer of completion)
+
+set completeopt=menuone,noselect
+set shortmess+=c
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+let g:compe = {}
+let g:compe.enabled = v:true
+let g:compe.autocomplete = v:true
+let g:compe.debug = v:false
+let g:compe.min_length = 1
+let g:compe.preselect = 'enable'
+let g:compe.throttle_time = 80
+let g:compe.source_timeout = 200
+let g:compe.incomplete_delay = 400
+let g:compe.max_abbr_width = 100
+let g:compe.max_kind_width = 100
+let g:compe.max_menu_width = 100
+let g:compe.documentation = v:true
+
+let g:compe.source = {}
+let g:compe.source.path = v:true
+let g:compe.source.buffer = v:true
+"let g:compe.source.calc = v:true
+let g:compe.source.nvim_lsp = v:true
+let g:compe.source.nvim_lua = v:true
+let g:compe.source.vsnip = v:true
+let g:compe.source.ultisnips = v:true
+let g:compe.source.omni = {
+      \ 'filetypes': ['tex'],
+      \ }
+
+highlight link CompeDocumentation NormalFloat
+
+lua << EOF
+local nvim_lsp = require('lspconfig')
+local on_attach = function(client, bufnr)
+  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+  --buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  -- Mappings.
+  local opts = { noremap=true, silent=true }
+  buf_set_keymap('n', '<leader>d', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  buf_set_keymap('n', '<leader>g', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap('n', '<leader>i', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  buf_set_keymap('n', '<leader>r', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+end
+
+nvim_lsp.vimls.setup{on_attach=on_attach}
+
+nvim_lsp.ccls.setup{on_attach=on_attach}
+
+nvim_lsp.tsserver.setup{on_attach=on_attach; root_dir=nvim_lsp.util.root_pattern("tsconfig.json")}
+
+nvim_lsp.flow.setup{on_attach=on_attach}
+
+nvim_lsp.jedi_language_server.setup{on_attach=on_attach}
+
+nvim_lsp.gopls.setup{on_attach=on_attach}
+
+nvim_lsp.metals.setup{on_attach=on_attach}
+
+local pid = vim.fn.getpid()
+-- local omnisharp_bin = "/home/ludvig/.cache/omnisharp-vim/omnisharp-roslyn/omnisharp/OmniSharp.exe"
+local omnisharp_bin = "/home/ludvig/.bin/run"
+
+
+nvim_lsp.omnisharp.setup{
+  on_attach=on_attach;
+  cmd = {omnisharp_bin, "-lsp", "-s", vim.fn.getcwd(), "-e utf-8", "--hostPID", tostring(pid) };
+  root_dir = nvim_lsp.util.root_pattern("*.sln");
+}
+
+EOF
+
+augroup CSwrap
+  autocmd!
+  autocmd FileType cs set nowrap
+augroup END
+
+
 "#--------------------------------------
-inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-nnoremap <silent> <leader>d <Plug>(coc-references)
+"# Treesitter
+"#--------------------------------------
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,
+    },
+  rainbow = {
+    enable = true,
+    extended_mode = true,
+      colors = {
+        "#a89984",
+        "#fb4934",
+        "#98971a",
+        "#d79921",
+        "#458588",
+      },
+    }
+  }
+EOF
 
 
 "#--------------------------------------
@@ -469,17 +634,19 @@ function! JumpToDefinition()
   endif
 endfunction
 
-nmap <leader>g :call JumpToDefinition()<CR>
+"nmap <leader>g :call JumpToDefinition()<CR>
 
 
 "#--------------------------------------
 "# Rainbow parentheses
 "#--------------------------------------
-augroup rainbow_parentheses
-    autocmd!
-    autocmd FileType javascript,typescript,latex,java,python RainbowParentheses
-augroup END
-let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+if !has('nvim')
+  augroup rainbow_parentheses
+      autocmd!
+      autocmd FileType javascript,typescript,latex,java,python,c RainbowParentheses
+  augroup END
+  let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+endif
 
 
 "#--------------------------------------
@@ -517,10 +684,10 @@ let g:gitgutter_override_sign_column_highlight = 1
 hi VertSplit ctermbg=235 ctermfg=235
 hi SignColumn ctermbg=235 ctermfg=235
 hi! link SignColumn LineNr
-hi GitGutterAdd ctermbg=235 ctermfg=34
-hi GitGutterChange ctermbg=235 ctermfg=220
-hi GitGutterDelete ctermbg=235 ctermfg=160
-hi GitGutterChangeDelete ctermbg=235 ctermfg=220
+hi GitGutterAdd ctermbg=235 ctermfg=34 guifg=#00af00
+hi GitGutterChange ctermbg=235 ctermfg=220 guifg=#ffd700
+hi GitGutterDelete ctermbg=235 ctermfg=160 guifg=#d70000
+hi GitGutterChangeDelete ctermbg=235 ctermfg=220 guifg=#ffd700
 let g:gitgutter_sign_added = '⏽'
 let g:gitgutter_sign_modified = '⏽'
 let g:gitgutter_sign_removed = ''
@@ -544,6 +711,9 @@ augroup END
 "# Hexokinase
 "#--------------------------------------
 let g:Hexokinase_highlighters = ['backgroundfull']
+if has('nvim')
+  let g:Hexokinase_highlighters = ['virtual']
+endif
 let g:Hexokinase_optInPatterns = [
     \ 'full_hex',
     \ 'triple_hex',
@@ -555,9 +725,7 @@ let g:Hexokinase_optInPatterns = [
     \ ]
 let g:Hexokinase_virtualText = '■'
 let g:Hexokinase_refreshEvents = ['TextChanged', 'TextChangedI']
-"if has('nvim')
-  let g:Hexokinase_ftEnabled = ['css', 'xml', 'javascript.jsx']
-"endif
+let g:Hexokinase_ftEnabled = ['css', 'xml', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact']
 
 
 "#--------------------------------------
@@ -593,33 +761,9 @@ nmap P <plug>(YoinkPaste_P)
 "# VimTeX
 "#--------------------------------------
 let g:tex_flavor = 'latex'
+"let g:vimtex_compiler_method = 'tectonic'
 
-" Testing
-if has('nvim') && exists('&winblend')
-  " colorscheme gruvbox-material
-  let g:airline_theme = 'gruvbox_material'
-  set winblend=8
-
-  hi NormalFloat guibg=235
-  if exists('g:fzf_colors.bg')
-    call remove(g:fzf_colors, 'bg')
-  endif
-
-  if stridx($FZF_DEFAULT_OPTS, '--border') == -1
-    let $FZF_DEFAULT_OPTS .= ' --border'
-  endif
-
-  function! FloatingFZF()
-    let width = float2nr(&columns * 0.8)
-    let height = float2nr(&lines * 0.6)
-    let opts = { 'relative': 'editor',
-               \ 'row': (&lines - height) / 2,
-               \ 'col': (&columns - width) / 2,
-               \ 'width': width,
-               \ 'height': height }
-
-    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
-  endfunction
-
-  let g:fzf_layout = { 'window': 'call FloatingFZF()' }
-endif
+let g:vimtex_compiler_method = 'generic'
+let g:vimtex_compiler_generic = {
+      \ 'command': 'ls *.tex | entr -c tectonic /_ --synctex --keep-logs',
+      \ }

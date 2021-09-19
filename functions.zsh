@@ -38,6 +38,12 @@ psp() {
   pacman -Slq | fzf --multi --preview 'pacman -Si {1}' | xargs -ro sudo pacman -S
 }
 
+ysp() {
+  yay -Ss $1 --color=always \
+    | sed -n '1~2p' \
+    | fzf --tac --ansi --multi --preview 'yay -Si {1}' \
+    | cut -d" " -f1 | xargs -ro yay -S
+}
 
 
 # rg - less
@@ -108,3 +114,16 @@ ghc() {
     gh pr checkout "$pr_number"
   fi
 }
+
+
+dotcomp() {
+  _dotnet_zsh_complete()
+  {
+    local completions=("$(dotnet complete "$words")")
+
+    reply=( "${(ps:\n:)completions}" )
+  }
+
+  compctl -K _dotnet_zsh_complete dotnet
+}
+

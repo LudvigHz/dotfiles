@@ -1,5 +1,6 @@
 # General
 alias ..="cd ../"
+alias vim="nvim"
 
 # Git
 alias gd="git diff"
@@ -11,17 +12,26 @@ alias gca="git commit --amend"
 
 # Programs
 alias gotop="gotop --color=monokai -p -b"
-[ $(command -v bat) ] && alias cat='bat'
+if [ $(command -v bat) ]; then
+  alias cat='bat'
+  alias catt='/usr/bin/cat'
+fi
 
 # Open modified files
 # ACMR = Added || Copied || Modified || Renamed
+# U = Unmerged (conflicting)
+# TM = Changed || Modified
 alias vd="vim \$(git diff HEAD --name-only --diff-filter=ACMR)"
 alias vds="vim \$(git diff --staged --name-only --diff-filter=ACMR)"
-alias vdc="vim \$(git diff HEAD^ --name-only --diff-filter=tm)"
+alias vda="vim \$(git diff HEAD^ --name-only --diff-filter=TM)"
+alias vdc="vim \$(git diff --name-only --diff-filter=U)"
 
 # Clipboard
 # $<some command> | copy
 alias copy="xclip -sel clip"
+
+# Format json in clipboard
+alias jsontidy="xclip -o | jq '.' | copy"
 
 # XDG open
 alias o=xdg-open
