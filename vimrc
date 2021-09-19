@@ -137,6 +137,11 @@ nnoremap <F2> :set invpaste paste?<CR>
 imap <F2> <C-O>:set invpaste paste?<CR>
 set pastetoggle=<F2>
 
+" Splits (See also vim-tmux-navigator)
+nmap <silent> <C-t>k :wincmd k<CR>
+nmap <silent> <C-t>l :wincmd l<CR>
+nmap <silent> <C-t>j :wincmd j<CR>
+nmap <silent> <C-t>h :wincmd h<CR>
 
 "#--------------------------------------
 "# Undos
@@ -407,12 +412,15 @@ autocmd  FileType fzf set noshowmode noruler nonu
 
 
 "#--------------------------------------
-"# Goyo
+"# vim-tmux-navigator
 "#--------------------------------------
-let g:goyo_width = 110
+let g:tmux_navigator_no_mappings = 1
 
-autocmd! User GoyoEnter Limelight
-autocmd! User GoyoLeave Limelight!
+nnoremap <silent> <C-b>h :TmuxNavigateLeft<cr>
+nnoremap <silent> <C-b>j :TmuxNavigateDown<cr>
+nnoremap <silent> <C-b>k :TmuxNavigateUp<cr>
+nnoremap <silent> <C-b>l :TmuxNavigateRight<cr>
+nnoremap <silent> <C-b>/ :TmuxNavigatePrevious<cr>
 
 
 
