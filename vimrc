@@ -336,9 +336,16 @@ Plug 'srcery-colors/srcery-vim'
 Plug 'sainnhe/gruvbox-material'
 
 " Completion (nvim-lsp)
-Plug 'neovim/nvim-lspconfig'
-Plug 'hrsh7th/nvim-compe'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+if has('nvim')
+  Plug 'neovim/nvim-lspconfig'
+  Plug 'hrsh7th/nvim-cmp'
+  Plug 'hrsh7th/cmp-nvim-lsp'
+  Plug 'hrsh7th/cmp-buffer'
+  Plug 'quangnguyen30192/cmp-nvim-ultisnips'
+  Plug 'onsails/lspkind-nvim'
+  Plug 'ray-x/lsp_signature.nvim'
+  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+endif
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
 Plug 'Procrat/oz.vim'
@@ -498,37 +505,73 @@ let g:ale_c_clangformat_options = '--style=Mozilla'
 "# LSP
 "#--------------------------------------
 
-set completeopt=menuone,noselect
+set completeopt=menu,menuone,noselect
 set shortmess+=c
 " Use <Tab> and <S-Tab> to navigate through popup menu
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-let g:compe = {}
-let g:compe.enabled = v:true
-let g:compe.autocomplete = v:true
-let g:compe.debug = v:false
-let g:compe.min_length = 1
-let g:compe.preselect = 'enable'
-let g:compe.throttle_time = 80
-let g:compe.source_timeout = 200
-let g:compe.incomplete_delay = 400
-let g:compe.max_abbr_width = 100
-let g:compe.max_kind_width = 100
-let g:compe.max_menu_width = 100
-let g:compe.documentation = v:true
+if has('nvim')
+lua << EOF
+local cmp = require'cmp'
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      vim.fn["UltiSnips#Anon"](args.body)
+    end,
+    },
 
-let g:compe.source = {}
-let g:compe.source.path = v:true
-let g:compe.source.buffer = v:true
-"let g:compe.source.calc = v:true
-let g:compe.source.nvim_lsp = v:true
-let g:compe.source.nvim_lua = v:true
-let g:compe.source.vsnip = v:true
-let g:compe.source.ultisnips = v:true
-let g:compe.source.omni = {
-      \ 'filetypes': ['tex'],
-      \ }
+  sources = {
+      { name = 'nvim_lsp' },
+      { name = 'ultisnips' },
+      { name = 'buffer' },
+    },
+
+  formatting = {
+    format = function(entry, vim_item)
+      -- fancy icons and a name of kind
+      vim_item.kind = require("lspkind").presets.default[vim_item.kind] .. " " .. vim_item.kind
+
+      -- set a name for each source
+      vim_item.menu = ({
+        buffer = "[Buffer]",
+        nvim_lsp = "[LSP]",
+        luasnip = "[LuaSnip]",
+        nvim_lua = "[Lua]",
+        latex_symbols = "[Latex]",
+      })[entry.source.name]
+      return vim_item
+    end,
+  },
+
+})
+EOF
+
+"let g:compe = {}
+"let g:compe.enabled = v:true
+"let g:compe.autocomplete = v:true
+"let g:compe.debug = v:false
+"let g:compe.min_length = 1
+"let g:compe.preselect = 'enable'
+"let g:compe.throttle_time = 80
+"let g:compe.source_timeout = 200
+"let g:compe.incomplete_delay = 400
+"let g:compe.max_abbr_width = 100
+"let g:compe.max_kind_width = 100
+"let g:compe.max_menu_width = 100
+"let g:compe.documentation = v:true
+
+"let g:compe.source = {}
+"let g:compe.source.path = v:true
+"let g:compe.source.buffer = v:true
+""let g:compe.source.calc = v:true
+"let g:compe.source.nvim_lsp = v:true
+"let g:compe.source.nvim_lua = v:true
+"let g:compe.source.vsnip = v:true
+"let g:compe.source.ultisnips = v:true
+"let g:compe.source.omni = {
+      "\ 'filetypes': ['tex'],
+      "\ }
 
 highlight link CompeDocumentation NormalFloat
 
@@ -560,19 +603,21 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
 end
 
-nvim_lsp.vimls.setup{on_attach=on_attach}
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-nvim_lsp.ccls.setup{on_attach=on_attach}
+nvim_lsp.vimls.setup{on_attach=on_attach; capabilities=capabilities}
 
-nvim_lsp.tsserver.setup{on_attach=on_attach; root_dir=nvim_lsp.util.root_pattern("tsconfig.json")}
+nvim_lsp.ccls.setup{on_attach=on_attach; cababilities=cababilities}
 
-nvim_lsp.flow.setup{on_attach=on_attach}
+nvim_lsp.tsserver.setup{on_attach=on_attach; cababilities=cababilities; root_dir=nvim_lsp.util.root_pattern("tsconfig.json")}
 
-nvim_lsp.jedi_language_server.setup{on_attach=on_attach}
+nvim_lsp.flow.setup{on_attach=on_attach; cababilities=cababilities}
 
-nvim_lsp.gopls.setup{on_attach=on_attach}
+nvim_lsp.jedi_language_server.setup{on_attach=on_attach; cababilities=cababilities}
 
-nvim_lsp.metals.setup{on_attach=on_attach}
+nvim_lsp.gopls.setup{on_attach=on_attach; cababilities=cababilities}
+
+nvim_lsp.metals.setup{on_attach=on_attach; cababilities=cababilities}
 
 local pid = vim.fn.getpid()
 -- local omnisharp_bin = "/home/ludvig/.cache/omnisharp-vim/omnisharp-roslyn/omnisharp/OmniSharp.exe"
@@ -585,7 +630,17 @@ nvim_lsp.omnisharp.setup{
   root_dir = nvim_lsp.util.root_pattern("*.sln");
 }
 
+-- Signature help
+require'lsp_signature'.setup({
+  bind = true,
+  hint_prefix = " ",
+  handler_opts = {
+    border = "shadow"
+    }
+})
+
 EOF
+endif
 
 augroup CSwrap
   autocmd!
@@ -596,6 +651,7 @@ augroup END
 "#--------------------------------------
 "# Treesitter
 "#--------------------------------------
+if has('nvim')
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
   highlight = {
@@ -614,6 +670,7 @@ require'nvim-treesitter.configs'.setup {
     }
   }
 EOF
+endif
 
 
 "#--------------------------------------

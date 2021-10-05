@@ -1,11 +1,13 @@
 [commit]
 	gpgsign = true
+	verbose = true
 [user]
 	email = ludvig123@gmail.com
 	name = Ludvig Hozman
 
 [core]
 	pager = delta
+	editor = nvim
 
 [interactive]
 	diffFilter = delta --color-only
