@@ -459,6 +459,7 @@ let g:ale_fixers = {
             \'scala': ['scalafmt'],
             \'c': ['clang-format'],
             \'cpp': ['clang-format'],
+            \'cuda': ['clang-format'],
             \'cs': [],
 \}
 
@@ -519,6 +520,16 @@ cmp.setup({
     expand = function(args)
       vim.fn["UltiSnips#Anon"](args.body)
     end,
+    },
+
+  mapping = {
+    ['<Tab>'] = function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end
     },
 
   sources = {
@@ -607,7 +618,7 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protoco
 
 nvim_lsp.vimls.setup{on_attach=on_attach; capabilities=capabilities}
 
-nvim_lsp.ccls.setup{on_attach=on_attach; cababilities=cababilities}
+nvim_lsp.ccls.setup{on_attach=on_attach; cababilities=cababilities; filetypes = {"c", "cpp", "cuda"}}
 
 nvim_lsp.tsserver.setup{on_attach=on_attach; cababilities=cababilities; root_dir=nvim_lsp.util.root_pattern("tsconfig.json")}
 
@@ -634,9 +645,9 @@ nvim_lsp.omnisharp.setup{
 require'lsp_signature'.setup({
   bind = true,
   hint_prefix = " ",
-  handler_opts = {
-    border = "shadow"
-    }
+--  handler_opts = {
+--    border = "shadow"
+--    }
 })
 
 EOF
