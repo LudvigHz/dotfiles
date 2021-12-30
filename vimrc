@@ -165,7 +165,7 @@ augroup text_langs
   autocmd FileType tex,text,markdown setlocal spelllang=nb,en_us
 augroup end
 
-inoremap <c-b> <c-g>u<Esc>[s1z=`]a<c-g>u
+inoremap <c-h> <c-g>u<Esc>[s1z=`]a<c-g>u
 
 
 "#--------------------------------------
@@ -341,6 +341,8 @@ if has('nvim')
   Plug 'hrsh7th/nvim-cmp'
   Plug 'hrsh7th/cmp-nvim-lsp'
   Plug 'hrsh7th/cmp-buffer'
+  Plug 'hrsh7th/cmp-path'
+  Plug 'hrsh7th/cmp-cmdline'
   Plug 'quangnguyen30192/cmp-nvim-ultisnips'
   Plug 'onsails/lspkind-nvim'
   Plug 'ray-x/lsp_signature.nvim'
@@ -501,6 +503,10 @@ let g:ale_writegood_options = '--no-passive'
 let g:ale_c_parse_makefile = 1
 let g:ale_c_clangformat_options = '--style=Mozilla'
 
+if has('nvim')
+  let g:ale_floating_preview = 1
+  let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰']
+endif
 
 "--------------------------------------
 "# LSP
@@ -529,13 +535,16 @@ cmp.setup({
       else
         fallback()
       end
-    end
+    end,
+    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
     },
 
   sources = {
       { name = 'nvim_lsp' },
       { name = 'ultisnips' },
       { name = 'buffer' },
+      { name = 'path' },
+      { name = 'cmdline' },
     },
 
   formatting = {
@@ -618,17 +627,22 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protoco
 
 nvim_lsp.vimls.setup{on_attach=on_attach; capabilities=capabilities}
 
-nvim_lsp.ccls.setup{on_attach=on_attach; cababilities=cababilities; filetypes = {"c", "cpp", "cuda"}}
+nvim_lsp.ccls.setup{on_attach=on_attach; capabilities=capabilities; filetypes = {"c", "cpp", "cuda"}}
 
-nvim_lsp.tsserver.setup{on_attach=on_attach; cababilities=cababilities; root_dir=nvim_lsp.util.root_pattern("tsconfig.json")}
+nvim_lsp.tsserver.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+  root_dir=nvim_lsp.util.root_pattern("package.json");
+  handlers={['textDocument/publishDiagnostics'] = function(...) end }
+}
 
-nvim_lsp.flow.setup{on_attach=on_attach; cababilities=cababilities}
+nvim_lsp.flow.setup{on_attach=on_attach; capabilities=capabilities}
 
-nvim_lsp.jedi_language_server.setup{on_attach=on_attach; cababilities=cababilities}
+nvim_lsp.jedi_language_server.setup{on_attach=on_attach; capabilities=capabilities}
 
-nvim_lsp.gopls.setup{on_attach=on_attach; cababilities=cababilities}
+nvim_lsp.gopls.setup{on_attach=on_attach; capabilities=capabilities}
 
-nvim_lsp.metals.setup{on_attach=on_attach; cababilities=cababilities}
+nvim_lsp.metals.setup{on_attach=on_attach; capabilities=capabilities}
 
 local pid = vim.fn.getpid()
 -- local omnisharp_bin = "/home/ludvig/.cache/omnisharp-vim/omnisharp-roslyn/omnisharp/OmniSharp.exe"

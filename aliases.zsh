@@ -9,6 +9,8 @@ alias ga="git add ."
 alias gc="git checkout"
 alias gcm="git checkout master"
 alias gca="git commit --amend"
+alias gp="git push"
+alias gpf="git push --force-with-lease"
 
 # Programs
 alias gotop="gotop --color=monokai -p -b"
