@@ -113,7 +113,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export EDITOR='/usr/bin/nvim'
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 
-export LESS='-F -S -R -M -i'
+export LESS='-+F -S -R -M -i'
 
 # launch gpg-agent with ssh support
 export GPG_TTY="$(tty)"

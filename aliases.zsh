@@ -47,3 +47,6 @@ alias ap="ansible-playbook"
 
 # Sudo vim
 alias svim="sudoedit"
+
+# Manage.py: Django
+alias ma="./manage.py"

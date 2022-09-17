@@ -347,6 +347,9 @@ if has('nvim')
   Plug 'onsails/lspkind-nvim'
   Plug 'ray-x/lsp_signature.nvim'
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+  Plug 'mfussenegger/nvim-jdtls'
+  Plug 'mfussenegger/nvim-dap'             " Debug Adapter Protocol support
+  Plug 'simrat39/rust-tools.nvim'
 endif
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
@@ -463,7 +466,10 @@ let g:ale_fixers = {
             \'cpp': ['clang-format'],
             \'cuda': ['clang-format'],
             \'cs': [],
+            \'rust': ['rustfmt'],
+            \'zig': ['zigfmt']
 \}
+            "\'lua': ['lua-format'],
 
 function! FormatDotnet(buffer) abort
   return {
@@ -475,7 +481,7 @@ endfunction
 execute ale#fix#registry#Add('dotnet-format', 'FormatDotnet', ['cs'], 'Dotnet-format for csharp')
 
 let g:ale_linters = {
-      \'python': ['flake8', 'isort', 'jedi'],
+      \'python': ['flake8', 'isort', 'mypy'],
       \'typescript': ['tsserver', 'eslint'],
       \'typescriptreact': ['tsserver', 'eslint'],
       \'javascript': ['eslint', 'ternjs', 'flow'],
@@ -485,6 +491,7 @@ let g:ale_linters = {
       \'zsh': ['shell'],
       \'scala': ['metals'],
       \'cs': [],
+      \'rust': ['analyzer'],
 \}
 
 let g:nvim_typescript#diagnostics_enable = 0
@@ -541,7 +548,7 @@ cmp.setup({
 
   sources = {
       { name = 'nvim_lsp' },
-      { name = 'ultisnips' },
+      -- { name = 'ultisnips' },
       { name = 'buffer' },
       { name = 'path' },
       { name = 'cmdline' },
@@ -605,19 +612,19 @@ local on_attach = function(client, bufnr)
 
   -- Mappings.
   local opts = { noremap=true, silent=true }
-  buf_set_keymap('n', '<leader>d', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  buf_set_keymap('n', '<leader>g', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap('n', '<leader>d', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  buf_set_keymap('n', '<leader>g', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', '<leader>i', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
   buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   buf_set_keymap('n', '<leader>r', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.open_float()<CR>', opts)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
@@ -643,6 +650,58 @@ nvim_lsp.jedi_language_server.setup{on_attach=on_attach; capabilities=capabiliti
 nvim_lsp.gopls.setup{on_attach=on_attach; capabilities=capabilities}
 
 nvim_lsp.metals.setup{on_attach=on_attach; capabilities=capabilities}
+
+nvim_lsp.sumneko_lua.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = {'vim'},
+      },
+      workspace = {
+          -- Make the server aware of Neovim runtime files
+          library = vim.api.nvim_get_runtime_file("", true),
+      },
+    },
+  }
+}
+
+-- Rust
+nvim_lsp.rust_analyzer.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+  settings = {
+    ['rust-analyzer'] = {
+      useClientWatching = true;
+      checkOnSave = {
+        command = "clippy"
+      },
+    }
+  }
+}
+
+local rust_opts = {
+    tools = { -- rust-tools options
+        autoSetHints = true,
+        hover_with_actions = true,
+        inlay_hints = {
+            show_parameter_hints = false,
+            parameter_hints_prefix = "",
+            other_hints_prefix = "",
+        },
+    },
+}
+--require('rust-tools').setup(rust_opts)
+--------------
+
+-- Zig
+nvim_lsp.zls.setup{on_attach=on_attach; capabilities=capabilities}
+
+
+-- Julia
+nvim_lsp.julials.setup{on_attach=on_attach; capabilities=capabilities}
+
 
 local pid = vim.fn.getpid()
 -- local omnisharp_bin = "/home/ludvig/.cache/omnisharp-vim/omnisharp-roslyn/omnisharp/OmniSharp.exe"

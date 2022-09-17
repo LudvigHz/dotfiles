@@ -21,6 +21,7 @@ load_plugin() {
 # **Requires svn to be installed**
 load_oh-my-zsh_plugin() {
 
+  check_install "svn"
   if [[ ! -d "$ZSH_PLUGINS/$1" ]]; then
     echo -e "\e[1mInstalling $1...              \c"
     svn export --quiet "https://github.com/robbyrussell/oh-my-zsh/trunk/plugins/$1" "$ZSH_PLUGINS/$1"
@@ -33,13 +34,12 @@ load_oh-my-zsh_plugin() {
 
 # Update plugins
 update_plugin() {
-
   local plugin_name="$1"
   if [[ -d "$ZSH_PLUGINS/$plugin_name" ]]; then
     echo -e "\e[1mLooking for changes in $1\e[0m"
     git -C "$ZSH_PLUGINS/$plugin_name" remote update -p >>/dev/null
-    _local="$(git -C "$ZSH_PLUGINS/$plugin_name" rev-parse HEAD >>/dev/null)"
-    _remote="$(git -C "$ZSH_PLUGINS/$plugin_name" rev-parse '@{u}' >>/dev/null)"
+    _local="$(git -C "$ZSH_PLUGINS/$plugin_name" rev-parse HEAD 2>/dev/null)"
+    _remote="$(git -C "$ZSH_PLUGINS/$plugin_name" rev-parse '@{u}' 2>/dev/null)"
     if [[ "$_local" != "$_remote" ]]; then
       echo -e "Fetching updates...    \c"
       git -C "$ZSH_PLUGINS/$plugin_name" merge --ff-only '@{u}' >>/dev/null
