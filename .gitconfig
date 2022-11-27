@@ -26,3 +26,6 @@
 
 [pull]
 	ff = only
+
+[rebase]
+	updateRefs = true

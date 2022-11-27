@@ -167,6 +167,9 @@ augroup end
 
 inoremap <c-h> <c-g>u<Esc>[s1z=`]a<c-g>u
 
+"Spellchecking and text wrapping in commits
+autocmd Filetype gitcommit setlocal spell textwidth=72
+
 
 "#--------------------------------------
 "# Autoclose hidden buffers if the file is defined in .gitignore
@@ -343,6 +346,7 @@ if has('nvim')
   Plug 'hrsh7th/cmp-buffer'
   Plug 'hrsh7th/cmp-path'
   Plug 'hrsh7th/cmp-cmdline'
+  Plug 'hrsh7th/cmp-omni'
   Plug 'quangnguyen30192/cmp-nvim-ultisnips'
   Plug 'onsails/lspkind-nvim'
   Plug 'ray-x/lsp_signature.nvim'
@@ -368,6 +372,8 @@ Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
 Plug 'mhinz/vim-startify'                   " Fancy start screen
 Plug 'svermeulen/vim-yoink'                 " Yank utils
 Plug 'tmux-plugins/vim-tmux'                " tmux.conf editing features
+
+Plug 'kdheepak/JuliaFormatter.vim'
 
 " LaTeX and snippets
 Plug 'lervag/vimtex'
@@ -467,9 +473,15 @@ let g:ale_fixers = {
             \'cuda': ['clang-format'],
             \'cs': [],
             \'rust': ['rustfmt'],
-            \'zig': ['zigfmt']
+            \'zig': ['zigfmt'],
+            \'julia': ['FormatJulia']
 \}
             "\'lua': ['lua-format'],
+            "
+function! FormatJulia(buffer) abort
+  :silent :JuliaFormatterFormat
+endfunction
+
 
 function! FormatDotnet(buffer) abort
   return {
@@ -522,8 +534,8 @@ endif
 set completeopt=menu,menuone,noselect
 set shortmess+=c
 " Use <Tab> and <S-Tab> to navigate through popup menu
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+"inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+"inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 if has('nvim')
 lua << EOF
@@ -536,23 +548,35 @@ cmp.setup({
     },
 
   mapping = {
-    ['<Tab>'] = function(fallback)
+    ['<Tab>'] = cmp.mapping(function(fallback)
+    local col = vim.fn.col('.') - 1
+
       if cmp.visible() then
         cmp.select_next_item()
+      elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+        fallback()
+      else
+        cmp.complete()
+      end
+    end, {'i', 's'}),
+    ['<S-Tab>'] = cmp.mapping(function(mapping)
+      if cmp.visible() then
+        cmp.select_prev_item()
       else
         fallback()
       end
-    end,
-    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-    },
+    end, {'i', 's'}),
+  },
 
-  sources = {
-      { name = 'nvim_lsp' },
-      -- { name = 'ultisnips' },
-      { name = 'buffer' },
-      { name = 'path' },
-      { name = 'cmdline' },
-    },
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'omni' },
+    { name = 'ultisnips' },
+    { name = 'path' },
+    --{ name = 'cmdline' },
+  }, {
+    { name = 'buffer', keyword_length = 3 },
+  }),
 
   formatting = {
     format = function(entry, vim_item)
@@ -561,6 +585,7 @@ cmp.setup({
 
       -- set a name for each source
       vim_item.menu = ({
+        omni = (vim.inspect(vim_item.menu):gsub('%"', "")),
         buffer = "[Buffer]",
         nvim_lsp = "[LSP]",
         luasnip = "[LuaSnip]",
@@ -574,33 +599,7 @@ cmp.setup({
 })
 EOF
 
-"let g:compe = {}
-"let g:compe.enabled = v:true
-"let g:compe.autocomplete = v:true
-"let g:compe.debug = v:false
-"let g:compe.min_length = 1
-"let g:compe.preselect = 'enable'
-"let g:compe.throttle_time = 80
-"let g:compe.source_timeout = 200
-"let g:compe.incomplete_delay = 400
-"let g:compe.max_abbr_width = 100
-"let g:compe.max_kind_width = 100
-"let g:compe.max_menu_width = 100
-"let g:compe.documentation = v:true
 
-"let g:compe.source = {}
-"let g:compe.source.path = v:true
-"let g:compe.source.buffer = v:true
-""let g:compe.source.calc = v:true
-"let g:compe.source.nvim_lsp = v:true
-"let g:compe.source.nvim_lua = v:true
-"let g:compe.source.vsnip = v:true
-"let g:compe.source.ultisnips = v:true
-"let g:compe.source.omni = {
-      "\ 'filetypes': ['tex'],
-      "\ }
-
-highlight link CompeDocumentation NormalFloat
 
 lua << EOF
 local nvim_lsp = require('lspconfig')
@@ -630,7 +629,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
 end
 
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 nvim_lsp.vimls.setup{on_attach=on_attach; capabilities=capabilities}
 
@@ -701,6 +700,9 @@ nvim_lsp.zls.setup{on_attach=on_attach; capabilities=capabilities}
 
 -- Julia
 nvim_lsp.julials.setup{on_attach=on_attach; capabilities=capabilities}
+
+-- LaTeX
+nvim_lsp.texlab.setup{on_attach=on_attach; capabilities=capabilities}
 
 
 local pid = vim.fn.getpid()
@@ -866,7 +868,7 @@ let g:Hexokinase_optInPatterns = [
     \ ]
 let g:Hexokinase_virtualText = '■'
 let g:Hexokinase_refreshEvents = ['TextChanged', 'TextChangedI']
-let g:Hexokinase_ftEnabled = ['css', 'xml', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact']
+let g:Hexokinase_ftEnabled = ['css', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact']
 
 
 "#--------------------------------------
@@ -902,9 +904,5 @@ nmap P <plug>(YoinkPaste_P)
 "# VimTeX
 "#--------------------------------------
 let g:tex_flavor = 'latex'
-"let g:vimtex_compiler_method = 'tectonic'
-
-let g:vimtex_compiler_method = 'generic'
-let g:vimtex_compiler_generic = {
-      \ 'command': 'ls *.tex | entr -c tectonic /_ --synctex --keep-logs',
-      \ }
+let g:vimtex_compiler_method = 'tectonic'
+"let g:vimtex_view_method = 'zathura'
