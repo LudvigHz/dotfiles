@@ -29,3 +29,5 @@
 
 [rebase]
 	updateRefs = true
+[init]
+	defaultBranch = master

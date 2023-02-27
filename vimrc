@@ -377,6 +377,7 @@ Plug 'kdheepak/JuliaFormatter.vim'
 
 " LaTeX and snippets
 Plug 'lervag/vimtex'
+Plug 'peterbjorgensen/sved'
 Plug 'vim-pandoc/vim-pandoc-syntax'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
@@ -570,7 +571,7 @@ cmp.setup({
 
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
-    { name = 'omni' },
+    --{ name = 'omni' },
     { name = 'ultisnips' },
     { name = 'path' },
     --{ name = 'cmdline' },
@@ -650,11 +651,14 @@ nvim_lsp.gopls.setup{on_attach=on_attach; capabilities=capabilities}
 
 nvim_lsp.metals.setup{on_attach=on_attach; capabilities=capabilities}
 
-nvim_lsp.sumneko_lua.setup{
+nvim_lsp.lua_ls.setup{
   on_attach=on_attach;
   capabilities=capabilities;
   settings = {
     Lua = {
+      runtime = {
+        version = "LuaJIT"
+      },
       diagnostics = {
         globals = {'vim'},
       },
@@ -662,6 +666,9 @@ nvim_lsp.sumneko_lua.setup{
           -- Make the server aware of Neovim runtime files
           library = vim.api.nvim_get_runtime_file("", true),
       },
+      telemetry = {
+        enable = false,
+      }
     },
   }
 }
@@ -703,6 +710,25 @@ nvim_lsp.julials.setup{on_attach=on_attach; capabilities=capabilities}
 
 -- LaTeX
 nvim_lsp.texlab.setup{on_attach=on_attach; capabilities=capabilities}
+
+-- Elixir
+nvim_lsp.elixirls.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+  cmd = { "/usr/lib/elixir-ls/language_server.sh" }
+}
+
+-- TOML
+nvim_lsp.taplo.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+}
+
+-- Svelte
+nvim_lsp.svelte.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+}
 
 
 local pid = vim.fn.getpid()
@@ -906,3 +932,5 @@ nmap P <plug>(YoinkPaste_P)
 let g:tex_flavor = 'latex'
 let g:vimtex_compiler_method = 'tectonic'
 "let g:vimtex_view_method = 'zathura'
+
+nmap <leader>G :call SVED_Sync()<CR>
