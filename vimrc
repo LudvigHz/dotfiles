@@ -301,7 +301,6 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'vim-airline/vim-airline'              " Status bar
 Plug 'ryanoasis/vim-devicons'               " devicons for all icon support (requires nerdfont)
-Plug 'junegunn/fzf.vim'                     " Fzf must have fuzzy search
 "if filereadable('~/.fzf')
   "" For git installations
   "Plug '~/.fzf'
@@ -364,7 +363,7 @@ Plug 'mbbill/undotree'                      " Undo tree
 Plug 'scrooloose/nerdcommenter'             " Command to comment out code
 Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
 "Plug 'flowtype/vim-flow'                    " Flow support
-Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
+"Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
 Plug 'mhinz/vim-startify'                   " Fancy start screen
 Plug 'svermeulen/vim-yoink'                 " Yank utils
 Plug 'tmux-plugins/vim-tmux'                " tmux.conf editing features

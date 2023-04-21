@@ -56,6 +56,8 @@ elif [ -f /usr/share/doc/fzf/examples/completion.zsh ]; then
 elif [ -r /etc/arch-release ]; then
   source /usr/share/fzf/completion.zsh
   source /usr/share/fzf/key-bindings.zsh
+elif [ -f ~/.vim/plugged/fzf/shell/key-bindings.zsh ]; then
+  source ~/.vim/plugged/fzf/shell/key-bindings.zsh
 fi
 
 #Plugins
@@ -104,13 +106,13 @@ source_plugin dotenv
 export PATH="/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
 export PATH="/home/ludvig/.local/share/coursier/bin:$HOME/.cabal/bin:$PATH"
 export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
+#export PATH="$HOME/.local/bin:$PATH"
 
 
 # ---------------------------------------------------------
 # Environment
 # ---------------------------------------------------------
-export EDITOR='/usr/bin/nvim'
+export EDITOR='/usr/bin/vim'
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 
 export LESS='-+F -S -R -M -i'

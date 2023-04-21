@@ -86,7 +86,7 @@ add-zsh-hook precmd virtenv_indicator
 
 # Finalized prompt
 precmd() {
-  PS1="%(1V.(%1v).)%f%(1j.%F{cyan}[%j]%f .)%F{blue}ﬦ %~%f " # start of promt: ﬦ ~
+  PS1="%(1V.(%1v).)%f%(1j.%F{cyan}[%j]%f .)%F{blue}ﬦ %F{red}(IDUN) %F{blue}%~%f " # start of promt: ﬦ ~
   PS1+="$(vcs_prompt_info)"                                 # git info
   PS1+=$'\n%(?.%F{green}.%F{red})  %f'                     # input line
 }
