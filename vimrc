@@ -1,4 +1,4 @@
-"    __              _         _
+"na    __              _         _
 "   / /   _   _   __| |__   __(_)  __ _   /\  /\ ____
 "  / /   | | | | / _` |\ \ / /| | / _` | / /_/ /|_  /
 " / /___ | |_| || (_| | \ V / | || (_| |/ __  /  / /
@@ -323,7 +323,7 @@ let g:fzf_installed = 1
 if has('nvim')
   Plug 'p00f/nvim-ts-rainbow'
 else
-Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
+  Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
 endif
 
 Plug 'junegunn/vim-peekaboo'                " Show register contents
@@ -458,7 +458,7 @@ let g:ale_fixers = {
             \'json': ['prettier'],
             \'typescript': ['prettier', 'eslint'],
             \'typescriptreact': ['prettier', 'eslint'],
-            \'python': ['black', 'isort'],
+            \'python': ['black', 'isort', 'ruff'],
             \'java': ['google_java_format'],
             \'css': ['prettier'],
             \'markdown': ['prettier'],
@@ -475,7 +475,8 @@ let g:ale_fixers = {
             \'cs': [],
             \'rust': ['rustfmt'],
             \'zig': ['zigfmt'],
-            \'julia': ['FormatJulia']
+            \'julia': ['FormatJulia'],
+            \'svelte': ['prettier']
 \}
             "\'lua': ['lua-format'],
             "
@@ -494,7 +495,7 @@ endfunction
 execute ale#fix#registry#Add('dotnet-format', 'FormatDotnet', ['cs'], 'Dotnet-format for csharp')
 
 let g:ale_linters = {
-      \'python': ['flake8', 'isort', 'mypy'],
+      \'python': ['flake8', 'isort', 'mypy', 'ruff'],
       \'typescript': ['tsserver', 'eslint'],
       \'typescriptreact': ['tsserver', 'eslint'],
       \'javascript': ['eslint', 'ternjs', 'flow'],
@@ -522,6 +523,8 @@ let g:ale_hover_to_preview = 1
 let g:ale_writegood_options = '--no-passive'
 let g:ale_c_parse_makefile = 1
 let g:ale_c_clangformat_options = '--style=Mozilla'
+
+let g:ale_disable_lsp = 1
 
 if has('nvim')
   let g:ale_floating_preview = 1
@@ -567,6 +570,7 @@ cmp.setup({
         fallback()
       end
     end, {'i', 's'}),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
   },
 
   sources = cmp.config.sources({
@@ -646,6 +650,7 @@ nvim_lsp.tsserver.setup{
 nvim_lsp.flow.setup{on_attach=on_attach; capabilities=capabilities}
 
 nvim_lsp.jedi_language_server.setup{on_attach=on_attach; capabilities=capabilities}
+nvim_lsp.ruff_lsp.setup{on_attach=on_attach; capabilities=capabilities}
 
 nvim_lsp.gopls.setup{on_attach=on_attach; capabilities=capabilities}
 
@@ -676,7 +681,7 @@ nvim_lsp.lua_ls.setup{
 -- Rust
 nvim_lsp.rust_analyzer.setup{
   on_attach=on_attach;
-  capabilities=capabilities;
+  --capabilities=capabilities;
   settings = {
     ['rust-analyzer'] = {
       useClientWatching = true;
@@ -730,6 +735,11 @@ nvim_lsp.svelte.setup{
   capabilities=capabilities;
 }
 
+nvim_lsp.typst_lsp.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+}
+
 
 local pid = vim.fn.getpid()
 -- local omnisharp_bin = "/home/ludvig/.cache/omnisharp-vim/omnisharp-roslyn/omnisharp/OmniSharp.exe"
@@ -770,7 +780,7 @@ require'nvim-treesitter.configs'.setup {
     enable = true,
     },
   rainbow = {
-    enable = true,
+    enable = false,
     extended_mode = true,
       colors = {
         "#a89984",

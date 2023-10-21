@@ -3,8 +3,8 @@
 autoload -Uz add-zsh-hook
 
 VCS_SYMBOL_BRANCH=""
-VCS_SYMBOL_AHEAD=""
-VCS_SYMBOL_BEHIND=""
+VCS_SYMBOL_AHEAD=""
+VCS_SYMBOL_BEHIND=""
 VCS_SYMBOL_STAGED="●"
 VCS_SYMBOL_CONFLICTS=""
 VCS_SYMBOL_UNSTAGED=""
@@ -86,7 +86,7 @@ add-zsh-hook precmd virtenv_indicator
 
 # Finalized prompt
 precmd() {
-  PS1="%(1V.(%1v).)%f%(1j.%F{cyan}[%j]%f .)%F{blue}ﬦ %~%f " # start of promt: ﬦ ~
+  PS1="%(1V.(%1v).)%f%(1j.%F{cyan}[%j]%f .)%F{blue}󰘧 %~%f " # start of promt: ﬦ ~
   PS1+="$(vcs_prompt_info)"                                 # git info
   PS1+=$'\n%(?.%F{green}.%F{red})  %f'                     # input line
 }
