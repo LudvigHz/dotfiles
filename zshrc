@@ -1,5 +1,5 @@
 # Run tmux if exists
-if [ -x "$(command -v tmux)" ] && [ -n "${DISPLAY}" ]; then
+if [[ -x "$(command -v tmux)" ]]; then
   [ -z "${TMUX}" ] && exec tmux
 else
   echo "tmux not installed on this system"
@@ -38,7 +38,7 @@ if [ -x $(command -v autojump) ]; then
   if [ -f "/etc/debian_version" ]; then
     source /usr/share/autojump/autojump.sh
   elif [[ "$OSTYPE" == "darwin"* ]] then
-    source /usr/local/share/autojump/autojump.zsh
+    source /opt/homebrew/share/autojump/autojump.zsh
   elif [ -f "/etc/arch-release" ]; then
     source /usr/share/autojump/autojump.zsh
   fi
@@ -56,6 +56,9 @@ elif [ -f /usr/share/doc/fzf/examples/completion.zsh ]; then
 elif [ -r /etc/arch-release ]; then
   source /usr/share/fzf/completion.zsh
   source /usr/share/fzf/key-bindings.zsh
+elif [ -r /opt/homebrew/opt/fzf ]; then
+  source /opt/homebrew/opt/fzf/shell/completion.zsh
+  source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
 fi
 
 #Plugins
@@ -106,6 +109,12 @@ export PATH="/home/ludvig/.local/share/coursier/bin:$HOME/.cabal/bin:$PATH"
 export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
+#  Godamm brew
+export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+export CPPFLAGS="-I/opt/homebrew/opt/openjdk@17/include"
+export PATH="/Users/ludvig/.local/share/containers/podman-desktop/extensions-storage/podman-desktop.compose/bin:$PATH"
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+export PATH="/opt/homebrew/lib/ruby/gems/3.2.0/bin/:$PATH"
 
 # ---------------------------------------------------------
 # Environment
@@ -150,7 +159,7 @@ source $DOTFILES/functions.zsh
 # ---------------------------------------------------------
 
 # Completions not provided by plugins or bundled can be put here
-fpath=("$DOTFILES/.local/completions" $fpath)
+fpath=("$DOTFILES/.local/completions" "/opt/homebrew/share/zsh/site-functions" $fpath)
 
 _zpcompinit_custom() {
   # Remember to have "skip_global_compinit=1" in $ZDOTDIR:-$HOME/.zshenv

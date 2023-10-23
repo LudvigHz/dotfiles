@@ -50,3 +50,4 @@ alias svim="sudoedit"
 
 # Manage.py: Django
 alias ma="./manage.py"
+alias sed="gsed"

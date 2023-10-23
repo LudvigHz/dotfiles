@@ -277,8 +277,11 @@ command EisvogelToggle let b:eisvogel_auto = !get(b:, 'eisvogel_auto', 0) | call
 command EisvogelCompile call EisvogelRun()
 
 
-let g:python3_host_prog = '/usr/bin/python'
 
+let g:python3_host_prog = '/usr/bin/python'
+if has('mac')
+  let g:python3_host_prog = '/usr/bin/python3'
+endif
 
 
 "###########################################################
@@ -354,10 +357,14 @@ if has('nvim')
   Plug 'mfussenegger/nvim-jdtls'
   Plug 'mfussenegger/nvim-dap'             " Debug Adapter Protocol support
   Plug 'simrat39/rust-tools.nvim'
+
+  Plug 'IndianBoy42/tree-sitter-just'
 endif
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
 Plug 'Procrat/oz.vim'
+Plug 'NoahTheDuke/vim-just'
+
 Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
 Plug 'tpope/vim-repeat'                     " Repeat plugin commands
@@ -476,10 +483,14 @@ let g:ale_fixers = {
             \'rust': ['rustfmt'],
             \'zig': ['zigfmt'],
             \'julia': ['FormatJulia'],
-            \'svelte': ['prettier']
+            \'svelte': ['prettier'],
+            \'ruby': ['syntax_tree', 'rubocop']
 \}
             "\'lua': ['lua-format'],
             "
+let g:ale_ruby_syntax_tree_executable = 'bundle'
+let g:ale_ruby_rubocop_executable = 'bundle'
+
 function! FormatJulia(buffer) abort
   :silent :JuliaFormatterFormat
 endfunction
@@ -507,8 +518,6 @@ let g:ale_linters = {
       \'cs': [],
       \'rust': ['analyzer'],
 \}
-
-let g:nvim_typescript#diagnostics_enable = 0
 
 let g:ale_fix_on_save = '1'               " Enble auto fixing on save
 let g:ale_lint_on_insert_leave = '1'
@@ -553,7 +562,7 @@ cmp.setup({
 
   mapping = {
     ['<Tab>'] = cmp.mapping(function(fallback)
-    local col = vim.fn.col('.') - 1
+      local col = vim.fn.col('.') - 1
 
       if cmp.visible() then
         cmp.select_next_item()
@@ -563,6 +572,7 @@ cmp.setup({
         cmp.complete()
       end
     end, {'i', 's'}),
+
     ['<S-Tab>'] = cmp.mapping(function(mapping)
       if cmp.visible() then
         cmp.select_prev_item()
@@ -570,13 +580,14 @@ cmp.setup({
         fallback()
       end
     end, {'i', 's'}),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+
+    ['<CR>'] = cmp.mapping.confirm({ select = true })
   },
 
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
     --{ name = 'omni' },
-    { name = 'ultisnips' },
+    --{ name = 'ultisnips' },
     { name = 'path' },
     --{ name = 'cmdline' },
   }, {
@@ -644,7 +655,7 @@ nvim_lsp.tsserver.setup{
   on_attach=on_attach;
   capabilities=capabilities;
   root_dir=nvim_lsp.util.root_pattern("package.json");
-  handlers={['textDocument/publishDiagnostics'] = function(...) end }
+  --handlers={['textDocument/publishDiagnostics'] = function(...) end }
 }
 
 nvim_lsp.flow.setup{on_attach=on_attach; capabilities=capabilities}
@@ -655,6 +666,8 @@ nvim_lsp.ruff_lsp.setup{on_attach=on_attach; capabilities=capabilities}
 nvim_lsp.gopls.setup{on_attach=on_attach; capabilities=capabilities}
 
 nvim_lsp.metals.setup{on_attach=on_attach; capabilities=capabilities}
+
+nvim_lsp.gopls.setup{on_attach=on_attach; capabilities=capabilities}
 
 nvim_lsp.lua_ls.setup{
   on_attach=on_attach;
@@ -729,6 +742,30 @@ nvim_lsp.taplo.setup{
   capabilities=capabilities;
 }
 
+-- YAML
+nvim_lsp.yamlls.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+  settings = {
+    yaml = {
+      schemas = {
+        ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+        }
+      }
+    }
+}
+
+-- Terraform
+nvim_lsp.terraformls.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+}
+
+nvim_lsp.tailwindcss.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+}
+
 -- Svelte
 nvim_lsp.svelte.setup{
   on_attach=on_attach;
@@ -736,6 +773,26 @@ nvim_lsp.svelte.setup{
 }
 
 nvim_lsp.typst_lsp.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+}
+-- Kotlin
+nvim_lsp.kotlin_language_server.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+  -- root_dir=nvim_lsp.util.root_pattern("settings.gradle.kts")
+}
+
+-- Ruby
+-- nvim_lsp.rubocop.setup{
+--   on_attach=on_attach;
+--   capabilities=capabilities;
+-- }
+-- nvim_lsp.ruby_ls.setup{
+--   on_attach=on_attach;
+--   capabilities=capabilities;
+-- }
+nvim_lsp.solargraph.setup{
   on_attach=on_attach;
   capabilities=capabilities;
 }
@@ -793,6 +850,14 @@ require'nvim-treesitter.configs'.setup {
   }
 EOF
 endif
+
+
+"#--------------------------------------
+"# Treesitter
+"#--------------------------------------
+lua << EOF
+require('tree-sitter-just').setup({})
+EOF
 
 
 "#--------------------------------------
