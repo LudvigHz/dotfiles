@@ -38,7 +38,8 @@ if [ -x $(command -v autojump) ]; then
   if [ -f "/etc/debian_version" ]; then
     source /usr/share/autojump/autojump.sh
   elif [[ "$OSTYPE" == "darwin"* ]] then
-    source /opt/homebrew/share/autojump/autojump.zsh
+    [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
+    #source /opt/homebrew/share/autojump/autojump.zsh
   elif [ -f "/etc/arch-release" ]; then
     source /usr/share/autojump/autojump.zsh
   fi
@@ -59,6 +60,9 @@ elif [ -r /etc/arch-release ]; then
 elif [ -r /opt/homebrew/opt/fzf ]; then
   source /opt/homebrew/opt/fzf/shell/completion.zsh
   source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
+elif [ -r /usr/local/opt/fzf/shell/completion.zsh ]; then
+  source /usr/local/opt/fzf/shell/completion.zsh
+  source /usr/local/opt/fzf/shell/key-bindings.zsh
 fi
 
 #Plugins
@@ -119,7 +123,7 @@ export PATH="/opt/homebrew/lib/ruby/gems/3.2.0/bin/:$PATH"
 # ---------------------------------------------------------
 # Environment
 # ---------------------------------------------------------
-export EDITOR='/usr/bin/nvim'
+export EDITOR=nvim
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 
 export LESS='-+F -S -R -M -i'

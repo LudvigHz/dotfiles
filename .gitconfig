@@ -4,6 +4,7 @@
 [user]
 	email = ludvig123@gmail.com
 	name = Ludvig Hozman
+	signingkey = B1619A47E85B6E94
 
 [core]
 	pager = delta
