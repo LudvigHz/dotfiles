@@ -130,7 +130,7 @@ nnoremap <leader><Tab> :buffer<Space><Tab>
 " Navigate between buffers
 nmap <C-l> :bnext<CR>
 nmap <C-h> :bprevious<CR>
-nmap <C-w> :bp <BAR> bd #<CR>
+nnoremap <C-w> :bp <BAR> bd #<CR>
 
 " Use F2 to toggle paste on/off
 nnoremap <F2> :set invpaste paste?<CR>
@@ -278,7 +278,7 @@ command EisvogelCompile call EisvogelRun()
 
 
 
-let g:python3_host_prog = '/usr/bin/python'
+let g:python3_host_prog = '/usr/bin/python3'
 if has('mac')
   let g:python3_host_prog = '/usr/bin/python3'
 endif
@@ -372,9 +372,10 @@ Plug 'tpope/vim-vinegar'                    " netrw tweaks
 Plug 'tpope/vim-sleuth'                     " Auto set tab width based on buffer
 
 Plug 'mbbill/undotree'                      " Undo tree
-Plug 'scrooloose/nerdcommenter'             " Command to comment out code
+if !has('nvim')
+  Plug 'scrooloose/nerdcommenter'           " Command to comment out code
+endif
 Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
-"Plug 'flowtype/vim-flow'                    " Flow support
 Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
 Plug 'mhinz/vim-startify'                   " Fancy start screen
 Plug 'svermeulen/vim-yoink'                 " Yank utils
@@ -637,9 +638,9 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   buf_set_keymap('n', '<leader>r', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.open_float()<CR>', opts)
+  buf_set_keymap('n', 'L', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
@@ -750,11 +751,16 @@ nvim_lsp.yamlls.setup{
     yaml = {
       schemas = {
         ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
-        ["https://storage.googleapis.com/nais-json-schema-2c91/nais-k8s-all.json"] = "nais.ya?ml",
-        ["https://storage.googleapis.com/nais-json-schema-2c91/nais-k8s-all.json"] = ".nais/*.yaml"
+        ["https://storage.googleapis.com/nais-json-schema-2c91/nais-k8s-all.json"] = "*nais*",
         }
       }
     }
+}
+
+-- JSON
+nvim_lsp.jsonls.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
 }
 
 -- Terraform

@@ -25,6 +25,10 @@
 [diff "ansible-vault"]
 	textconv = ansible-vault view
 
+[diff "lockb"]
+	binary = true
+	textconv = bun
+
 [pull]
 	ff = only
 
