@@ -326,7 +326,7 @@ let g:fzf_installed = 1
 if has('nvim')
   Plug 'p00f/nvim-ts-rainbow'
 else
-  Plug 'junegunn/rainbow_parentheses.vim'     " Rainbow parentheses
+  Plug 'junegunn/rainbow_parentheses.vim'   " Rainbow parentheses
 endif
 
 Plug 'junegunn/vim-peekaboo'                " Show register contents
@@ -337,9 +337,9 @@ Plug 'airblade/vim-gitgutter'               " Git info before line numbers
 
 " Color schemes
 Plug 'gruvbox-community/gruvbox'            " Standard color scheme
-Plug 'gilgigilgil/anderson.vim'             " Alternate color schemes
-Plug 'srcery-colors/srcery-vim'
-Plug 'sainnhe/gruvbox-material'
+"Plug 'gilgigilgil/anderson.vim'             " Alternate color schemes
+"Plug 'srcery-colors/srcery-vim'
+"Plug 'sainnhe/gruvbox-material'
 
 " Completion (nvim-lsp)
 if has('nvim')
@@ -354,41 +354,47 @@ if has('nvim')
   Plug 'onsails/lspkind-nvim'
   Plug 'ray-x/lsp_signature.nvim'
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-  Plug 'mfussenegger/nvim-jdtls'
-  Plug 'mfussenegger/nvim-dap'             " Debug Adapter Protocol support
-  Plug 'simrat39/rust-tools.nvim'
+  "Plug 'mfussenegger/nvim-jdtls'
+  "Plug 'mfussenegger/nvim-dap'             " Debug Adapter Protocol support
+  "Plug 'simrat39/rust-tools.nvim'
+
+  Plug 'nvim-lua/plenary.nvim'
+  Plug 'nvim-telescope/telescope.nvim'
 
   Plug 'IndianBoy42/tree-sitter-just'
 endif
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
-Plug 'Procrat/oz.vim'
-Plug 'NoahTheDuke/vim-just'
+"Plug 'NoahTheDuke/vim-just'
 
 Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
 Plug 'tpope/vim-repeat'                     " Repeat plugin commands
-Plug 'tpope/vim-vinegar'                    " netrw tweaks
+"Plug 'tpope/vim-vinegar'                    " netrw tweaks
 Plug 'tpope/vim-sleuth'                     " Auto set tab width based on buffer
 
 Plug 'mbbill/undotree'                      " Undo tree
 if !has('nvim')
   Plug 'scrooloose/nerdcommenter'           " Command to comment out code
 endif
-Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
-Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
+if has('nvim')
+  Plug 'm4xshen/autoclose.nvim'
+else
+  Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
+endif
+"Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
 Plug 'mhinz/vim-startify'                   " Fancy start screen
 Plug 'svermeulen/vim-yoink'                 " Yank utils
 Plug 'tmux-plugins/vim-tmux'                " tmux.conf editing features
 
-Plug 'kdheepak/JuliaFormatter.vim'
+"Plug 'kdheepak/JuliaFormatter.vim'
 
 " LaTeX and snippets
 Plug 'lervag/vimtex'
-Plug 'peterbjorgensen/sved'
-Plug 'vim-pandoc/vim-pandoc-syntax'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+"Plug 'peterbjorgensen/sved'
+"Plug 'vim-pandoc/vim-pandoc-syntax'
+"Plug 'SirVer/ultisnips'
+"Plug 'honza/vim-snippets'
 
 "Plug 'omnisharp/omnisharp-vim'
 
@@ -620,6 +626,21 @@ EOF
 
 lua << EOF
 local nvim_lsp = require('lspconfig')
+
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
+  callback = function(event)
+  local map = function(keys, func, desc, mode)
+    mode = mode or 'n'
+    vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+  end
+
+  map('<leader>d', require('telescope.builtin').lsp_definitions, 'Goto definitions')
+  map('<leader>r', require('telescope.builtin').lsp_references, 'Goto references')
+
+  end
+  })
+
 local on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
   local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
@@ -628,8 +649,7 @@ local on_attach = function(client, bufnr)
 
   -- Mappings.
   local opts = { noremap=true, silent=true }
-  buf_set_keymap('n', '<leader>d', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  buf_set_keymap('n', '<leader>g', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+
   buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', '<leader>i', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
@@ -639,7 +659,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-  buf_set_keymap('n', '<leader>r', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  --buf_set_keymap('n', '<leader>r', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   buf_set_keymap('n', 'L', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
@@ -652,14 +672,18 @@ nvim_lsp.vimls.setup{on_attach=on_attach; capabilities=capabilities}
 
 nvim_lsp.ccls.setup{on_attach=on_attach; capabilities=capabilities; filetypes = {"c", "cpp", "cuda"}}
 
-nvim_lsp.tsserver.setup{
+nvim_lsp.ts_ls.setup{
   on_attach=on_attach;
   capabilities=capabilities;
   root_dir=nvim_lsp.util.root_pattern("package.json");
   --handlers={['textDocument/publishDiagnostics'] = function(...) end }
 }
 
-nvim_lsp.flow.setup{on_attach=on_attach; capabilities=capabilities}
+
+nvim_lsp.biome.setup{
+  on_attach=on_attach;
+  capabilities=capabilities;
+}
 
 nvim_lsp.jedi_language_server.setup{on_attach=on_attach; capabilities=capabilities}
 nvim_lsp.ruff_lsp.setup{on_attach=on_attach; capabilities=capabilities}
@@ -826,6 +850,12 @@ require'lsp_signature'.setup({
 --    }
 })
 
+
+-- ================
+-- Telescope
+-- ================
+
+
 EOF
 endif
 
@@ -905,7 +935,7 @@ endif
 "# Airline
 "#--------------------------------------
 let g:airline_powerline_fonts = 1
-let g:airline_theme = 'gruvbox_material'
+let g:airline_theme = 'gruvbox'
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
