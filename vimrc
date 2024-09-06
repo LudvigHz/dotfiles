@@ -464,8 +464,8 @@ let g:ale_fixers = {
             \'javascript': ['prettier', 'eslint'],
             \'javascriptreact': ['prettier', 'eslint'],
             \'json': ['prettier'],
-            \'typescript': ['prettier', 'eslint'],
-            \'typescriptreact': ['prettier', 'eslint'],
+            \'typescript': ['prettier', 'eslint', 'biome'],
+            \'typescriptreact': ['prettier', 'eslint', 'biome'],
             \'python': ['black', 'isort', 'ruff'],
             \'java': ['google_java_format'],
             \'css': ['prettier'],
@@ -508,9 +508,9 @@ execute ale#fix#registry#Add('dotnet-format', 'FormatDotnet', ['cs'], 'Dotnet-fo
 
 let g:ale_linters = {
       \'python': ['flake8', 'isort', 'mypy', 'ruff'],
-      \'typescript': ['tsserver', 'eslint'],
-      \'typescriptreact': ['tsserver', 'eslint'],
-      \'javascript': ['eslint', 'ternjs', 'flow'],
+      \'typescript': ['tsserver', 'eslint', 'biome'],
+      \'typescriptreact': ['tsserver', 'eslint', 'biome'],
+      \'javascript': ['eslint', 'ternjs', 'flow', 'biome'],
       \'jsx': ['stylelint'],
       \'sh': ['shell', 'shellcheck', 'language_server'],
       \'bash': ['shell', 'shellcheck'],
