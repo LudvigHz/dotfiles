@@ -547,6 +547,16 @@ if has('nvim')
   let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰']
 endif
 
+
+"#--------------------------------------
+"# Autoclose
+"#--------------------------------------
+if has('nvim')
+lua << EOF
+require("autoclose").setup()
+EOF
+endif
+
 "--------------------------------------
 "# LSP
 "#--------------------------------------
@@ -650,6 +660,7 @@ local on_attach = function(client, bufnr)
   -- Mappings.
   local opts = { noremap=true, silent=true }
 
+  buf_set_keymap('n', '<leader>g', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
   buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', '<leader>i', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
