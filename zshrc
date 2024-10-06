@@ -88,7 +88,6 @@ plugins=(
 # Oh-my-zsh plugins to be installed
 oh_my_zsh_plugins=(
   "sudo"
-  "dotenv"
 )
 
 
@@ -101,7 +100,6 @@ source_plugin zsh-completions
 source_plugin zsh-history-substring-search
 source_plugin k "k.sh"
 source_plugin sudo
-source_plugin dotenv
 
 
 # ---------------------------------------------------------
@@ -112,13 +110,15 @@ export PATH="/usr/local/texlive/2020/bin/x86_64-linux:$PATH"
 export PATH="/home/ludvig/.local/share/coursier/bin:$HOME/.cabal/bin:$PATH"
 export PATH="$HOME/.yarn/bin:$HOME/go/bin:/usr/local/go/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.bun/bin:$PATH"
 
 #  Godamm brew
 export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
 export CPPFLAGS="-I/opt/homebrew/opt/openjdk@17/include"
 export PATH="/Users/ludvig/.local/share/containers/podman-desktop/extensions-storage/podman-desktop.compose/bin:$PATH"
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
-export PATH="/opt/homebrew/lib/ruby/gems/3.2.0/bin/:$PATH"
+export PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"
 
 # ---------------------------------------------------------
 # Environment
@@ -200,4 +200,5 @@ compload() {
 
 # Call zprof (debug)
 #zprof
-#
+
+eval "$(direnv hook zsh)"
