@@ -467,14 +467,14 @@ nnoremap <silent> <C-b>/ :TmuxNavigatePrevious<cr>
 "#--------------------------------------
 let g:ale_fixers = {
             \'*': ['remove_trailing_lines', 'trim_whitespace'],
-            \'javascript': ['prettier', 'eslint'],
-            \'javascriptreact': ['prettier', 'eslint'],
-            \'json': ['prettier'],
+            \'javascript': ['prettier', 'eslint', 'biome'],
+            \'javascriptreact': ['prettier', 'eslint', 'biome'],
+            \'json': ['prettier', 'biome'],
             \'typescript': ['prettier', 'eslint', 'biome'],
             \'typescriptreact': ['prettier', 'eslint', 'biome'],
             \'python': ['black', 'isort', 'ruff'],
             \'java': ['google_java_format'],
-            \'css': ['prettier'],
+            \'css': ['prettier', 'biome'],
             \'markdown': ['prettier'],
             \'pandoc': ['prettier'],
             \'sql': ['sqlfmt'],
@@ -525,6 +525,8 @@ let g:ale_linters = {
       \'cs': [],
       \'rust': ['analyzer'],
 \}
+
+let g:ale_biome_lsp_project_root = "biome.jsonc"
 
 let g:ale_fix_on_save = '1'               " Enble auto fixing on save
 let g:ale_lint_on_insert_leave = '1'
