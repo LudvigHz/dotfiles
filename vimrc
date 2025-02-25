@@ -472,7 +472,7 @@ let g:ale_fixers = {
             \'json': ['prettier', 'biome'],
             \'typescript': ['prettier', 'eslint', 'biome'],
             \'typescriptreact': ['prettier', 'eslint', 'biome'],
-            \'python': ['black', 'isort', 'ruff'],
+            \'python': ['black', 'isort', 'ruff', 'ruff_format'],
             \'java': ['google_java_format'],
             \'css': ['prettier', 'biome'],
             \'markdown': ['prettier'],
@@ -556,6 +556,15 @@ endif
 if has('nvim')
 lua << EOF
 require("autoclose").setup()
+EOF
+endif
+
+"--------------------------------------
+"# Autoclose
+"#--------------------------------------
+if has('nvim')
+lua << EOF
+require('autoclose').setup{}
 EOF
 endif
 
@@ -787,7 +796,7 @@ nvim_lsp.yamlls.setup{
   settings = {
     yaml = {
       schemas = {
-        ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+        ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/**/*",
         ["https://storage.googleapis.com/nais-json-schema-2c91/nais-k8s-all.json"] = "*nais*",
         }
       }
