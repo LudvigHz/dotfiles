@@ -796,7 +796,7 @@ nvim_lsp.yamlls.setup{
   settings = {
     yaml = {
       schemas = {
-        ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/**/*",
+        ["https://json.schemastore.org/github-workflow.json"] = ".github/workflows/*",
         ["https://storage.googleapis.com/nais-json-schema-2c91/nais-k8s-all.json"] = "*nais*",
         }
       }
