@@ -118,7 +118,8 @@ export CPPFLAGS="-I/opt/homebrew/opt/openjdk@17/include"
 export PATH="/Users/ludvig/.local/share/containers/podman-desktop/extensions-storage/podman-desktop.compose/bin:$PATH"
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 export PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
-export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"
+export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
+export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
 
 # ---------------------------------------------------------
 # Environment

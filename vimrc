@@ -135,7 +135,6 @@ nnoremap <C-w> :bp <BAR> bd #<CR>
 " Use F2 to toggle paste on/off
 nnoremap <F2> :set invpaste paste?<CR>
 imap <F2> <C-O>:set invpaste paste?<CR>
-set pastetoggle=<F2>
 
 " Splits (See also vim-tmux-navigator)
 nmap <silent> <C-t>k :wincmd k<CR>
@@ -324,7 +323,7 @@ Plug 'junegunn/fzf', {'do': { -> fzf#install() }}
 let g:fzf_installed = 1
 
 if has('nvim')
-  Plug 'p00f/nvim-ts-rainbow'
+  Plug 'HiPhish/rainbow-delimiters.nvim'
 else
   Plug 'junegunn/rainbow_parentheses.vim'   " Rainbow parentheses
 endif
@@ -361,7 +360,6 @@ if has('nvim')
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-telescope/telescope.nvim'
 
-  Plug 'IndianBoy42/tree-sitter-just'
 endif
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
@@ -475,7 +473,6 @@ let g:ale_fixers = {
             \'python': ['black', 'isort', 'ruff', 'ruff_format'],
             \'java': ['google_java_format'],
             \'css': ['prettier', 'biome'],
-            \'markdown': ['prettier'],
             \'pandoc': ['prettier'],
             \'sql': ['sqlfmt'],
             \'sh': ['shfmt'],
@@ -513,11 +510,12 @@ endfunction
 execute ale#fix#registry#Add('dotnet-format', 'FormatDotnet', ['cs'], 'Dotnet-format for csharp')
 
 let g:ale_linters = {
-      \'python': ['flake8', 'isort', 'mypy', 'ruff'],
+      \'python': ['flake8', 'isort', 'ty', 'ruff'],
       \'typescript': ['tsserver', 'eslint', 'biome'],
       \'typescriptreact': ['tsserver', 'eslint', 'biome'],
       \'javascript': ['eslint', 'ternjs', 'flow', 'biome'],
-      \'jsx': ['stylelint'],
+      \'css': ['biome'],
+      \'jsx': ['stylelint', 'biome'],
       \'sh': ['shell', 'shellcheck', 'language_server'],
       \'bash': ['shell', 'shellcheck'],
       \'zsh': ['shell'],
@@ -526,7 +524,7 @@ let g:ale_linters = {
       \'rust': ['analyzer'],
 \}
 
-let g:ale_biome_lsp_project_root = "biome.jsonc"
+let g:ale_biome_lsp_project_root = "biome.json"
 
 let g:ale_fix_on_save = '1'               " Enble auto fixing on save
 let g:ale_lint_on_insert_leave = '1'
@@ -559,14 +557,8 @@ require("autoclose").setup()
 EOF
 endif
 
-"--------------------------------------
-"# Autoclose
-"#--------------------------------------
-if has('nvim')
-lua << EOF
-require('autoclose').setup{}
-EOF
-endif
+let g:astro_typescript = "enable"
+au BufRead,BufNewFile *.astro setfiletype astro
 
 "--------------------------------------
 "# LSP
@@ -646,8 +638,6 @@ EOF
 
 
 lua << EOF
-local nvim_lsp = require('lspconfig')
-
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
   callback = function(event)
@@ -690,33 +680,38 @@ end
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-nvim_lsp.vimls.setup{on_attach=on_attach; capabilities=capabilities}
+vim.lsp.config('vimls', {on_attach=on_attach; capabilities=capabilities})
+vim.lsp.enable('vimls')
 
-nvim_lsp.ccls.setup{on_attach=on_attach; capabilities=capabilities; filetypes = {"c", "cpp", "cuda"}}
+--nvim_lsp.ccls.setup{on_attach=on_attach; capabilities=capabilities; filetypes = {"c", "cpp", "cuda"}}
 
-nvim_lsp.ts_ls.setup{
+vim.lsp.config('tsgo', {
   on_attach=on_attach;
   capabilities=capabilities;
-  root_dir=nvim_lsp.util.root_pattern("package.json");
+  --root_dir=nvim_lsp.util.root_pattern("package.json");
   --handlers={['textDocument/publishDiagnostics'] = function(...) end }
-}
+})
+vim.lsp.enable('tsgo')
 
 
-nvim_lsp.biome.setup{
+vim.lsp.config('biome', {
   on_attach=on_attach;
   capabilities=capabilities;
-}
+})
+vim.lsp.enable('biome')
 
-nvim_lsp.jedi_language_server.setup{on_attach=on_attach; capabilities=capabilities}
-nvim_lsp.ruff_lsp.setup{on_attach=on_attach; capabilities=capabilities}
+vim.lsp.config('astro', {on_attach=on_attach; capabilities=capabilities})
+vim.lsp.enable('astro')
 
-nvim_lsp.gopls.setup{on_attach=on_attach; capabilities=capabilities}
+vim.lsp.config('ruff', {on_attach=on_attach; capabilities=capabilities})
+vim.lsp.enable('ruff')
 
-nvim_lsp.metals.setup{on_attach=on_attach; capabilities=capabilities}
+vim.lsp.config('ty', {on_attach=on_attach; capabilities=capabilities})
+vim.lsp.enable('ty')
 
-nvim_lsp.gopls.setup{on_attach=on_attach; capabilities=capabilities}
+--nvim_lsp.gopls.setup{on_attach=on_attach; capabilities=capabilities}
 
-nvim_lsp.lua_ls.setup{
+vim.lsp.config('lua_ls', {
   on_attach=on_attach;
   capabilities=capabilities;
   settings = {
@@ -736,10 +731,11 @@ nvim_lsp.lua_ls.setup{
       }
     },
   }
-}
+})
+vim.lsp.enable('lua_ls')
 
 -- Rust
-nvim_lsp.rust_analyzer.setup{
+vim.lsp.config('rust_analyzer', {
   on_attach=on_attach;
   --capabilities=capabilities;
   settings = {
@@ -750,7 +746,7 @@ nvim_lsp.rust_analyzer.setup{
       },
     }
   }
-}
+})
 
 local rust_opts = {
     tools = { -- rust-tools options
@@ -767,30 +763,37 @@ local rust_opts = {
 --------------
 
 -- Zig
-nvim_lsp.zls.setup{on_attach=on_attach; capabilities=capabilities}
+vim.lsp.config('zls', {on_attach=on_attach; capabilities=capabilities})
 
 
 -- Julia
-nvim_lsp.julials.setup{on_attach=on_attach; capabilities=capabilities}
+--nvim_lsp.julials.setup{on_attach=on_attach; capabilities=capabilities}
 
 -- LaTeX
-nvim_lsp.texlab.setup{on_attach=on_attach; capabilities=capabilities}
+--nvim_lsp.texlab.setup{on_attach=on_attach; capabilities=capabilities}
 
 -- Elixir
-nvim_lsp.elixirls.setup{
+vim.lsp.config('elixirls', {
   on_attach=on_attach;
   capabilities=capabilities;
-  cmd = { "/usr/lib/elixir-ls/language_server.sh" }
-}
+  cmd = { "elixir-ls" }
+})
+
+-- Gleam
+vim.lsp.config('gleam', {
+  on_attach=on_attach;
+  capabilities=capabilities;
+})
 
 -- TOML
-nvim_lsp.taplo.setup{
+vim.lsp.config('taplo', {
   on_attach=on_attach;
   capabilities=capabilities;
-}
+})
+vim.lsp.enable('taplo')
 
 -- YAML
-nvim_lsp.yamlls.setup{
+vim.lsp.config('yamlls', {
   on_attach=on_attach;
   capabilities=capabilities;
   settings = {
@@ -801,41 +804,27 @@ nvim_lsp.yamlls.setup{
         }
       }
     }
-}
+})
+vim.lsp.enable('yamlls')
 
 -- JSON
-nvim_lsp.jsonls.setup{
+vim.lsp.config('jsonls', {
   on_attach=on_attach;
   capabilities=capabilities;
-}
+})
+vim.lsp.enable('jsonls')
 
--- Terraform
-nvim_lsp.terraformls.setup{
+vim.lsp.config('tailwindcss', {
   on_attach=on_attach;
   capabilities=capabilities;
-}
-
-nvim_lsp.tailwindcss.setup{
-  on_attach=on_attach;
-  capabilities=capabilities;
-}
+})
+vim.lsp.enable('tailwindcss')
 
 -- Svelte
-nvim_lsp.svelte.setup{
+vim.lsp.config('svelte', {
   on_attach=on_attach;
   capabilities=capabilities;
-}
-
-nvim_lsp.typst_lsp.setup{
-  on_attach=on_attach;
-  capabilities=capabilities;
-}
--- Kotlin
-nvim_lsp.kotlin_language_server.setup{
-  on_attach=on_attach;
-  capabilities=capabilities;
-  -- root_dir=nvim_lsp.util.root_pattern("settings.gradle.kts")
-}
+})
 
 -- Ruby
 -- nvim_lsp.rubocop.setup{
@@ -846,27 +835,15 @@ nvim_lsp.kotlin_language_server.setup{
 --   on_attach=on_attach;
 --   capabilities=capabilities;
 -- }
-nvim_lsp.solargraph.setup{
-  on_attach=on_attach;
-  capabilities=capabilities;
-}
 
-
-local pid = vim.fn.getpid()
--- local omnisharp_bin = "/home/ludvig/.cache/omnisharp-vim/omnisharp-roslyn/omnisharp/OmniSharp.exe"
-local omnisharp_bin = "/home/ludvig/.bin/run"
-
-
-nvim_lsp.omnisharp.setup{
-  on_attach=on_attach;
-  cmd = {omnisharp_bin, "-lsp", "-s", vim.fn.getcwd(), "-e utf-8", "--hostPID", tostring(pid) };
-  root_dir = nvim_lsp.util.root_pattern("*.sln");
-}
 
 -- Signature help
 require'lsp_signature'.setup({
   bind = true,
   hint_prefix = " ",
+  ignore_error = function(err, ctx, config)
+    return true
+  end
 --  handler_opts = {
 --    border = "shadow"
 --    }
@@ -892,10 +869,7 @@ augroup END
 "#--------------------------------------
 if has('nvim')
 lua <<EOF
-require'nvim-treesitter.configs'.setup {
-  highlight = {
-    enable = true,
-    },
+require'nvim-treesitter'.setup {
   rainbow = {
     enable = false,
     extended_mode = true,
@@ -908,6 +882,37 @@ require'nvim-treesitter.configs'.setup {
       },
     }
   }
+--require'nvim-treesitter'.install { 'javascript', 'typescript', 'tsx', 'json', 'yaml'}
+
+local languages = { 'typescript', 'tsx', 'python', 'json', 'yaml', 'javascript', 'css', 'bash' }
+require('nvim-treesitter').install(languages)
+vim.api.nvim_create_autocmd('FileType', {
+    group = vim.api.nvim_create_augroup('treesitter.setup', {}),
+    callback = function(args)
+        local buf = args.buf
+        local filetype = args.match
+
+        -- you need some mechanism to avoid running on buffers that do not
+        -- correspond to a language (like oil.nvim buffers), this implementation
+        -- checks if a parser exists for the current language
+        local language = vim.treesitter.language.get_lang(filetype) or filetype
+        if not vim.treesitter.language.add(language) then
+            return
+        end
+
+        -- replicate `fold = { enable = true }`
+        --vim.wo.foldmethod = 'expr'
+        --vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+
+        -- replicate `highlight = { enable = true }`
+        vim.treesitter.start(buf, language)
+
+        -- replicate `indent = { enable = true }`
+        vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+
+        -- `incremental_selection = { enable = true }` cannot be easily replicated
+    end,
+})
 EOF
 endif
 
@@ -916,7 +921,6 @@ endif
 "# Treesitter
 "#--------------------------------------
 lua << EOF
-require('tree-sitter-just').setup({})
 EOF
 
 

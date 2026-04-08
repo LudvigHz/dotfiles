@@ -7,7 +7,7 @@ alias gd="git diff"
 alias gs="git status"
 alias ga="git add ."
 alias gc="git checkout"
-alias gcm="git checkout master"
+alias gcm="git checkout main 2>/dev/null || git checkout master"
 alias gca="git commit --amend"
 alias gp="git push"
 alias gpf="git push --force-with-lease"
@@ -55,3 +55,6 @@ alias ma="./manage.py"
 if [[ "$OSTYPE" == "darwin"* ]] then
 	alias sed="gsed"
 fi
+
+# Node/js
+alias p="pnpm"
