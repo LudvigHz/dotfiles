@@ -261,14 +261,13 @@ endif
 Plug 'junegunn/vim-peekaboo'                " Show register contents
 Plug 'christoomey/vim-tmux-navigator'
 
-Plug 'dense-analysis/ale'                   " Linter
+if !has('nvim')
+  Plug 'dense-analysis/ale'                   " Linter
+endif
 Plug 'airblade/vim-gitgutter'               " Git info before line numbers
 
 " Color schemes
 Plug 'gruvbox-community/gruvbox'            " Standard color scheme
-"Plug 'gilgigilgil/anderson.vim'             " Alternate color schemes
-"Plug 'srcery-colors/srcery-vim'
-"Plug 'sainnhe/gruvbox-material'
 
 " Completion (nvim-lsp)
 if has('nvim')
@@ -279,13 +278,11 @@ if has('nvim')
   Plug 'hrsh7th/cmp-path'
   Plug 'hrsh7th/cmp-cmdline'
   Plug 'hrsh7th/cmp-omni'
-  "Plug 'quangnguyen30192/cmp-nvim-ultisnips'
   Plug 'onsails/lspkind-nvim'
   Plug 'ray-x/lsp_signature.nvim'
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-  "Plug 'mfussenegger/nvim-jdtls'
-  "Plug 'mfussenegger/nvim-dap'             " Debug Adapter Protocol support
-  "Plug 'simrat39/rust-tools.nvim'
+
+  Plug 'stevearc/conform.nvim'
 
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-telescope/telescope.nvim'
@@ -404,44 +401,23 @@ let g:ale_fixers = {
             \'c': ['clang-format'],
             \'cpp': ['clang-format'],
             \'cuda': ['clang-format'],
-            \'cs': [],
             \'rust': ['rustfmt'],
             \'zig': ['zigfmt'],
-            \'julia': ['FormatJulia'],
             \'svelte': ['prettier'],
             \'ruby': ['syntax_tree', 'rubocop']
 \}
             "\'lua': ['lua-format'],
-            "
-let g:ale_ruby_syntax_tree_executable = 'bundle'
-let g:ale_ruby_rubocop_executable = 'bundle'
-
-function! FormatJulia(buffer) abort
-  :silent :JuliaFormatterFormat
-endfunction
-
-
-function! FormatDotnet(buffer) abort
-  return {
-        \'command': 'dotnet format --fix --include' . ' %t',
-        \'read_temporary_file': 1,
-        \}
-endfunction
-
-execute ale#fix#registry#Add('dotnet-format', 'FormatDotnet', ['cs'], 'Dotnet-format for csharp')
 
 let g:ale_linters = {
       \'python': ['flake8', 'isort', 'ty', 'ruff'],
       \'typescript': ['tsserver', 'eslint', 'biome'],
       \'typescriptreact': ['tsserver', 'eslint', 'biome'],
-      \'javascript': ['eslint', 'ternjs', 'flow', 'biome'],
+      \'javascript': ['eslint', 'biome'],
       \'css': ['biome'],
       \'jsx': ['stylelint', 'biome'],
       \'sh': ['shell', 'shellcheck', 'language_server'],
       \'bash': ['shell', 'shellcheck'],
       \'zsh': ['shell'],
-      \'scala': ['metals'],
-      \'cs': [],
       \'rust': ['analyzer'],
 \}
 
@@ -468,6 +444,34 @@ if has('nvim')
   let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰']
 endif
 
+"--------------------------------------
+" Formatting (NVIM conform)
+"--------------------------------------
+if has('nvim')
+lua << EOF
+require("conform").setup({
+  formatters_by_ft = {
+    ["*"] = { "trim_whitespace", "trim_newlines" },
+    javascript = { "biome-check", "prettier", stop_after_first = true },
+    typescript = { "biome-check", "prettier", stop_after_first = true },
+    typescriptreact = { "biome-check", "prettier", stop_after_first = true },
+    json = { "biome-check", "prettier", stop_after_first = true },
+    sh = { 'shfmt' },
+    bash = { 'shfmt' },
+    zsh = { 'shfmt' },
+    python = { 'ruff_fix', 'ruff_format', 'ruff_organize_imports' },
+  },
+
+  format_on_save = {
+     -- These options will be passed to conform.format()
+    timeout_ms = 500,
+    lsp_format = "fallback",
+  },
+})
+EOF
+endif
+
+
 
 "#--------------------------------------
 "# Autoclose
@@ -482,8 +486,8 @@ let g:astro_typescript = "enable"
 au BufRead,BufNewFile *.astro setfiletype astro
 
 "--------------------------------------
-"# LSP
-"#--------------------------------------
+" LSP
+"--------------------------------------
 
 set completeopt=menu,menuone,noselect
 set shortmess+=c
