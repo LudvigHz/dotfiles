@@ -209,74 +209,6 @@ endfun
 
 command ShowFile call Open_xdg()
 
-function! s:eis_on_err(j, d, e)
-  if len(a:d[0]) > 0
-    redraw
-    echoe a:d[0]
-  endif
-endfun
-
-function! s:eis_on_out(j, d, e)
-  redraw
-  echoh MoreMsg | echom "Eisvogel compiled successfully" | echoh None
-endfun
-
-"#--------------------------------------
-"# Create pdf from md using eisvogel template
-"#--------------------------------------
-function! EisvogelRun()
-  redraw
-  echom "Compiling pandoc..."
-  let generated_file = substitute(fnameescape(expand('%:p')), '.md', '.pdf', '')
-  call jobstart('pandoc --pdf-engine=tectonic --filter pandoc-latex-environment '
-        \ . fnameescape(expand('%:p'))
-        \ . ' -o '
-        \ . generated_file
-        \ . ' --from markdown --template eisvogel -V lang=en --listings',
-        \ {
-          \ 'stdout_buffered': 1,
-          \ 'stderr_buffered': 1,
-          \ 'on_stderr': function("s:eis_on_err"),
-          \ 'on_stdout': function("s:eis_on_out")
-        \ })
-  " If run for the first time, open the generated pdf in zathura, or another program
-  if !get(b:, 'eisvogel_auto_run', 0) && filereadable(generated_file)
-    try
-      execute system(get(g:, 'pdf_viewer', 'xdg-open') . generated_file . ' &')
-    catch
-      try
-        if has('macunix')
-          execute system('open ' . generated_file)
-        elseif has('unix')
-          execute system('xdg-open ' . generated_file)
-        else
-          throw 1
-        endif
-      catch
-        echom 'No pdf viewer available to open file'
-      endtry
-    endtry
-    let b:eisvogel_auto_run = 1
-  endif
-endfunction
-
-augroup eisvogel_on_save
-  autocmd!
-  autocmd FileType markdown let b:eisvogel_auto_run = 0
-  autocmd BufWritePost * if get(b:, 'eisvogel_auto', 0) | call EisvogelRun() | endif
-augroup end
-
-function! Eis_toggleMsg()
-  echom 'Eisvogel auto compile ' . (get(b:, 'eisvogel_auto') ? 'ON' : 'OFF')
-endfun
-
-" Command to toggle compile on save for the current buffer
-command EisvogelToggle let b:eisvogel_auto = !get(b:, 'eisvogel_auto', 0) | call Eis_toggleMsg()
-" Command to recompile current buffer
-command EisvogelCompile call EisvogelRun()
-
-
-
 let g:python3_host_prog = '/usr/bin/python3'
 if has('mac')
   let g:python3_host_prog = '/usr/bin/python3'
@@ -324,8 +256,6 @@ let g:fzf_installed = 1
 
 if has('nvim')
   Plug 'HiPhish/rainbow-delimiters.nvim'
-else
-  Plug 'junegunn/rainbow_parentheses.vim'   " Rainbow parentheses
 endif
 
 Plug 'junegunn/vim-peekaboo'                " Show register contents
@@ -363,12 +293,10 @@ if has('nvim')
 endif
 
 Plug 'sheerun/vim-polyglot'                 " Support for most languages
-"Plug 'NoahTheDuke/vim-just'
 
 Plug 'tpope/vim-fugitive'                   " More git info
 Plug 'tpope/vim-surround'                   " Tag and delimit manipulation
 Plug 'tpope/vim-repeat'                     " Repeat plugin commands
-"Plug 'tpope/vim-vinegar'                    " netrw tweaks
 Plug 'tpope/vim-sleuth'                     " Auto set tab width based on buffer
 
 Plug 'mbbill/undotree'                      " Undo tree
@@ -377,24 +305,17 @@ if !has('nvim')
 endif
 if has('nvim')
   Plug 'm4xshen/autoclose.nvim'
-else
-  Plug 'raimondi/delimitmate'                 " Auto close tags and parentheses
 endif
-"Plug 'RRethy/vim-hexokinase', {'do': 'make hexokinase'} " Color highlighting CSS
 Plug 'mhinz/vim-startify'                   " Fancy start screen
 Plug 'svermeulen/vim-yoink'                 " Yank utils
 Plug 'tmux-plugins/vim-tmux'                " tmux.conf editing features
 
-"Plug 'kdheepak/JuliaFormatter.vim'
-
 " LaTeX and snippets
-Plug 'lervag/vimtex'
+""Plug 'lervag/vimtex'
 "Plug 'peterbjorgensen/sved'
 "Plug 'vim-pandoc/vim-pandoc-syntax'
 "Plug 'SirVer/ultisnips'
 "Plug 'honza/vim-snippets'
-
-"Plug 'omnisharp/omnisharp-vim'
 
 call plug#end()
 
@@ -572,6 +493,10 @@ set shortmess+=c
 
 if has('nvim')
 lua << EOF
+
+-- Enable new UI
+--require('vim._core.ui2').enable()
+
 local cmp = require'cmp'
 cmp.setup({
   snippet = {
@@ -915,34 +840,6 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 EOF
 endif
-
-
-"#--------------------------------------
-"# Treesitter
-"#--------------------------------------
-lua << EOF
-EOF
-
-
-"#--------------------------------------
-"# Jump to definition (Ale & CoC)
-"#--------------------------------------
-
-" Custom function for jump to definition.
-" Will try jump to definition in order:
-" coc -> ale
-function! JumpToDefinition()
-  call CocActionAsync('jumpDefinition')
-  sleep 200m
-  let lastMsg = execute('1messages')
-  if lastMsg =~? 'Definition provider not found'
-    redraw
-    echom ''
-    execute 'ALEGoToDefinition'
-  endif
-endfunction
-
-"nmap <leader>g :call JumpToDefinition()<CR>
 
 
 "#--------------------------------------
